@@ -77,7 +77,7 @@ export function IntensitySlider({ emotion, intensity, onChange, onConfirm }: Int
         className="w-full py-4 rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         style={{
           background: emotion.color,
-          color: "#FFF",
+          color: "#F2EFE2",
           boxShadow: `0 4px 20px ${emotion.color}44`,
         }}
       >

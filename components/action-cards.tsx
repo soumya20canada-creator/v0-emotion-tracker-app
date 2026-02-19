@@ -72,7 +72,7 @@ export function ActionCards({ actions, emotion, onComplete, completedIds }: Acti
                 }}
               >
                 {isDone ? (
-                  <Check size={18} style={{ color: "#FFF" }} />
+                  <Check size={18} style={{ color: "#F2EFE2" }} />
                 ) : Icon ? (
                   <Icon size={18} style={{ color: emotion.color }} />
                 ) : (

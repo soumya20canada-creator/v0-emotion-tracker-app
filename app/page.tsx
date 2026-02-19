@@ -219,7 +219,7 @@ export default function FeelsMovesApp() {
             <div className="flex flex-col items-center gap-3">
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold"
-                style={{ background: selectedEmotion.color, color: "#FFF" }}
+                style={{ background: selectedEmotion.color, color: "#F2EFE2" }}
               >
                 {selectedEmotion.label.slice(0, 2)}
               </div>
@@ -240,7 +240,7 @@ export default function FeelsMovesApp() {
               className="w-full max-w-sm mx-auto py-4 rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 background: selectedEmotion.color,
-                color: "#FFF",
+                color: "#F2EFE2",
                 boxShadow: `0 4px 20px ${selectedEmotion.color}44`,
               }}
             >
@@ -278,7 +278,7 @@ export default function FeelsMovesApp() {
             <div className="flex items-center gap-4 p-4 rounded-2xl" style={{ background: `${selectedEmotion.color}12` }}>
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center text-base font-bold shrink-0"
-                style={{ background: selectedEmotion.color, color: "#FFF" }}
+                style={{ background: selectedEmotion.color, color: "#F2EFE2" }}
               >
                 {selectedEmotion.label.slice(0, 2)}
               </div>
@@ -301,7 +301,7 @@ export default function FeelsMovesApp() {
                 style={{
                   borderColor: selectedEmotion.color,
                   background: showCrisis ? selectedEmotion.color : "transparent",
-                  color: showCrisis ? "#FFF" : selectedEmotion.color,
+                  color: showCrisis ? "#F2EFE2" : selectedEmotion.color,
                 }}
               >
                 {showCrisis ? "Hide Crisis Tools" : "Open Crisis Toolkit"}
@@ -329,8 +329,8 @@ export default function FeelsMovesApp() {
             {completedActionIds.length > 0 && (
               <button
                 onClick={handleReset}
-                className="w-full py-4 rounded-2xl text-lg font-bold bg-game-teal text-accent-foreground cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                style={{ boxShadow: "0 4px 20px rgba(6, 214, 160, 0.3)" }}
+                className="w-full py-4 rounded-2xl text-lg font-bold bg-primary text-primary-foreground cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                style={{ boxShadow: "0 4px 20px rgba(122, 129, 108, 0.3)" }}
               >
                 Check in again
               </button>
