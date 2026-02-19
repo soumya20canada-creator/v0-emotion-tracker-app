@@ -2,6 +2,7 @@
 
 import { type GameState } from "@/lib/game-store"
 import { EMOTION_CATEGORIES } from "@/lib/emotions-data"
+import { CONTEXT_TAGS } from "@/lib/context-tags"
 import {
   Flame,
   Star,
@@ -44,6 +45,19 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
   const unlockedCount = gameState.badges.filter((b) => b.unlocked).length
   const totalBadges = gameState.badges.length
   const recentEmotions = [...new Set(gameState.checkIns.slice(-10).map((c) => c.emotionId))]
+
+  // Count context tags across all check-ins
+  const tagCounts: Record<string, number> = {}
+  gameState.checkIns.forEach((checkin) => {
+    const tags = checkin.contextTags || []
+    tags.forEach((t) => {
+      tagCounts[t] = (tagCounts[t] || 0) + 1
+    })
+  })
+  const sortedTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+  const maxTagCount = sortedTags.length > 0 ? sortedTags[0][1] : 1
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-md mx-auto pb-6">
@@ -119,6 +133,42 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
           })}
         </div>
       </div>
+
+      {/* Top triggers */}
+      {sortedTags.length > 0 && (
+        <div>
+          <h4 className="text-base font-bold text-foreground mb-3">Top Triggers</h4>
+          <div className="flex flex-col gap-2">
+            {sortedTags.map(([tagId, count]) => {
+              const tag = CONTEXT_TAGS.find((t) => t.id === tagId)
+              const pct = Math.round((count / maxTagCount) * 100)
+              return (
+                <div key={tagId} className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-foreground w-32 shrink-0 truncate">
+                    {tag?.label || tagId}
+                  </span>
+                  <div className="flex-1 h-4 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${pct}%`,
+                        background: "var(--primary)",
+                        minWidth: "8px",
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm font-bold text-muted-foreground w-8 text-right shrink-0">
+                    {count}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+            Understanding your triggers helps you prepare and respond better over time.
+          </p>
+        </div>
+      )}
 
       {/* Recent activity */}
       {recentEmotions.length > 0 && (
@@ -205,6 +255,15 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
                     <p className="text-xs text-muted-foreground">
                       {checkin.actionsCompleted.length} moves completed, +{checkin.pointsEarned}pts
                     </p>
+                    {checkin.contextTags && checkin.contextTags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {checkin.contextTags.map((tagId) => (
+                          <span key={tagId} className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                            {tagId.replace(/-/g, " ")}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <span className="text-[10px] text-muted-foreground shrink-0">{checkin.date}</span>
                 </div>

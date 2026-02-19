@@ -14,6 +14,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { AppLogo } from "@/components/app-logo"
 import { LocationPicker } from "@/components/location-picker"
 import { CrisisResources } from "@/components/crisis-resources"
+import { ContextTagPicker } from "@/components/context-tag-picker"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -31,12 +32,13 @@ import { getRegionById } from "@/lib/crisis-resources"
 import type { Badge } from "@/lib/emotions-data"
 import { ArrowLeft, Sparkles } from "lucide-react"
 
-type Screen = "home" | "sub-emotion" | "intensity" | "actions" | "crisis" | "progress"
+type Screen = "home" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress"
 
 export default function FeelsMovesApp() {
   const [screen, setScreen] = useState<Screen>("home")
   const [selectedEmotion, setSelectedEmotion] = useState<EmotionCategory | null>(null)
   const [subEmotions, setSubEmotions] = useState<string[]>([])
+  const [contextTags, setContextTags] = useState<string[]>([])
   const [intensity, setIntensity] = useState(3)
   const [actions, setActions] = useState<MicroAction[]>([])
   const [completedActionIds, setCompletedActionIds] = useState<string[]>([])
@@ -63,6 +65,16 @@ export default function FeelsMovesApp() {
   }, [])
 
   const handleSubEmotionContinue = useCallback(() => {
+    setScreen("context")
+  }, [])
+
+  const handleContextTagToggle = useCallback((tagId: string) => {
+    setContextTags((prev) =>
+      prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId]
+    )
+  }, [])
+
+  const handleContextContinue = useCallback(() => {
     setScreen("intensity")
   }, [])
 
@@ -97,7 +109,8 @@ export default function FeelsMovesApp() {
         subLabel,
         intensity,
         [{ id: action.id, points: action.points, category: action.category }],
-        showCrisis
+        showCrisis,
+        contextTags
       )
 
       const newlyUnlocked = newState.badges.filter(
@@ -111,7 +124,7 @@ export default function FeelsMovesApp() {
         setTimeout(showNextBadge, 1400)
       }
     },
-    [selectedEmotion, gameState, subEmotions, intensity, showCrisis, showNextBadge]
+    [selectedEmotion, gameState, subEmotions, intensity, showCrisis, showNextBadge, contextTags]
   )
 
   const handleCrisisComplete = useCallback(() => {
@@ -124,7 +137,8 @@ export default function FeelsMovesApp() {
       subLabel,
       intensity,
       [{ id: "crisis-game", points: 25, category: "mindful" }],
-      true
+      true,
+      contextTags
     )
     const newlyUnlocked = newState.badges.filter(
       (b) => b.unlocked && !gameState.badges.find((ob) => ob.id === b.id && ob.unlocked)
@@ -134,7 +148,7 @@ export default function FeelsMovesApp() {
       badgeQueueRef.current.push(...newlyUnlocked)
       setTimeout(showNextBadge, 1400)
     }
-  }, [selectedEmotion, gameState, subEmotions, intensity, showNextBadge])
+  }, [selectedEmotion, gameState, subEmotions, intensity, showNextBadge, contextTags])
 
   const handleRegionSelect = useCallback(
     (regionId: string) => {
@@ -149,6 +163,7 @@ export default function FeelsMovesApp() {
   const handleReset = useCallback(() => {
     setSelectedEmotion(null)
     setSubEmotions([])
+    setContextTags([])
     setIntensity(3)
     setActions([])
     setCompletedActionIds([])
@@ -185,7 +200,8 @@ export default function FeelsMovesApp() {
               <button
                 onClick={() => {
                   if (screen === "sub-emotion") setScreen("home")
-                  else if (screen === "intensity") setScreen("sub-emotion")
+                  else if (screen === "context") setScreen("sub-emotion")
+                  else if (screen === "intensity") setScreen("context")
                   else if (screen === "actions") setScreen("intensity")
                 }}
                 className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
@@ -269,6 +285,37 @@ export default function FeelsMovesApp() {
           </div>
         )}
 
+        {screen === "context" && selectedEmotion && (
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col items-center gap-3">
+              <h2 className="text-2xl font-extrabold text-foreground text-center text-balance">
+                What is this about?
+              </h2>
+              <p className="text-base text-muted-foreground text-center leading-relaxed">
+                Tag what might be causing this feeling. Pick as many as apply.
+              </p>
+            </div>
+            <ContextTagPicker
+              selected={contextTags}
+              onToggle={handleContextTagToggle}
+              accentColor={selectedEmotion.color}
+            />
+            <button
+              onClick={handleContextContinue}
+              className="w-full max-w-sm mx-auto py-4 rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+              style={{
+                background: selectedEmotion.color,
+                color: "#FFFFFF",
+                boxShadow: `0 4px 20px ${selectedEmotion.color}44`,
+              }}
+            >
+              {contextTags.length > 0
+                ? `Continue with ${contextTags.length} tag${contextTags.length !== 1 ? "s" : ""}`
+                : "Skip - not sure why"}
+            </button>
+          </div>
+        )}
+
         {screen === "intensity" && selectedEmotion && (
           <div className="flex flex-col gap-8">
             <div className="flex flex-col items-center gap-2">
@@ -300,7 +347,7 @@ export default function FeelsMovesApp() {
               >
                 {selectedEmotion.label.slice(0, 2)}
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="text-base font-bold text-foreground">
                   {selectedEmotion.label}
                   {subEmotions.length > 0 ? ` - ${subEmotions.join(", ")}` : ""}
@@ -308,6 +355,22 @@ export default function FeelsMovesApp() {
                 <p className="text-sm text-muted-foreground">
                   {INTENSITY_OPTIONS.find((o) => o.level === intensity)?.label || ""}
                 </p>
+                {contextTags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {contextTags.map((tagId) => (
+                      <span
+                        key={tagId}
+                        className="text-xs font-medium px-2 py-0.5 rounded-full"
+                        style={{
+                          background: `${selectedEmotion.color}15`,
+                          color: selectedEmotion.color,
+                        }}
+                      >
+                        {tagId.replace(/-/g, " ")}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

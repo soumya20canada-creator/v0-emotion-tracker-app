@@ -11,6 +11,7 @@ export type CheckIn = {
   actionsCompleted: string[]
   pointsEarned: number
   usedCrisisMode: boolean
+  contextTags: string[]
 }
 
 export type GameState = {
@@ -96,7 +97,8 @@ export function processCheckIn(
   subEmotion: string,
   intensity: number,
   completedActions: { id: string; points: number; category: string }[],
-  usedCrisisMode: boolean
+  usedCrisisMode: boolean,
+  contextTags: string[] = []
 ): GameState {
   const now = new Date().toISOString()
   const today = now.slice(0, 10)
@@ -142,6 +144,7 @@ export function processCheckIn(
         actionsCompleted: completedActions.map((a) => a.id),
         pointsEarned,
         usedCrisisMode,
+        contextTags,
       },
     ],
     badges: state.badges,
