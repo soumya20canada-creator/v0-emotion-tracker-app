@@ -39,6 +39,7 @@ export default function FeelsMovesApp() {
   const [selectedEmotion, setSelectedEmotion] = useState<EmotionCategory | null>(null)
   const [subEmotions, setSubEmotions] = useState<string[]>([])
   const [contextTags, setContextTags] = useState<string[]>([])
+  const [journalNote, setJournalNote] = useState("")
   const [intensity, setIntensity] = useState(3)
   const [actions, setActions] = useState<MicroAction[]>([])
   const [completedActionIds, setCompletedActionIds] = useState<string[]>([])
@@ -110,7 +111,8 @@ export default function FeelsMovesApp() {
         intensity,
         [{ id: action.id, points: action.points, category: action.category }],
         showCrisis,
-        contextTags
+        contextTags,
+        journalNote
       )
 
       const newlyUnlocked = newState.badges.filter(
@@ -124,7 +126,7 @@ export default function FeelsMovesApp() {
         setTimeout(showNextBadge, 1400)
       }
     },
-    [selectedEmotion, gameState, subEmotions, intensity, showCrisis, showNextBadge, contextTags]
+    [selectedEmotion, gameState, subEmotions, intensity, showCrisis, showNextBadge, contextTags, journalNote]
   )
 
   const handleCrisisComplete = useCallback(() => {
@@ -138,7 +140,8 @@ export default function FeelsMovesApp() {
       intensity,
       [{ id: "crisis-game", points: 25, category: "mindful" }],
       true,
-      contextTags
+      contextTags,
+      journalNote
     )
     const newlyUnlocked = newState.badges.filter(
       (b) => b.unlocked && !gameState.badges.find((ob) => ob.id === b.id && ob.unlocked)
@@ -148,7 +151,7 @@ export default function FeelsMovesApp() {
       badgeQueueRef.current.push(...newlyUnlocked)
       setTimeout(showNextBadge, 1400)
     }
-  }, [selectedEmotion, gameState, subEmotions, intensity, showNextBadge, contextTags])
+  }, [selectedEmotion, gameState, subEmotions, intensity, showNextBadge, contextTags, journalNote])
 
   const handleRegionSelect = useCallback(
     (regionId: string) => {
@@ -164,6 +167,7 @@ export default function FeelsMovesApp() {
     setSelectedEmotion(null)
     setSubEmotions([])
     setContextTags([])
+    setJournalNote("")
     setIntensity(3)
     setActions([])
     setCompletedActionIds([])
@@ -269,6 +273,31 @@ export default function FeelsMovesApp() {
               selected={subEmotions}
               onToggle={handleSubEmotionToggle}
             />
+
+            {/* Optional 1-sentence journal */}
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="journal-note"
+                className="text-base font-bold text-foreground"
+              >
+                Want to write 1 sentence about why?
+              </label>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Totally optional. Sometimes naming the reason helps.
+              </p>
+              <textarea
+                id="journal-note"
+                value={journalNote}
+                onChange={(e) => setJournalNote(e.target.value.slice(0, 200))}
+                placeholder={`I feel ${selectedEmotion.label.toLowerCase()} because...`}
+                rows={2}
+                className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground text-base placeholder:text-muted-foreground/60 border border-border focus:outline-none focus:ring-2 focus:ring-ring resize-none transition-all"
+              />
+              <span className="text-xs text-muted-foreground text-right">
+                {journalNote.length}/200
+              </span>
+            </div>
+
             <button
               onClick={handleSubEmotionContinue}
               className="w-full max-w-sm mx-auto py-4 rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
@@ -355,6 +384,11 @@ export default function FeelsMovesApp() {
                 <p className="text-sm text-muted-foreground">
                   {INTENSITY_OPTIONS.find((o) => o.level === intensity)?.label || ""}
                 </p>
+                {journalNote && (
+                  <p className="text-sm text-muted-foreground mt-1 italic leading-relaxed">
+                    {'"'}{journalNote}{'"'}
+                  </p>
+                )}
                 {contextTags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {contextTags.map((tagId) => (

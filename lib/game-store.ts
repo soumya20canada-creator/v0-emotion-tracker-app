@@ -12,6 +12,7 @@ export type CheckIn = {
   pointsEarned: number
   usedCrisisMode: boolean
   contextTags: string[]
+  journalNote: string
 }
 
 export type GameState = {
@@ -98,7 +99,8 @@ export function processCheckIn(
   intensity: number,
   completedActions: { id: string; points: number; category: string }[],
   usedCrisisMode: boolean,
-  contextTags: string[] = []
+  contextTags: string[] = [],
+  journalNote: string = ""
 ): GameState {
   const now = new Date().toISOString()
   const today = now.slice(0, 10)
@@ -145,6 +147,7 @@ export function processCheckIn(
         pointsEarned,
         usedCrisisMode,
         contextTags,
+        journalNote,
       },
     ],
     badges: state.badges,

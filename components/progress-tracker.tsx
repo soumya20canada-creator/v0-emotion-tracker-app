@@ -255,6 +255,11 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
                     <p className="text-xs text-muted-foreground">
                       {checkin.actionsCompleted.length} moves completed, +{checkin.pointsEarned}pts
                     </p>
+                    {checkin.journalNote && (
+                      <p className="text-xs text-muted-foreground italic mt-0.5 leading-relaxed">
+                        {'"'}{checkin.journalNote}{'"'}
+                      </p>
+                    )}
                     {checkin.contextTags && checkin.contextTags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {checkin.contextTags.map((tagId) => (
