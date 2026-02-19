@@ -237,7 +237,7 @@ export default function FeelsMovesApp() {
             <div className="flex flex-col items-center gap-3">
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold"
-                style={{ background: selectedEmotion.color, color: "#F2EFE2" }}
+                style={{ background: selectedEmotion.color, color: "#FFFFFF" }}
               >
                 {selectedEmotion.label.slice(0, 2)}
               </div>
@@ -258,7 +258,7 @@ export default function FeelsMovesApp() {
               className="w-full max-w-sm mx-auto py-4 rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 background: selectedEmotion.color,
-                color: "#F2EFE2",
+                color: "#FFFFFF",
                 boxShadow: `0 4px 20px ${selectedEmotion.color}44`,
               }}
             >
@@ -296,7 +296,7 @@ export default function FeelsMovesApp() {
             <div className="flex items-center gap-4 p-4 rounded-2xl" style={{ background: `${selectedEmotion.color}12` }}>
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center text-base font-bold shrink-0"
-                style={{ background: selectedEmotion.color, color: "#F2EFE2" }}
+                style={{ background: selectedEmotion.color, color: "#FFFFFF" }}
               >
                 {selectedEmotion.label.slice(0, 2)}
               </div>
@@ -319,7 +319,7 @@ export default function FeelsMovesApp() {
                 style={{
                   borderColor: selectedEmotion.color,
                   background: showCrisis ? selectedEmotion.color : "transparent",
-                  color: showCrisis ? "#F2EFE2" : selectedEmotion.color,
+                  color: showCrisis ? "#FFFFFF" : selectedEmotion.color,
                 }}
               >
                 {showCrisis ? "Hide Crisis Tools" : "Open Crisis Toolkit"}
@@ -336,36 +336,33 @@ export default function FeelsMovesApp() {
             )}
 
             {/* Crisis resources - helplines & support groups */}
-            {showCrisis && (
-              <>
-                {gameState.selectedRegion ? (
-                  (() => {
-                    const regionData = getRegionById(gameState.selectedRegion)
-                    if (!regionData) return null
-                    return (
-                      <CrisisResources
-                        region={regionData}
-                        accentColor={selectedEmotion.color}
-                      />
-                    )
-                  })()
-                ) : (
-                  <div className="flex flex-col gap-3 p-5 rounded-2xl bg-card border-2 border-accent/30">
-                    <p className="text-base font-bold text-foreground">
-                      Where are you right now?
-                    </p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Set your location so we can show you real crisis helplines
-                      and community support groups near you.
-                    </p>
-                    <LocationPicker
-                      selectedRegion={gameState.selectedRegion}
-                      onSelect={handleRegionSelect}
-                    />
-                  </div>
-                )}
-              </>
-            )}
+            {/* Always shown when location is set; prompts to set location in crisis mode */}
+            {gameState.selectedRegion ? (
+              (() => {
+                const regionData = getRegionById(gameState.selectedRegion)
+                if (!regionData) return null
+                return (
+                  <CrisisResources
+                    region={regionData}
+                    accentColor={selectedEmotion.color}
+                  />
+                )
+              })()
+            ) : showCrisis ? (
+              <div className="flex flex-col gap-3 p-5 rounded-2xl bg-card border-2 border-accent/30">
+                <p className="text-base font-bold text-foreground">
+                  Where are you right now?
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Set your location so we can show you real crisis helplines
+                  and community support groups near you.
+                </p>
+                <LocationPicker
+                  selectedRegion={gameState.selectedRegion}
+                  onSelect={handleRegionSelect}
+                />
+              </div>
+            ) : null}
 
             {/* Action cards */}
             <ActionCards
@@ -380,7 +377,7 @@ export default function FeelsMovesApp() {
               <button
                 onClick={handleReset}
                 className="w-full py-4 rounded-2xl text-lg font-bold bg-primary text-primary-foreground cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                style={{ boxShadow: "0 4px 20px rgba(122, 129, 108, 0.3)" }}
+                style={{ boxShadow: "0 4px 20px rgba(59, 130, 246, 0.3)" }}
               >
                 Check in again
               </button>

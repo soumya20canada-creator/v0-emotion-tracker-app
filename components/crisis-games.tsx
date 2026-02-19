@@ -88,7 +88,7 @@ function BreathingGame({ emotion, onComplete }: { emotion: EmotionCategory; onCo
         <button
           onClick={onComplete}
           className="px-6 py-3 rounded-xl text-sm font-bold cursor-pointer hover:scale-105 active:scale-95 transition-transform"
-          style={{ background: emotion.color, color: "#F2EFE2" }}
+          style={{ background: emotion.color, color: "#FFFFFF" }}
         >
           Done! +25pts
         </button>
@@ -98,7 +98,7 @@ function BreathingGame({ emotion, onComplete }: { emotion: EmotionCategory; onCo
 }
 
 // -- COLOR MATCHING GAME --
-const GAME_COLORS = ["#98AA9D", "#AE6965", "#B3C9D6", "#A58B71", "#D1A9A5", "#7A816C"]
+const GAME_COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#EC4899", "#8B5CF6"]
 
 function ColorMatchGame({ emotion, onComplete }: { emotion: EmotionCategory; onComplete: () => void }) {
   const [target, setTarget] = useState<string[]>([])
@@ -214,7 +214,7 @@ function ColorMatchGame({ emotion, onComplete }: { emotion: EmotionCategory; onC
           <button
             onClick={onComplete}
             className="px-6 py-3 rounded-xl text-sm font-bold cursor-pointer hover:scale-105 active:scale-95 transition-transform"
-            style={{ background: emotion.color, color: "#F2EFE2" }}
+            style={{ background: emotion.color, color: "#FFFFFF" }}
           >
             Done! +{Math.max(score, 15)}pts
           </button>
@@ -322,7 +322,7 @@ function PatternPuzzle({ emotion, onComplete }: { emotion: EmotionCategory; onCo
           <button
             onClick={onComplete}
             className="px-6 py-3 rounded-xl text-sm font-bold cursor-pointer hover:scale-105 active:scale-95 transition-transform"
-            style={{ background: emotion.color, color: "#F2EFE2" }}
+            style={{ background: emotion.color, color: "#FFFFFF" }}
           >
             Done! +20pts
           </button>

@@ -67,13 +67,13 @@ export function EmotionWheel({ onSelect, selectedId }: EmotionWheelProps) {
               {Icon && (
                 <Icon
                   size={28}
-                  style={{ color: isSelected ? "#F2EFE2" : emotion.color }}
+                  style={{ color: isSelected ? "#FFFFFF" : emotion.color }}
                   aria-hidden="true"
                 />
               )}
               <span
                 className="text-base font-bold"
-                style={{ color: isSelected ? "#F2EFE2" : emotion.color }}
+                style={{ color: isSelected ? "#FFFFFF" : emotion.color }}
               >
                 {emotion.label}
               </span>
