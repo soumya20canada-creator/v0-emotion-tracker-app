@@ -26,6 +26,7 @@ export type GameState = {
   bodyActionsCompleted: number
   mindfulActionsCompleted: number
   usedCrisisMode: boolean
+  selectedRegion: string | null
 }
 
 const STORAGE_KEY = "feels-moves-game-state"
@@ -44,6 +45,7 @@ export function getDefaultState(): GameState {
     bodyActionsCompleted: 0,
     mindfulActionsCompleted: 0,
     usedCrisisMode: false,
+    selectedRegion: null,
   }
 }
 

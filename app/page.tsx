@@ -12,6 +12,8 @@ import { PointPopup } from "@/components/point-popup"
 import { BadgePopup } from "@/components/badge-popup"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { AppLogo } from "@/components/app-logo"
+import { LocationPicker } from "@/components/location-picker"
+import { CrisisResources } from "@/components/crisis-resources"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -22,8 +24,10 @@ import {
 import {
   type GameState,
   loadState,
+  saveState,
   processCheckIn,
 } from "@/lib/game-store"
+import { getRegionById } from "@/lib/crisis-resources"
 import type { Badge } from "@/lib/emotions-data"
 import { ArrowLeft, Sparkles } from "lucide-react"
 
@@ -132,6 +136,16 @@ export default function FeelsMovesApp() {
     }
   }, [selectedEmotion, gameState, subEmotions, intensity, showNextBadge])
 
+  const handleRegionSelect = useCallback(
+    (regionId: string) => {
+      if (!gameState) return
+      const updated = { ...gameState, selectedRegion: regionId }
+      setGameState(updated)
+      saveState(updated)
+    },
+    [gameState]
+  )
+
   const handleReset = useCallback(() => {
     setSelectedEmotion(null)
     setSubEmotions([])
@@ -192,6 +206,10 @@ export default function FeelsMovesApp() {
               <Sparkles size={14} className="text-primary" />
               <span className="text-sm font-bold text-primary">{gameState.totalPoints}</span>
             </div>
+            <LocationPicker
+              selectedRegion={gameState.selectedRegion}
+              onSelect={handleRegionSelect}
+            />
             <ThemeToggle />
           </div>
         </div>
@@ -315,6 +333,38 @@ export default function FeelsMovesApp() {
                 onClose={() => setShowCrisis(false)}
                 onComplete={handleCrisisComplete}
               />
+            )}
+
+            {/* Crisis resources - helplines & support groups */}
+            {showCrisis && (
+              <>
+                {gameState.selectedRegion ? (
+                  (() => {
+                    const regionData = getRegionById(gameState.selectedRegion)
+                    if (!regionData) return null
+                    return (
+                      <CrisisResources
+                        region={regionData}
+                        accentColor={selectedEmotion.color}
+                      />
+                    )
+                  })()
+                ) : (
+                  <div className="flex flex-col gap-3 p-5 rounded-2xl bg-card border-2 border-accent/30">
+                    <p className="text-base font-bold text-foreground">
+                      Where are you right now?
+                    </p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Set your location so we can show you real crisis helplines
+                      and community support groups near you.
+                    </p>
+                    <LocationPicker
+                      selectedRegion={gameState.selectedRegion}
+                      onSelect={handleRegionSelect}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             {/* Action cards */}
