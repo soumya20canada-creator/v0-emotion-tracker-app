@@ -214,10 +214,26 @@ export const BADGES: Badge[] = [
   { id: "mindful-5", name: "Mindful Maven", description: "Complete 5 mindful micro-actions", icon: "Brain", requirement: "5 mindful actions", unlocked: false },
 ]
 
+export type IntensityOption = {
+  level: number
+  label: string
+  description: string
+  size: number
+  actionLevel: "low" | "medium" | "high"
+  isCrisis: boolean
+}
+
+export const INTENSITY_OPTIONS: IntensityOption[] = [
+  { level: 1, label: "A whisper", description: "Barely there, just a hint", size: 44, actionLevel: "low", isCrisis: false },
+  { level: 2, label: "Noticeable", description: "I can feel it, but it's manageable", size: 56, actionLevel: "low", isCrisis: false },
+  { level: 3, label: "Strong", description: "Hard to ignore, taking up space", size: 68, actionLevel: "medium", isCrisis: false },
+  { level: 4, label: "Intense", description: "Really powerful, I need to do something", size: 80, actionLevel: "high", isCrisis: true },
+  { level: 5, label: "Overwhelming", description: "It's all I can think about right now", size: 92, actionLevel: "high", isCrisis: true },
+]
+
 export function getIntensityLevel(intensity: number): "low" | "medium" | "high" {
-  if (intensity <= 3) return "low"
-  if (intensity <= 6) return "medium"
-  return "high"
+  const option = INTENSITY_OPTIONS.find((o) => o.level === intensity)
+  return option?.actionLevel || "medium"
 }
 
 export function getActionsForEmotion(emotionId: string, intensity: number): MicroAction[] {

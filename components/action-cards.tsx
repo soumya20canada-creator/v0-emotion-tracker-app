@@ -43,8 +43,8 @@ export function ActionCards({ actions, emotion, onComplete, completedIds }: Acti
   return (
     <div className="flex flex-col gap-3 w-full max-w-md mx-auto">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-foreground">Your Moves</h3>
-        <span className="text-xs font-medium px-3 py-1 rounded-full" style={{ background: `${emotion.color}15`, color: emotion.color }}>
+        <h3 className="text-2xl font-extrabold text-foreground">Your Moves</h3>
+        <span className="text-sm font-bold px-3 py-1.5 rounded-full" style={{ background: `${emotion.color}15`, color: emotion.color }}>
           {completedIds.length}/{actions.length} done
         </span>
       </div>
@@ -82,21 +82,21 @@ export function ActionCards({ actions, emotion, onComplete, completedIds }: Acti
 
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium leading-relaxed ${isDone ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                <p className={`text-base font-semibold leading-relaxed ${isDone ? "line-through text-muted-foreground" : "text-foreground"}`}>
                   {action.text}
                 </p>
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock size={12} aria-hidden="true" />
+                  <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Clock size={14} aria-hidden="true" />
                     {action.timeMinutes}min
                   </span>
                   <span
-                    className="text-xs font-bold px-2 py-0.5 rounded-full"
+                    className="text-sm font-bold px-2.5 py-0.5 rounded-full"
                     style={{ background: `${emotion.color}15`, color: emotion.color }}
                   >
                     +{action.points}pts
                   </span>
-                  <span className="text-xs text-muted-foreground capitalize">
+                  <span className="text-sm text-muted-foreground capitalize">
                     {CATEGORY_LABELS[action.category]}
                   </span>
                   {(action.researchBasis || action.culturalNote) && (

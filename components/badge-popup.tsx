@@ -61,11 +61,11 @@ export function BadgePopup({ badge, onDone }: BadgePopupProps) {
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-primary">
           <Icon size={32} style={{ color: "#FFF" }} />
         </div>
-        <p className="text-lg font-bold text-foreground">Badge Unlocked!</p>
-        <p className="text-base font-bold" style={{ color: "var(--primary)" }}>
+        <p className="text-xl font-extrabold text-foreground">Badge Unlocked!</p>
+        <p className="text-lg font-bold" style={{ color: "var(--primary)" }}>
           {badge.name}
         </p>
-        <p className="text-sm text-muted-foreground text-center max-w-[200px]">
+        <p className="text-base text-muted-foreground text-center max-w-[240px]">
           {badge.description}
         </p>
         <button

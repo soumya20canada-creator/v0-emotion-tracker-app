@@ -50,8 +50,8 @@ function BreathingGame({ emotion, onComplete }: { emotion: EmotionCategory; onCo
 
   return (
     <div className="flex flex-col items-center gap-6">
-      <h4 className="text-lg font-bold text-foreground">Breathing Game</h4>
-      <p className="text-sm text-muted-foreground text-center leading-relaxed">
+      <h4 className="text-xl font-extrabold text-foreground">Breathing Game</h4>
+      <p className="text-base text-muted-foreground text-center leading-relaxed">
         Follow the circle. Based on the 4-4-6 technique used by therapists.
       </p>
       <div className="relative flex items-center justify-center" style={{ width: 200, height: 200 }}>
@@ -150,8 +150,8 @@ function ColorMatchGame({ emotion, onComplete }: { emotion: EmotionCategory; onC
 
   return (
     <div className="flex flex-col items-center gap-5">
-      <h4 className="text-lg font-bold text-foreground">Color Match</h4>
-      <p className="text-sm text-muted-foreground text-center leading-relaxed">
+      <h4 className="text-xl font-extrabold text-foreground">Color Match</h4>
+      <p className="text-base text-muted-foreground text-center leading-relaxed">
         Remember the color sequence and tap to repeat it. Engaging your memory interrupts distressing thought loops.
       </p>
       <div className="flex items-center gap-4">
@@ -271,8 +271,8 @@ function PatternPuzzle({ emotion, onComplete }: { emotion: EmotionCategory; onCo
 
   return (
     <div className="flex flex-col items-center gap-5">
-      <h4 className="text-lg font-bold text-foreground">Pattern Puzzle</h4>
-      <p className="text-sm text-muted-foreground text-center leading-relaxed">
+      <h4 className="text-xl font-extrabold text-foreground">Pattern Puzzle</h4>
+      <p className="text-base text-muted-foreground text-center leading-relaxed">
         Match the target pattern. Tapping a square toggles it and its neighbors. Puzzles engage your problem-solving brain, giving your emotional brain a break.
       </p>
 
@@ -351,8 +351,8 @@ export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) 
     <div className="flex flex-col gap-5 w-full max-w-md mx-auto">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Gamepad2 size={20} style={{ color: emotion.color }} />
-          <h3 className="text-lg font-bold text-foreground">Crisis Toolkit</h3>
+          <Gamepad2 size={22} style={{ color: emotion.color }} />
+          <h3 className="text-xl font-extrabold text-foreground">Crisis Toolkit</h3>
         </div>
         <button
           onClick={onClose}
@@ -362,7 +362,7 @@ export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) 
         </button>
       </div>
 
-      <p className="text-sm text-muted-foreground leading-relaxed">
+      <p className="text-base text-muted-foreground leading-relaxed">
         These games are designed to activate different parts of your brain, giving your emotional center a chance to cool down. Based on DBT distress tolerance techniques.
       </p>
 
@@ -387,8 +387,8 @@ export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) 
                   <GameIcon size={22} style={{ color: emotion.color }} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-foreground">{game.name}</p>
-                  <p className="text-xs text-muted-foreground">{game.description}</p>
+                  <p className="text-base font-bold text-foreground">{game.name}</p>
+                  <p className="text-sm text-muted-foreground">{game.description}</p>
                 </div>
               </button>
             )

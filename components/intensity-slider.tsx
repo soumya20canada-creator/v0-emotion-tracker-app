@@ -1,91 +1,74 @@
 "use client"
 
-import { type EmotionCategory } from "@/lib/emotions-data"
+import { type EmotionCategory, INTENSITY_OPTIONS, type IntensityOption } from "@/lib/emotions-data"
 
-type IntensitySliderProps = {
+type IntensityPickerProps = {
   emotion: EmotionCategory
   intensity: number
   onChange: (value: number) => void
   onConfirm: () => void
 }
 
-const INTENSITY_LABELS: Record<string, string[]> = {
-  low: ["barely there", "a whisper", "a light nudge"],
-  medium: ["noticeable", "pretty real", "can't ignore it"],
-  high: ["super intense", "overwhelming", "off the charts"],
-}
-
-function getLabel(val: number): string {
-  if (val <= 3) return INTENSITY_LABELS.low[val - 1] || INTENSITY_LABELS.low[0]
-  if (val <= 6) return INTENSITY_LABELS.medium[val - 4] || INTENSITY_LABELS.medium[0]
-  if (val <= 9) return INTENSITY_LABELS.high[val - 7] || INTENSITY_LABELS.high[0]
-  return "maximum"
-}
-
-export function IntensitySlider({ emotion, intensity, onChange, onConfirm }: IntensitySliderProps) {
-  const isCrisis = intensity >= 7
+export function IntensitySlider({ emotion, intensity, onChange, onConfirm }: IntensityPickerProps) {
+  const selected = INTENSITY_OPTIONS.find((o) => o.level === intensity)
+  const isCrisis = selected?.isCrisis || false
 
   return (
-    <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto">
-      <div className="flex flex-col items-center gap-2">
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300"
-          style={{
-            background: emotion.color,
-            color: "#FFF",
-            transform: `scale(${0.8 + intensity * 0.06})`,
-            boxShadow: `0 0 ${intensity * 4}px ${emotion.color}66`,
-          }}
-        >
-          {intensity}
-        </div>
-        <p className="text-sm font-medium text-muted-foreground capitalize">
-          {getLabel(intensity)}
-        </p>
-      </div>
-
-      {/* Slider */}
-      <div className="w-full flex flex-col gap-2">
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>mild</span>
-          <span>intense</span>
-        </div>
-        <div className="relative w-full">
-          <input
-            type="range"
-            min={1}
-            max={10}
-            value={intensity}
-            onChange={(e) => onChange(Number(e.target.value))}
-            className="w-full h-3 rounded-full appearance-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            style={{
-              background: `linear-gradient(to right, ${emotion.color}44, ${emotion.color})`,
-              accentColor: emotion.color,
-            }}
-            aria-label={`Intensity level: ${intensity} out of 10`}
-          />
-          {/* Tick marks */}
-          <div className="flex justify-between px-1 mt-1" aria-hidden="true">
-            {Array.from({ length: 10 }, (_, i) => (
+    <div className="flex flex-col items-center gap-8 w-full max-w-sm mx-auto">
+      {/* Bubble options */}
+      <div className="flex items-end justify-center gap-3 w-full py-4">
+        {INTENSITY_OPTIONS.map((option) => {
+          const isSelected = intensity === option.level
+          return (
+            <button
+              key={option.level}
+              onClick={() => onChange(option.level)}
+              className="flex flex-col items-center gap-2 transition-all duration-300 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl p-2"
+              aria-label={`${option.label}: ${option.description}`}
+              aria-pressed={isSelected}
+            >
               <div
-                key={i}
-                className="w-1 h-1 rounded-full"
+                className="rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-active:scale-95"
                 style={{
-                  background:
-                    i + 1 <= intensity ? emotion.color : "#E8E0D8",
+                  width: option.size,
+                  height: option.size,
+                  background: isSelected ? emotion.color : `${emotion.color}20`,
+                  border: `3px solid ${isSelected ? emotion.color : `${emotion.color}44`}`,
+                  boxShadow: isSelected ? `0 0 20px ${emotion.color}44` : "none",
                 }}
               />
-            ))}
-          </div>
-        </div>
+              <span
+                className="text-xs font-bold leading-tight text-center max-w-[70px] transition-colors duration-200"
+                style={{ color: isSelected ? emotion.color : "var(--muted-foreground)" }}
+              >
+                {option.label}
+              </span>
+            </button>
+          )
+        })}
       </div>
+
+      {/* Selected description */}
+      {selected && (
+        <div
+          className="text-center px-5 py-3 rounded-2xl transition-all duration-300"
+          style={{ background: `${emotion.color}10` }}
+        >
+          <p className="text-base font-semibold" style={{ color: emotion.color }}>
+            {selected.label}
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {selected.description}
+          </p>
+        </div>
+      )}
 
       {isCrisis && (
         <div
-          className="w-full rounded-xl p-3 text-center text-sm font-medium transition-all duration-300"
+          className="w-full rounded-2xl p-4 text-center text-sm font-semibold transition-all duration-300"
           style={{ background: `${emotion.color}15`, color: emotion.color, border: `1px solid ${emotion.color}33` }}
         >
-          High intensity detected - crisis tools will be available
+          Crisis tools will be ready for you
         </div>
       )}
 

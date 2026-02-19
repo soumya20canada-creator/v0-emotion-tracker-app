@@ -48,10 +48,10 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
   return (
     <div className="flex flex-col gap-6 w-full max-w-md mx-auto pb-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-foreground">Your Progress</h3>
+        <h3 className="text-2xl font-extrabold text-foreground">Your Progress</h3>
         <button
           onClick={onClose}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          className="text-base text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-semibold"
         >
           Close
         </button>
@@ -63,22 +63,22 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
           <div className="w-10 h-10 rounded-xl bg-game-coral/20 flex items-center justify-center">
             <TrendingUp size={20} className="text-game-coral" />
           </div>
-          <span className="text-2xl font-bold text-foreground mt-2">{gameState.totalPoints}</span>
-          <span className="text-xs text-muted-foreground">Total pts</span>
+          <span className="text-3xl font-extrabold text-foreground mt-2">{gameState.totalPoints}</span>
+          <span className="text-sm text-muted-foreground">Total pts</span>
         </div>
         <div className="flex flex-col items-center p-4 rounded-2xl bg-secondary">
           <div className="w-10 h-10 rounded-xl bg-game-teal/20 flex items-center justify-center">
             <Flame size={20} className="text-game-teal" />
           </div>
-          <span className="text-2xl font-bold text-foreground mt-2">{gameState.currentStreak}</span>
-          <span className="text-xs text-muted-foreground">Day streak</span>
+          <span className="text-3xl font-extrabold text-foreground mt-2">{gameState.currentStreak}</span>
+          <span className="text-sm text-muted-foreground">Day streak</span>
         </div>
         <div className="flex flex-col items-center p-4 rounded-2xl bg-secondary">
           <div className="w-10 h-10 rounded-xl bg-game-yellow/20 flex items-center justify-center">
             <Target size={20} className="text-game-yellow" />
           </div>
-          <span className="text-2xl font-bold text-foreground mt-2">{gameState.totalActionsCompleted}</span>
-          <span className="text-xs text-muted-foreground">Moves done</span>
+          <span className="text-3xl font-extrabold text-foreground mt-2">{gameState.totalActionsCompleted}</span>
+          <span className="text-sm text-muted-foreground">Moves done</span>
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
 
       {/* Emotion spectrum */}
       <div>
-        <h4 className="text-sm font-bold text-foreground mb-3">Emotions Explored</h4>
+        <h4 className="text-base font-bold text-foreground mb-3">Emotions Explored</h4>
         <div className="flex gap-2 flex-wrap">
           {EMOTION_CATEGORIES.map((cat) => {
             const explored = gameState.uniqueEmotions.includes(cat.id)
@@ -123,7 +123,7 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
       {/* Recent activity */}
       {recentEmotions.length > 0 && (
         <div>
-          <h4 className="text-sm font-bold text-foreground mb-3">Recent Feelings</h4>
+          <h4 className="text-base font-bold text-foreground mb-3">Recent Feelings</h4>
           <div className="flex gap-2">
             {recentEmotions.map((eid) => {
               const cat = EMOTION_CATEGORIES.find((c) => c.id === eid)
@@ -147,8 +147,8 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
       {/* Badges */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-sm font-bold text-foreground">Badges</h4>
-          <span className="text-xs text-muted-foreground">{unlockedCount}/{totalBadges} unlocked</span>
+          <h4 className="text-base font-bold text-foreground">Badges</h4>
+          <span className="text-sm text-muted-foreground">{unlockedCount}/{totalBadges} unlocked</span>
         </div>
         <div className="grid grid-cols-3 gap-3">
           {gameState.badges.map((badge) => {
@@ -174,8 +174,8 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
                     <Lock size={14} style={{ color: "var(--muted-foreground)" }} />
                   )}
                 </div>
-                <span className="text-xs font-bold text-foreground leading-tight">{badge.name}</span>
-                <span className="text-[10px] text-muted-foreground leading-tight">{badge.description}</span>
+                <span className="text-sm font-bold text-foreground leading-tight">{badge.name}</span>
+                <span className="text-xs text-muted-foreground leading-tight">{badge.description}</span>
               </div>
             )
           })}
@@ -185,7 +185,7 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
       {/* Check-in history */}
       {gameState.checkIns.length > 0 && (
         <div>
-          <h4 className="text-sm font-bold text-foreground mb-3">Recent Check-ins</h4>
+          <h4 className="text-base font-bold text-foreground mb-3">Recent Check-ins</h4>
           <div className="flex flex-col gap-2">
             {gameState.checkIns.slice(-5).reverse().map((checkin, i) => {
               const cat = EMOTION_CATEGORIES.find((c) => c.id === checkin.emotionId)
@@ -199,10 +199,10 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
                     style={{ background: cat?.color || "var(--muted)" }}
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-foreground truncate">
+                    <p className="text-sm font-semibold text-foreground truncate">
                       {cat?.label} ({checkin.subEmotion}) - Level {checkin.intensity}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {checkin.actionsCompleted.length} moves completed, +{checkin.pointsEarned}pts
                     </p>
                   </div>

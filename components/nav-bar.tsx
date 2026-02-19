@@ -17,23 +17,23 @@ export function NavBar({ activeScreen, onNavigate, streak, points }: NavBarProps
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50" aria-label="Main navigation">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-lg mx-auto">
         {/* Stats bar */}
-        <div className="flex items-center justify-center gap-4 px-4 py-1.5">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-game-coral/10">
-            <Zap size={14} className="text-game-coral" />
-            <span className="text-xs font-bold text-game-coral">{points} pts</span>
+        <div className="flex items-center justify-center gap-4 px-4 py-2">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-game-coral/10">
+            <Zap size={16} className="text-game-coral" />
+            <span className="text-sm font-bold text-game-coral">{points} pts</span>
           </div>
           {streak > 0 && (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-game-teal/10">
-              <Flame size={14} className="text-game-teal" />
-              <span className="text-xs font-bold text-game-teal">{streak} day streak</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-game-teal/10">
+              <Flame size={16} className="text-game-teal" />
+              <span className="text-sm font-bold text-game-teal">{streak} day streak</span>
             </div>
           )}
         </div>
 
         {/* Nav items */}
-        <div className="flex items-center justify-around p-2 rounded-t-2xl bg-card border-t border-border shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+        <div className="flex items-center justify-around p-3 rounded-t-2xl bg-card border-t border-border shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
           {items.map((item) => {
             const isActive = activeScreen === item.id
             const Icon = item.icon
@@ -41,16 +41,16 @@ export function NavBar({ activeScreen, onNavigate, streak, points }: NavBarProps
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className="flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex flex-col items-center gap-1 px-8 py-2.5 rounded-xl transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 style={{
                   background: isActive ? "var(--primary)" : "transparent",
                 }}
                 aria-current={isActive ? "page" : undefined}
               >
-                <Icon size={20} style={{ color: isActive ? "#FFF" : "var(--muted-foreground)" }} />
+                <Icon size={22} style={{ color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)" }} />
                 <span
-                  className="text-xs font-bold"
-                  style={{ color: isActive ? "#FFF" : "var(--muted-foreground)" }}
+                  className="text-sm font-bold"
+                  style={{ color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)" }}
                 >
                   {item.label}
                 </span>

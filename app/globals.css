@@ -44,6 +44,47 @@
   --game-blue: #118AB2;
 }
 
+.dark {
+  --background: #0F1117;
+  --foreground: #F0EDE8;
+  --card: #1A1D27;
+  --card-foreground: #F0EDE8;
+  --popover: #1A1D27;
+  --popover-foreground: #F0EDE8;
+  --primary: #FF8C5A;
+  --primary-foreground: #0F1117;
+  --secondary: #252836;
+  --secondary-foreground: #F0EDE8;
+  --muted: #1E2130;
+  --muted-foreground: #9CA3AF;
+  --accent: #2DD4A8;
+  --accent-foreground: #0F1117;
+  --destructive: #F0627E;
+  --destructive-foreground: #0F1117;
+  --border: #2A2D3A;
+  --input: #2A2D3A;
+  --ring: #FF8C5A;
+  --chart-1: #FF8C5A;
+  --chart-2: #2DD4A8;
+  --chart-3: #3DA5D9;
+  --chart-4: #FFE08A;
+  --chart-5: #F0627E;
+  --radius: 1rem;
+  --sidebar: #0F1117;
+  --sidebar-foreground: #F0EDE8;
+  --sidebar-primary: #FF8C5A;
+  --sidebar-primary-foreground: #0F1117;
+  --sidebar-accent: #252836;
+  --sidebar-accent-foreground: #F0EDE8;
+  --sidebar-border: #2A2D3A;
+  --sidebar-ring: #FF8C5A;
+  --game-teal: #2DD4A8;
+  --game-coral: #FF8C5A;
+  --game-pink: #F0627E;
+  --game-yellow: #FFE08A;
+  --game-blue: #3DA5D9;
+}
+
 @theme inline {
   --font-sans: var(--font-nunito), 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';

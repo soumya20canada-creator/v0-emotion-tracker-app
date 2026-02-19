@@ -27,8 +27,8 @@ export function PointPopup({ points, color, onDone }: PointPopupProps) {
       aria-live="polite"
     >
       <div
-        className="text-4xl font-bold animate-bounce"
-        style={{ color, textShadow: `0 0 20px ${color}66` }}
+        className="text-5xl font-extrabold animate-bounce"
+        style={{ color, textShadow: `0 0 24px ${color}66` }}
       >
         +{points} pts!
       </div>
