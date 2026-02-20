@@ -1,7 +1,8 @@
-// Client-side game state management using React context + localStorage for persistence
-// This is a game that doesn't require server-side data - using localStorage is appropriate
+// Client-side game state management using localStorage for instant UI + Supabase cloud sync
+// localStorage is the fast source of truth; Supabase is the durable backup
 
 import { BADGES, type Badge } from "./emotions-data"
+import { syncCheckIn } from "./supabase-sync"
 
 export type CheckIn = {
   date: string
@@ -193,5 +194,14 @@ export function processCheckIn(
   })
 
   saveState(newState)
+
+  // Fire-and-forget Supabase sync (non-blocking)
+  const latestCheckIn = newState.checkIns[newState.checkIns.length - 1]
+  if (latestCheckIn) {
+    syncCheckIn(latestCheckIn, newState).catch(() => {
+      // Sync failures are non-critical; localStorage has the data
+    })
+  }
+
   return newState
 }

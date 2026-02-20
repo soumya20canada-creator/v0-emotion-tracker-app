@@ -28,6 +28,7 @@ import {
   saveState,
   processCheckIn,
 } from "@/lib/game-store"
+import { getOrCreateUser } from "@/lib/supabase-sync"
 import { getRegionById } from "@/lib/crisis-resources"
 import type { Badge } from "@/lib/emotions-data"
 import { ArrowLeft, Sparkles } from "lucide-react"
@@ -51,6 +52,8 @@ export default function FeelsMovesApp() {
 
   useEffect(() => {
     setGameState(loadState())
+    // Initialize anonymous Supabase user in background
+    getOrCreateUser().catch(() => {})
   }, [])
 
   const handleEmotionSelect = useCallback((emotion: EmotionCategory) => {
