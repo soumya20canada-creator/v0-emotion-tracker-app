@@ -158,6 +158,7 @@ export function processCheckIn(
     bodyActionsCompleted: bodyCount,
     mindfulActionsCompleted: mindfulCount,
     usedCrisisMode: state.usedCrisisMode || usedCrisisMode,
+    selectedRegion: state.selectedRegion,
   }
 
   // Check badge unlocks

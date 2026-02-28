@@ -33,7 +33,7 @@ export async function getOrCreateUser(): Promise<string | null> {
       return null
     }
 
-    userId = data.id
+    userId = data.id as string
     localStorage.setItem(USER_ID_KEY, userId)
     return userId
   } catch (err) {
