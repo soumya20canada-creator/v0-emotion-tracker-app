@@ -49,6 +49,14 @@ export function NavBar({ activeScreen, onNavigate, streak, points, displayName, 
               <span className="text-xs">{level.emoji}</span>
               <span className="text-xs font-bold text-primary">{level.name}</span>
             </div>
+            <button
+              onClick={() => { onShowThemes?.(); }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors cursor-pointer"
+              aria-label="Change theme"
+            >
+              <Palette size={13} className="text-primary" />
+              <span className="text-xs font-bold text-primary">Themes</span>
+            </button>
           </div>
 
           {/* Avatar */}

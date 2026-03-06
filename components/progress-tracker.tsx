@@ -248,6 +248,78 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
         </div>
       </div>
 
+      {/* Time patterns */}
+      {(() => {
+        const checkInsWithTime = gameState.checkIns.filter(c => c.timestamp)
+        if (checkInsWithTime.length < 3) return null
+
+        const buckets = { Morning: 0, Afternoon: 0, Evening: 0, Night: 0 }
+        const dayBuckets: Record<string, number> = { Sun: 0, Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0 }
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+        checkInsWithTime.forEach(c => {
+          const d = new Date(c.timestamp!)
+          const h = d.getHours()
+          const day = days[d.getDay()]
+          dayBuckets[day] = (dayBuckets[day] || 0) + 1
+          if (h >= 5 && h < 12) buckets.Morning++
+          else if (h >= 12 && h < 17) buckets.Afternoon++
+          else if (h >= 17 && h < 22) buckets.Evening++
+          else buckets.Night++
+        })
+
+        const maxTime = Math.max(...Object.values(buckets))
+        const maxDay = Math.max(...Object.values(dayBuckets))
+        const peakTime = Object.entries(buckets).find(([, v]) => v === maxTime)?.[0]
+        const peakDay = Object.entries(dayBuckets).find(([, v]) => v === maxDay)?.[0]
+
+        return (
+          <div>
+            <h4 className="text-base font-bold text-foreground mb-1">When you check in</h4>
+            <p className="text-xs text-muted-foreground mb-3">Your patterns reveal your rhythms.</p>
+
+            {/* Time of day bars */}
+            <div className="flex flex-col gap-2 mb-4">
+              {Object.entries(buckets).map(([label, count]) => {
+                const pct = maxTime > 0 ? Math.round((count / maxTime) * 100) : 0
+                const emoji = label === "Morning" ? "🌅" : label === "Afternoon" ? "☀️" : label === "Evening" ? "🌆" : "🌙"
+                return (
+                  <div key={label} className="flex items-center gap-3">
+                    <span className="text-sm w-24 shrink-0 text-foreground font-medium">{emoji} {label}</span>
+                    <div className="flex-1 h-3 rounded-full bg-muted overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${pct}%`, background: "var(--primary)", minWidth: count > 0 ? "8px" : "0" }} />
+                    </div>
+                    <span className="text-xs font-bold text-muted-foreground w-5 text-right shrink-0">{count}</span>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Day of week mini grid */}
+            <div className="flex gap-1.5 justify-between">
+              {days.map(day => {
+                const count = dayBuckets[day] || 0
+                const intensity = maxDay > 0 ? count / maxDay : 0
+                return (
+                  <div key={day} className="flex flex-col items-center gap-1">
+                    <div className="w-8 h-8 rounded-lg transition-all duration-300"
+                      style={{ background: `var(--primary)`, opacity: 0.15 + intensity * 0.85 }} />
+                    <span className="text-[10px] text-muted-foreground">{day}</span>
+                  </div>
+                )
+              })}
+            </div>
+
+            {peakTime && peakDay && (
+              <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                You tend to check in most on <strong>{peakDay}s</strong>, usually in the <strong>{peakTime.toLowerCase()}</strong>. Knowing your patterns is part of knowing yourself.
+              </p>
+            )}
+          </div>
+        )
+      })()}
+
       {/* Recent check-ins */}
       {gameState.checkIns.length > 0 && (
         <div>

@@ -5,14 +5,14 @@ import { signInWithOtp, verifyOtp } from "@/lib/auth"
 import { getProfile, createProfile, isUsernameTaken } from "@/lib/profile"
 import type { Profile } from "@/lib/profile"
 
-type Step = "email" | "otp" | "profile"
+type Step = "welcome" | "email" | "otp" | "profile"
 
 type AuthGateProps = {
   onAuthenticated: (profile: Profile) => void
 }
 
 export function AuthGate({ onAuthenticated }: AuthGateProps) {
-  const [step, setStep] = useState<Step>("email")
+  const [step, setStep] = useState<Step>("welcome")
   const [email, setEmail] = useState("")
   const [otp, setOtp] = useState("")
   const [displayName, setDisplayName] = useState("")
@@ -103,6 +103,35 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
 
         {/* Card */}
         <div className="w-full bg-card rounded-3xl p-7 shadow-[0_8px_40px_rgba(0,0,0,0.08)] border border-border flex flex-col gap-5">
+          {step === "welcome" && (
+            <>
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-foreground">Welcome to Bhava 🌸</h2>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Are you new here, or coming back?
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => setStep("email")}
+                  className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                  style={{ background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
+                >
+                  I'm new here ✨
+                </button>
+                <button
+                  onClick={() => setStep("email")}
+                  className="w-full py-3.5 rounded-2xl font-bold text-sm border-2 border-primary/30 text-foreground hover:bg-muted transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Welcome back 🌿
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                Both paths use the same secure email code — no password needed.
+              </p>
+            </>
+          )}
+
           {step === "email" && (
             <>
               <div className="text-center">

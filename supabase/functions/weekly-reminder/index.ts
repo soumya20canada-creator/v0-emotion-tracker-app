@@ -65,6 +65,15 @@ Deno.serve(async () => {
       </p>
     </div>
 
+    <div style="background:#F0FFF4;border-radius:16px;padding:16px;margin:16px 0;">
+      <p style="font-size:13px;font-weight:700;color:#1E293B;margin:0 0 8px;">This week, try this:</p>
+      <p style="font-size:13px;color:#374151;margin:0;line-height:1.6;">
+        ${checkInCount > 0
+          ? "Take 5 minutes today for box breathing: inhale 4 counts, hold 4, exhale 4, hold 4. It's one of the fastest ways to regulate your nervous system."
+          : "Even a 2-minute check-in this week can help you notice patterns in how you feel. No pressure — just curiosity."}
+      </p>
+    </div>
+
     <div style="text-align:center;margin:32px 0;">
       <a href="${Deno.env.get("NEXT_PUBLIC_SITE_URL") ?? "https://bhava.app"}"
         style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#C9A84C,#F5D77E,#C9A84C);color:#3B1F00;font-weight:700;font-size:15px;border-radius:12px;text-decoration:none;">

@@ -6,6 +6,7 @@ import { syncCheckIn } from "./supabase-sync"
 
 export type CheckIn = {
   date: string
+  timestamp?: string   // full ISO timestamp for time-of-day analysis
   emotionId: string
   subEmotion: string
   intensity: number
@@ -161,6 +162,7 @@ export function processCheckIn(
       ...state.checkIns,
       {
         date: today,
+        timestamp: now,
         emotionId,
         subEmotion,
         intensity,

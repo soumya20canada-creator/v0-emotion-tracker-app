@@ -13,7 +13,7 @@ export function SubEmotionPicker({ emotion, selected, onToggle }: SubEmotionPick
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-sm mx-auto">
       <p className="text-base text-muted-foreground text-center leading-relaxed">
-        Pick as many as you want (earns bonus points)
+        Pick as many as feel true right now.
       </p>
       <div className="flex flex-wrap justify-center gap-2">
         {emotion.subEmotions.map((sub) => {

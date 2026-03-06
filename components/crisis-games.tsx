@@ -332,11 +332,185 @@ function PatternPuzzle({ emotion, onComplete }: { emotion: EmotionCategory; onCo
   )
 }
 
+// -- BUBBLE WRAP GAME --
+function BubbleWrapGame({ emotion, onComplete }: { emotion: EmotionCategory; onComplete: () => void }) {
+  const [popped, setPopped] = useState<boolean[]>(Array(20).fill(false))
+  const allPopped = popped.every(Boolean)
+
+  function pop(i: number) {
+    if (popped[i]) return
+    setPopped(prev => { const n = [...prev]; n[i] = true; return n })
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-5">
+      <h4 className="text-xl font-extrabold text-foreground">Bubble Wrap</h4>
+      <p className="text-base text-muted-foreground text-center leading-relaxed">
+        Pop every bubble. Simple. Satisfying. 🫧
+      </p>
+      <div className="grid grid-cols-5 gap-2">
+        {popped.map((isPop, i) => (
+          <button
+            key={i}
+            onClick={() => pop(i)}
+            className="w-12 h-12 rounded-full transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            style={{
+              background: isPop ? "var(--muted)" : `${emotion.color}33`,
+              border: `3px solid ${isPop ? "var(--border)" : emotion.color}`,
+              transform: isPop ? "scale(0.85)" : "scale(1)",
+              boxShadow: isPop ? "none" : `0 2px 8px ${emotion.color}44`,
+            }}
+            aria-label={isPop ? "Bubble popped" : "Pop bubble"}
+            aria-pressed={isPop}
+          />
+        ))}
+      </div>
+      <p className="text-sm text-muted-foreground">{popped.filter(Boolean).length}/20 popped</p>
+      {allPopped && (
+        <button
+          onClick={onComplete}
+          className="px-6 py-3 rounded-xl text-sm font-bold cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+          style={{ background: emotion.color, color: "#FFFFFF" }}
+        >
+          Done! +15pts
+        </button>
+      )}
+    </div>
+  )
+}
+
+// -- SAND DRAW GAME --
+function SandDrawGame({ emotion, onComplete }: { emotion: EmotionCategory; onComplete: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const isDrawing = useRef(false)
+  const lastPos = useRef<{ x: number; y: number } | null>(null)
+  const [strokeCount, setStrokeCount] = useState(0)
+  const [canFinish, setCanFinish] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setCanFinish(true), 20000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  function getPos(e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement) {
+    const rect = canvas.getBoundingClientRect()
+    if ("touches" in e) {
+      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top }
+    }
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+  }
+
+  function draw(x: number, y: number) {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+    ctx.globalAlpha = 0.6
+    ctx.fillStyle = emotion.color
+    for (let i = 0; i < 6; i++) {
+      const px = x + (Math.random() - 0.5) * 16
+      const py = y + (Math.random() - 0.5) * 16
+      const r = Math.random() * 3 + 1
+      ctx.beginPath()
+      ctx.arc(px, py, r, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    if (lastPos.current) {
+      ctx.globalAlpha = 0.3
+      ctx.strokeStyle = emotion.color
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(lastPos.current.x, lastPos.current.y)
+      ctx.lineTo(x, y)
+      ctx.stroke()
+    }
+    lastPos.current = { x, y }
+  }
+
+  function clearCanvas() {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext("2d")
+    ctx?.clearRect(0, 0, canvas.width, canvas.height)
+    setStrokeCount(0)
+  }
+
+  function handleStart(e: React.MouseEvent | React.TouchEvent) {
+    isDrawing.current = true
+    lastPos.current = null
+    const canvas = canvasRef.current
+    if (canvas) {
+      const pos = getPos(e, canvas)
+      draw(pos.x, pos.y)
+    }
+  }
+
+  function handleMove(e: React.MouseEvent | React.TouchEvent) {
+    if (!isDrawing.current) return
+    e.preventDefault()
+    const canvas = canvasRef.current
+    if (canvas) {
+      const pos = getPos(e, canvas)
+      draw(pos.x, pos.y)
+      setStrokeCount(s => s + 1)
+    }
+  }
+
+  function handleEnd() {
+    isDrawing.current = false
+    lastPos.current = null
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <h4 className="text-xl font-extrabold text-foreground">Sand Drawing</h4>
+      <p className="text-base text-muted-foreground text-center leading-relaxed">
+        Draw freely. Let it out. No rules, no judgment. 🌊
+      </p>
+      <canvas
+        ref={canvasRef}
+        width={280}
+        height={220}
+        className="rounded-2xl border-2 border-border touch-none cursor-crosshair"
+        style={{ background: "var(--secondary)" }}
+        onMouseDown={handleStart}
+        onMouseMove={handleMove}
+        onMouseUp={handleEnd}
+        onMouseLeave={handleEnd}
+        onTouchStart={handleStart}
+        onTouchMove={handleMove}
+        onTouchEnd={handleEnd}
+      />
+      <div className="flex items-center gap-3">
+        <button
+          onClick={clearCanvas}
+          className="px-4 py-2 rounded-xl text-xs font-bold border border-border text-muted-foreground hover:bg-muted transition-colors cursor-pointer"
+        >
+          Clear canvas
+        </button>
+        {canFinish ? (
+          <button
+            onClick={onComplete}
+            className="px-6 py-2 rounded-xl text-sm font-bold cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+            style={{ background: emotion.color, color: "#FFFFFF" }}
+          >
+            Done! +15pts
+          </button>
+        ) : (
+          <p className="text-xs text-muted-foreground">Keep drawing...</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // -- MAIN CRISIS GAMES COMPONENT --
 const GAMES = [
   { id: "breathing", name: "Breathing", icon: Wind, description: "Calm your nervous system" },
   { id: "colors", name: "Color Match", icon: Palette, description: "Engage your memory" },
   { id: "puzzle", name: "Pattern Puzzle", icon: Puzzle, description: "Focus your mind" },
+  { id: "bubble", name: "Bubble Wrap", icon: Gamepad2, description: "Pop every bubble" },
+  { id: "sand", name: "Sand Drawing", icon: Palette, description: "Draw freely, let it out" },
 ]
 
 export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) {
@@ -352,7 +526,7 @@ export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Gamepad2 size={22} style={{ color: emotion.color }} />
-          <h3 className="text-xl font-extrabold text-foreground">Crisis Toolkit</h3>
+          <h3 className="text-xl font-extrabold text-foreground">Grounding Toolkit</h3>
         </div>
         <button
           onClick={onClose}
@@ -363,7 +537,7 @@ export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) 
       </div>
 
       <p className="text-base text-muted-foreground leading-relaxed">
-        These games are designed to activate different parts of your brain, giving your emotional center a chance to cool down. Based on DBT distress tolerance techniques.
+        Take a moment for yourself. These tools help your nervous system settle.
       </p>
 
       {!activeGame ? (
@@ -400,6 +574,10 @@ export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) 
         <ColorMatchGame emotion={emotion} onComplete={handleGameComplete} />
       ) : activeGame === "puzzle" ? (
         <PatternPuzzle emotion={emotion} onComplete={handleGameComplete} />
+      ) : activeGame === "bubble" ? (
+        <BubbleWrapGame emotion={emotion} onComplete={handleGameComplete} />
+      ) : activeGame === "sand" ? (
+        <SandDrawGame emotion={emotion} onComplete={handleGameComplete} />
       ) : null}
 
       {activeGame && (

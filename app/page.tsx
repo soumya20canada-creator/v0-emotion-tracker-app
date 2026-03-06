@@ -10,7 +10,6 @@ import { ProgressTracker } from "@/components/progress-tracker"
 import { NavBar } from "@/components/nav-bar"
 import { PointPopup } from "@/components/point-popup"
 import { BadgePopup } from "@/components/badge-popup"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { AppLogo } from "@/components/app-logo"
 import { LocationPicker } from "@/components/location-picker"
 import { CrisisResources } from "@/components/crisis-resources"
@@ -18,6 +17,8 @@ import { ContextTagPicker } from "@/components/context-tag-picker"
 import { AuthGate } from "@/components/auth-gate"
 import { ThemePicker } from "@/components/theme-picker"
 import { MusicPlayer } from "@/components/music-player"
+import { OnboardingTooltips } from "@/components/onboarding-tooltips"
+import { getSuggestions, type Suggestion } from "@/lib/journal-suggestions"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -58,6 +59,8 @@ export default function BhavaApp() {
   const [pointPopup, setPointPopup] = useState<{ points: number; color: string } | null>(null)
   const [badgePopup, setBadgePopup] = useState<Badge | null>(null)
   const [showCrisis, setShowCrisis] = useState(false)
+  const [isNewUser, setIsNewUser] = useState(false)
+  const [journalSuggestions, setJournalSuggestions] = useState<Suggestion[]>([])
   const badgeQueueRef = useRef<Badge[]>([])
 
   // Auth check on mount
@@ -94,6 +97,7 @@ export default function BhavaApp() {
     setCurrentTheme(p.color_theme)
     applyTheme(p.color_theme)
     setGameState(loadState())
+    setIsNewUser(true)
   }, [])
 
   const handleThemeChange = useCallback((themeId: ThemeId) => {
@@ -254,7 +258,6 @@ export default function BhavaApp() {
               <span className="text-sm font-bold text-primary">{gameState.totalPoints}</span>
             </div>
             <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
-            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -305,12 +308,36 @@ export default function BhavaApp() {
               <textarea
                 id="journal-note"
                 value={journalNote}
-                onChange={(e) => setJournalNote(e.target.value.slice(0, 200))}
+                onChange={(e) => {
+                  const val = e.target.value.slice(0, 200)
+                  setJournalNote(val)
+                  setJournalSuggestions(getSuggestions(val))
+                }}
                 placeholder={`I feel ${selectedEmotion.label.toLowerCase()} because...`}
                 rows={2}
                 className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground text-base placeholder:text-muted-foreground/60 border border-border focus:outline-none focus:ring-2 focus:ring-ring resize-none transition-all"
               />
               <span className="text-xs text-muted-foreground text-right">{journalNote.length}/200</span>
+              {journalSuggestions.length > 0 && (
+                <div className="flex flex-col gap-2 mt-1">
+                  <p className="text-xs font-semibold text-muted-foreground">Things that might help right now:</p>
+                  {journalSuggestions.map((s, i) => (
+                    <div key={i} className="flex items-start gap-2 p-3 rounded-xl bg-secondary border border-border">
+                      <span className="text-base shrink-0">{s.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-foreground">{s.title}</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{s.description}</p>
+                        {s.link && (
+                          <a href={s.link} target="_blank" rel="noopener noreferrer"
+                            className="text-xs text-primary font-semibold mt-1 inline-block hover:underline">
+                            Open →
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <button
               onClick={() => setScreen("context")}
@@ -414,13 +441,22 @@ export default function BhavaApp() {
             <ActionCards actions={actions} emotion={selectedEmotion} onComplete={handleActionComplete} completedIds={completedActionIds} />
 
             {completedActionIds.length > 0 && (
-              <button
-                onClick={handleReset}
-                className="w-full py-4 rounded-2xl text-lg font-bold bg-primary text-primary-foreground cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                style={{ boxShadow: "0 4px 20px rgba(59, 130, 246, 0.3)" }}
-              >
-                Come back to yourself again 🌸
-              </button>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => setScreen("progress")}
+                  className="w-full py-3 rounded-2xl text-sm font-semibold border-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  style={{ borderColor: selectedEmotion?.color, color: selectedEmotion?.color, background: `${selectedEmotion?.color}10` }}
+                >
+                  Track your journey 📊
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="w-full py-4 rounded-2xl text-lg font-bold bg-primary text-primary-foreground cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  style={{ boxShadow: "0 4px 20px rgba(59, 130, 246, 0.3)" }}
+                >
+                  Come back to yourself again 🌸
+                </button>
+              </div>
             )}
 
             <div className="p-5 rounded-2xl bg-secondary border border-border">
@@ -460,6 +496,9 @@ export default function BhavaApp() {
           </div>
         </div>
       )}
+
+      {/* Onboarding tooltips */}
+      <OnboardingTooltips isNewUser={isNewUser} />
 
       {/* Bottom nav */}
       <NavBar
