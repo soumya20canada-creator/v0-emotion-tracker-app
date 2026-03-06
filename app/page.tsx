@@ -18,7 +18,6 @@ import { AuthGate } from "@/components/auth-gate"
 import { ThemePicker } from "@/components/theme-picker"
 import { MusicPlayer } from "@/components/music-player"
 import { OnboardingTooltips } from "@/components/onboarding-tooltips"
-import { getSuggestions, type Suggestion } from "@/lib/journal-suggestions"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -60,7 +59,6 @@ export default function BhavaApp() {
   const [badgePopup, setBadgePopup] = useState<Badge | null>(null)
   const [showCrisis, setShowCrisis] = useState(false)
   const [isNewUser, setIsNewUser] = useState(false)
-  const [journalSuggestions, setJournalSuggestions] = useState<Suggestion[]>([])
   const badgeQueueRef = useRef<Badge[]>([])
 
   // Auth check on mount
@@ -298,47 +296,6 @@ export default function BhavaApp() {
               <p className="text-base text-muted-foreground text-center">Can you get more specific?</p>
             </div>
             <SubEmotionPicker emotion={selectedEmotion} selected={subEmotions} onToggle={handleSubEmotionToggle} />
-            <div className="flex flex-col gap-2">
-              <label htmlFor="journal-note" className="text-base font-bold text-foreground">
-                Want to write one sentence about why?
-              </label>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Totally optional. You don't have to explain yourself to anyone — not even us.
-              </p>
-              <textarea
-                id="journal-note"
-                value={journalNote}
-                onChange={(e) => {
-                  const val = e.target.value.slice(0, 200)
-                  setJournalNote(val)
-                  setJournalSuggestions(getSuggestions(val))
-                }}
-                placeholder={`I feel ${selectedEmotion.label.toLowerCase()} because...`}
-                rows={2}
-                className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground text-base placeholder:text-muted-foreground/60 border border-border focus:outline-none focus:ring-2 focus:ring-ring resize-none transition-all"
-              />
-              <span className="text-xs text-muted-foreground text-right">{journalNote.length}/200</span>
-              {journalSuggestions.length > 0 && (
-                <div className="flex flex-col gap-2 mt-1">
-                  <p className="text-xs font-semibold text-muted-foreground">Things that might help right now:</p>
-                  {journalSuggestions.map((s, i) => (
-                    <div key={i} className="flex items-start gap-2 p-3 rounded-xl bg-secondary border border-border">
-                      <span className="text-base shrink-0">{s.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-foreground">{s.title}</p>
-                        <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{s.description}</p>
-                        {s.link && (
-                          <a href={s.link} target="_blank" rel="noopener noreferrer"
-                            className="text-xs text-primary font-semibold mt-1 inline-block hover:underline">
-                            Open →
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
             <button
               onClick={() => setScreen("context")}
               className="w-full max-w-sm mx-auto py-4 rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
@@ -408,15 +365,13 @@ export default function BhavaApp() {
               </div>
             </div>
 
-            {INTENSITY_OPTIONS.find((o) => o.level === intensity)?.isCrisis && (
-              <button
-                onClick={() => setShowCrisis(!showCrisis)}
-                className="w-full py-4 rounded-2xl text-base font-bold border-2 transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
-                style={{ borderColor: selectedEmotion.color, background: showCrisis ? selectedEmotion.color : "transparent", color: showCrisis ? "#FFFFFF" : selectedEmotion.color }}
-              >
-                {showCrisis ? "Hide grounding tools" : "Sometimes feelings get really big — we've got you 🤍"}
-              </button>
-            )}
+            <button
+              onClick={() => setShowCrisis(!showCrisis)}
+              className="w-full py-4 rounded-2xl text-base font-bold border-2 transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+              style={{ borderColor: selectedEmotion.color, background: showCrisis ? selectedEmotion.color : "transparent", color: showCrisis ? "#FFFFFF" : selectedEmotion.color }}
+            >
+              {showCrisis ? "Hide grounding toolkit" : INTENSITY_OPTIONS.find((o) => o.level === intensity)?.isCrisis ? "Sometimes feelings get really big — we've got you 🤍" : "Open grounding toolkit 🤲"}
+            </button>
 
             {showCrisis && (
               <CrisisGames emotion={selectedEmotion} onClose={() => setShowCrisis(false)} onComplete={handleCrisisComplete} />

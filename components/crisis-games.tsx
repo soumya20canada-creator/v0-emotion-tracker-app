@@ -504,6 +504,114 @@ function SandDrawGame({ emotion, onComplete }: { emotion: EmotionCategory; onCom
   )
 }
 
+// -- TAP THE DOT GAME --
+function TapTheDotGame({ emotion, onComplete }: { emotion: EmotionCategory; onComplete: () => void }) {
+  const DURATION = 30
+  const [timeLeft, setTimeLeft] = useState(DURATION)
+  const [score, setScore] = useState(0)
+  const [dotPos, setDotPos] = useState({ x: 50, y: 50 })
+  const [popped, setPopped] = useState(false)
+  const [done, setDone] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  function randomPos() {
+    // Keep dot inside bounds (dot is 60px, container ~280px)
+    const margin = 15
+    return {
+      x: margin + Math.random() * (70 - margin * 2),
+      y: margin + Math.random() * (70 - margin * 2),
+    }
+  }
+
+  useEffect(() => {
+    if (done) return
+    const t = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) { clearInterval(t); setDone(true); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(t)
+  }, [done])
+
+  // Auto-move dot every 2.5 s if not tapped
+  useEffect(() => {
+    if (done) return
+    const t = setTimeout(() => {
+      setDotPos(randomPos())
+      setPopped(false)
+    }, 2500)
+    return () => clearTimeout(t)
+  }, [dotPos, done])
+
+  function handleTap() {
+    if (popped || done) return
+    setPopped(true)
+    setScore((s) => s + 1)
+    setTimeout(() => {
+      setDotPos(randomPos())
+      setPopped(false)
+    }, 200)
+  }
+
+  const dotSize = 60
+
+  return (
+    <div className="flex flex-col items-center gap-5">
+      <h4 className="text-xl font-extrabold text-foreground">Tap the Dot</h4>
+      <p className="text-base text-muted-foreground text-center leading-relaxed">
+        Tap the circle before it moves! Focusing on a moving target draws you into the present moment. 🎯
+      </p>
+      <div className="flex items-center gap-6">
+        <span className="text-sm font-bold" style={{ color: emotion.color }}>Score: {score}</span>
+        <span className="text-sm font-medium text-muted-foreground">
+          {done ? "Time's up!" : `${timeLeft}s`}
+        </span>
+      </div>
+      {/* Play area */}
+      <div
+        ref={containerRef}
+        className="relative rounded-2xl border-2 overflow-hidden"
+        style={{ width: 280, height: 200, borderColor: `${emotion.color}33`, background: `${emotion.color}08` }}
+      >
+        {!done && (
+          <button
+            onClick={handleTap}
+            className="absolute transition-all duration-200 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            style={{
+              width: dotSize,
+              height: dotSize,
+              left: `${dotPos.x}%`,
+              top: `${dotPos.y}%`,
+              transform: "translate(-50%, -50%)",
+              background: popped ? `${emotion.color}33` : emotion.color,
+              boxShadow: popped ? "none" : `0 0 20px ${emotion.color}66`,
+              cursor: popped ? "default" : "pointer",
+              transition: popped ? "all 0.15s ease" : "left 0.25s ease, top 0.25s ease",
+            }}
+            aria-label="Tap the dot"
+          />
+        )}
+        {done && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+            <p className="text-2xl font-extrabold" style={{ color: emotion.color }}>{score}</p>
+            <p className="text-sm text-muted-foreground">dots tapped!</p>
+          </div>
+        )}
+      </div>
+      {done && (
+        <button
+          onClick={onComplete}
+          className="px-6 py-3 rounded-xl text-sm font-bold cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+          style={{ background: emotion.color, color: "#FFFFFF" }}
+        >
+          Done! +{Math.max(score * 2, 10)}pts
+        </button>
+      )}
+    </div>
+  )
+}
+
 // -- MAIN CRISIS GAMES COMPONENT --
 const GAMES = [
   { id: "breathing", name: "Breathing", icon: Wind, description: "Calm your nervous system" },
@@ -511,6 +619,7 @@ const GAMES = [
   { id: "puzzle", name: "Pattern Puzzle", icon: Puzzle, description: "Focus your mind" },
   { id: "bubble", name: "Bubble Wrap", icon: Gamepad2, description: "Pop every bubble" },
   { id: "sand", name: "Sand Drawing", icon: Palette, description: "Draw freely, let it out" },
+  { id: "tapdot", name: "Tap the Dot", icon: Gamepad2, description: "Chase the dot — stay present" },
 ]
 
 export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) {
@@ -578,6 +687,8 @@ export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) 
         <BubbleWrapGame emotion={emotion} onComplete={handleGameComplete} />
       ) : activeGame === "sand" ? (
         <SandDrawGame emotion={emotion} onComplete={handleGameComplete} />
+      ) : activeGame === "tapdot" ? (
+        <TapTheDotGame emotion={emotion} onComplete={handleGameComplete} />
       ) : null}
 
       {activeGame && (
