@@ -228,3 +228,52 @@ export function processCheckIn(
 
   return newState
 }
+
+// Wellbeing score per emotion (1–5 scale, 5 = highest wellbeing)
+const MOOD_SCORES: Record<string, number> = {
+  joy: 5, calm: 5,
+  surprise: 3,
+  sadness: 2, fear: 2,
+  anger: 1,
+}
+
+export function getMoodScore(emotionId: string): number {
+  return MOOD_SCORES[emotionId] ?? 3
+}
+
+export type MoodTrend = {
+  thisWeek: number      // 0–100 wellbeing score
+  lastWeek: number
+  thisMonth: number
+  lastMonth: number
+  weekDelta: number     // % change vs previous period (can be negative)
+  monthDelta: number
+}
+
+export function getMoodTrend(checkIns: CheckIn[]): MoodTrend | null {
+  if (checkIns.length < 3) return null
+
+  const now = Date.now()
+  const DAY = 86400000
+
+  function avgScore(items: CheckIn[]): number {
+    if (items.length === 0) return 0
+    const avg = items.reduce((sum, c) => sum + (MOOD_SCORES[c.emotionId] ?? 3), 0) / items.length
+    return Math.round(avg * 20) // maps 1–5 → 20–100
+  }
+
+  const thisWeekItems  = checkIns.filter(c => now - new Date(c.date).getTime() <= 7  * DAY)
+  const lastWeekItems  = checkIns.filter(c => { const d = now - new Date(c.date).getTime(); return d > 7 * DAY && d <= 14 * DAY })
+  const thisMonthItems = checkIns.filter(c => now - new Date(c.date).getTime() <= 30 * DAY)
+  const lastMonthItems = checkIns.filter(c => { const d = now - new Date(c.date).getTime(); return d > 30 * DAY && d <= 60 * DAY })
+
+  const thisWeek  = avgScore(thisWeekItems)
+  const lastWeek  = avgScore(lastWeekItems)
+  const thisMonth = avgScore(thisMonthItems)
+  const lastMonth = avgScore(lastMonthItems)
+
+  const weekDelta  = lastWeek  > 0 ? Math.round((thisWeek  - lastWeek)  / lastWeek  * 100) : 0
+  const monthDelta = lastMonth > 0 ? Math.round((thisMonth - lastMonth) / lastMonth * 100) : 0
+
+  return { thisWeek, lastWeek, thisMonth, lastMonth, weekDelta, monthDelta }
+}

@@ -1,8 +1,9 @@
 "use client"
 
-import { type GameState, getLevel, getDailyGoal } from "@/lib/game-store"
+import { type GameState, getLevel, getDailyGoal, getMoodTrend } from "@/lib/game-store"
 import { EMOTION_CATEGORIES } from "@/lib/emotions-data"
 import { CONTEXT_TAGS } from "@/lib/context-tags"
+import { MoodCalendar } from "@/components/mood-calendar"
 import {
   Flame, Star, Trophy, Compass, Zap, Shield, Heart, Dumbbell,
   Award, Crown, Brain, Lock, TrendingUp, Target, Rainbow,
@@ -10,6 +11,10 @@ import {
 
 const BADGE_ICON_MAP: Record<string, React.ElementType> = {
   Star, Compass, Flame, Trophy, Zap, Rainbow, Shield, Heart, Dumbbell, Award, Crown, Brain,
+}
+
+const EMOTION_EMOJI: Record<string, string> = {
+  joy: "😊", calm: "😌", sadness: "😔", anger: "😤", fear: "😰", surprise: "😕",
 }
 
 const MOTIVATIONAL_QUOTES = [
@@ -48,6 +53,47 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
   gameState.checkIns.forEach((c) => (c.contextTags || []).forEach((t) => { tagCounts[t] = (tagCounts[t] || 0) + 1 }))
   const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 8)
   const maxTagCount = sortedTags.length > 0 ? sortedTags[0][1] : 1
+
+  // Weekly mood breakdown (last 7 days)
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7); weekAgo.setHours(0, 0, 0, 0)
+  const weekCheckIns = gameState.checkIns.filter(c => new Date(c.date) >= weekAgo)
+  const weekCounts: Record<string, number> = {}
+  weekCheckIns.forEach(c => { weekCounts[c.emotionId] = (weekCounts[c.emotionId] || 0) + 1 })
+  const weekTotal = weekCheckIns.length
+  const weekBreakdown = Object.entries(weekCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([eid, count]) => ({
+      eid, count,
+      pct: weekTotal > 0 ? Math.round(count / weekTotal * 100) : 0,
+      cat: EMOTION_CATEGORIES.find(c => c.id === eid),
+    }))
+
+  // Mood score trend
+  const moodTrend = getMoodTrend(gameState.checkIns)
+
+  // Per-emotion peak patterns (needs timestamp)
+  const DAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  const checkInsWithTs = gameState.checkIns.filter(c => c.timestamp)
+  const emotionPatterns: { emotionId: string; label: string; color: string; peakDay: string; peakTime: string }[] = []
+  EMOTION_CATEGORIES.forEach(cat => {
+    const items = checkInsWithTs.filter(c => c.emotionId === cat.id)
+    if (items.length < 3) return
+    const timeCounts: Record<string, number> = {}
+    const dayCounts: Record<string, number> = {}
+    items.forEach(c => {
+      const h = new Date(c.timestamp!).getHours()
+      const d = new Date(c.timestamp!).getDay()
+      const slot = h >= 5 && h < 12 ? "mornings" : h >= 12 && h < 17 ? "afternoons" : h >= 17 && h < 22 ? "evenings" : "nights"
+      timeCounts[slot] = (timeCounts[slot] || 0) + 1
+      dayCounts[DAYS_SHORT[d]] = (dayCounts[DAYS_SHORT[d]] || 0) + 1
+    })
+    const peakTime = Object.entries(timeCounts).sort((a, b) => b[1] - a[1])[0]?.[0]
+    const peakDay = Object.entries(dayCounts).sort((a, b) => b[1] - a[1])[0]?.[0]
+    if (peakTime && peakDay) {
+      emotionPatterns.push({ emotionId: cat.id, label: cat.label, color: cat.color, peakDay: peakDay + "s", peakTime })
+    }
+  })
+  const topPatterns = emotionPatterns.slice(0, 3)
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-md mx-auto pb-6">
@@ -133,6 +179,78 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
           <span className="text-xs text-muted-foreground text-center">Moves done</span>
         </div>
       </div>
+
+      {/* Mood Calendar */}
+      {gameState.checkIns.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h4 className="text-base font-bold text-foreground">Mood calendar</h4>
+          <p className="text-xs text-muted-foreground">Your emotional fingerprint — 16 weeks at a glance.</p>
+          <MoodCalendar checkIns={gameState.checkIns} />
+        </div>
+      )}
+
+      {/* Weekly Mood Summary */}
+      <div>
+        <h4 className="text-base font-bold text-foreground mb-1">This week's mood breakdown</h4>
+        {weekTotal === 0 ? (
+          <p className="text-sm text-muted-foreground mt-2">No check-ins yet this week — start today 🌱</p>
+        ) : (
+          <div className="flex flex-col gap-2 mt-3">
+            {weekBreakdown.map(({ eid, pct, cat }) =>
+              cat ? (
+                <div key={eid} className="flex items-center gap-3">
+                  <span className="text-base shrink-0 w-6 text-center">{EMOTION_EMOJI[eid] ?? "•"}</span>
+                  <span className="text-sm font-medium text-foreground w-16 shrink-0">{cat.label}</span>
+                  <div className="flex-1 h-3 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${pct}%`, background: cat.color, minWidth: "4px" }} />
+                  </div>
+                  <span className="text-xs font-bold text-muted-foreground w-8 text-right shrink-0">{pct}%</span>
+                </div>
+              ) : null
+            )}
+            <p className="text-xs text-muted-foreground mt-1">{weekTotal} check-in{weekTotal !== 1 ? "s" : ""} this week</p>
+          </div>
+        )}
+      </div>
+
+      {/* Mood Score Trend */}
+      {moodTrend && (moodTrend.thisWeek > 0 || moodTrend.thisMonth > 0) && (
+        <div className="flex flex-col gap-3 p-4 rounded-2xl bg-secondary border border-border">
+          <div>
+            <h4 className="text-base font-bold text-foreground">Mood score</h4>
+            <p className="text-xs text-muted-foreground mt-0.5">Based on emotional quality of your check-ins (0–100).</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-4xl font-extrabold text-foreground">{moodTrend.thisWeek}</p>
+              <p className="text-xs text-muted-foreground">This week</p>
+            </div>
+            {moodTrend.lastWeek > 0 && (
+              <div className="px-3 py-1.5 rounded-full"
+                style={{ background: moodTrend.weekDelta >= 0 ? "#10B98115" : "#EF444415" }}>
+                <span className="text-sm font-bold"
+                  style={{ color: moodTrend.weekDelta >= 0 ? "#10B981" : "#EF4444" }}>
+                  {moodTrend.weekDelta >= 0 ? "↑" : "↓"} {Math.abs(moodTrend.weekDelta)}% vs last week
+                </span>
+              </div>
+            )}
+          </div>
+          {moodTrend.thisMonth > 0 && (
+            <div className="flex items-center gap-3 pt-2 border-t border-border flex-wrap">
+              <span className="text-sm text-muted-foreground">
+                This month: <strong className="text-foreground">{moodTrend.thisMonth}</strong>
+              </span>
+              {moodTrend.lastMonth > 0 && (
+                <span className="text-sm font-semibold"
+                  style={{ color: moodTrend.monthDelta >= 0 ? "#10B981" : "#EF4444" }}>
+                  {moodTrend.monthDelta >= 0 ? "↑" : "↓"} {Math.abs(moodTrend.monthDelta)}% vs last month
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Streak milestone messages */}
       {gameState.currentStreak >= 3 && (
@@ -319,6 +437,27 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
           </div>
         )
       })()}
+
+      {/* Per-emotion patterns */}
+      {topPatterns.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h4 className="text-base font-bold text-foreground">Your emotional patterns</h4>
+          <p className="text-xs text-muted-foreground">These insights emerge from your check-in history.</p>
+          <div className="flex flex-col gap-2">
+            {topPatterns.map(p => (
+              <div key={p.emotionId} className="flex items-center gap-3 p-3 rounded-xl border border-border">
+                <span className="text-xl shrink-0">{EMOTION_EMOJI[p.emotionId] ?? "•"}</span>
+                <p className="text-sm text-foreground leading-relaxed">
+                  You tend to feel{" "}
+                  <strong style={{ color: p.color }}>{p.label}</strong>{" "}
+                  most on <strong>{p.peakDay}</strong> during the{" "}
+                  <strong>{p.peakTime}</strong>.
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Recent check-ins */}
       {gameState.checkIns.length > 0 && (

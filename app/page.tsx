@@ -18,6 +18,7 @@ import { AuthGate } from "@/components/auth-gate"
 import { ThemePicker } from "@/components/theme-picker"
 import { MusicPlayer } from "@/components/music-player"
 import { OnboardingTooltips } from "@/components/onboarding-tooltips"
+import { HowItWorks } from "@/components/how-it-works"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -36,7 +37,7 @@ import { applyTheme } from "@/lib/themes"
 import { getRegionById } from "@/lib/crisis-resources"
 import type { Badge } from "@/lib/emotions-data"
 import type { ThemeId } from "@/lib/themes"
-import { ArrowLeft, Sparkles, X } from "lucide-react"
+import { ArrowLeft, Sparkles, X, Lock, Info } from "lucide-react"
 
 type Screen = "home" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress"
 
@@ -59,6 +60,7 @@ export default function BhavaApp() {
   const [badgePopup, setBadgePopup] = useState<Badge | null>(null)
   const [showCrisis, setShowCrisis] = useState(false)
   const [isNewUser, setIsNewUser] = useState(false)
+  const [showHowItWorks, setShowHowItWorks] = useState(false)
   const badgeQueueRef = useRef<Badge[]>([])
 
   // Auth check on mount
@@ -263,15 +265,65 @@ export default function BhavaApp() {
       {/* Main Content */}
       <div className="max-w-lg mx-auto px-5 py-8">
         {screen === "home" && (
-          <div className="flex flex-col items-center gap-10">
-            {/* Personalised greeting */}
-            <div className="text-center">
-              <p className="text-base text-muted-foreground italic">
+          <div className="flex flex-col items-center gap-8">
+            {/* Daily check-in status card */}
+            {(() => {
+              const today = new Date().toISOString().slice(0, 10)
+              const checkedInToday = gameState.checkIns.some(c => c.date === today)
+              return (
+                <div className="w-full p-4 rounded-2xl flex items-center gap-3 border border-border"
+                  style={{ background: checkedInToday ? "#10B98110" : "var(--secondary)" }}>
+                  <span className="text-2xl shrink-0">{checkedInToday ? "✅" : "📅"}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-foreground">
+                      {checkedInToday ? "Checked in today!" : "No check-in yet today"}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {checkedInToday
+                        ? `${gameState.currentStreak}-day streak 🔥 Keep going!`
+                        : "It takes 30 seconds. You're worth it."}
+                    </p>
+                  </div>
+                  {checkedInToday && gameState.currentStreak > 1 && (
+                    <div className="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold"
+                      style={{ background: "#F59E0B20", color: "#F59E0B" }}>
+                      🔥 {gameState.currentStreak}d
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+
+            {/* Hero headline */}
+            <div className="text-center flex flex-col gap-2">
+              <h1 className="text-3xl font-extrabold text-foreground leading-tight text-balance">
+                Understand your emotions,<br />one day at a time.
+              </h1>
+              <p className="text-sm text-muted-foreground italic">
                 Welcome back, {greetingName} {profile.avatar_emoji}
               </p>
-              <p className="text-xs text-muted-foreground/60 mt-1 tracking-widest">भाव · the felt sense of being</p>
+              <p className="text-xs text-muted-foreground/50 tracking-widest">भाव · the felt sense of being</p>
             </div>
+
+            {/* Emotion wheel */}
             <EmotionWheel onSelect={handleEmotionSelect} selectedId={selectedEmotion?.id || null} />
+
+            {/* "See how it works" CTA */}
+            <button
+              onClick={() => setShowHowItWorks(true)}
+              className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              <Info size={15} />
+              See how it works →
+            </button>
+
+            {/* Privacy badge */}
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/50">
+              <Lock size={10} />
+              Your data is private · end-to-end encrypted · never sold
+            </div>
+
+            {/* Science note */}
             <div className="w-full p-5 rounded-2xl bg-secondary border border-border">
               <p className="text-sm text-muted-foreground leading-relaxed">
                 <strong className="text-foreground">Why this works:</strong>{" "}
@@ -451,6 +503,9 @@ export default function BhavaApp() {
           </div>
         </div>
       )}
+
+      {/* How it works modal */}
+      {showHowItWorks && <HowItWorks onClose={() => setShowHowItWorks(false)} />}
 
       {/* Onboarding tooltips */}
       <OnboardingTooltips isNewUser={isNewUser} />
