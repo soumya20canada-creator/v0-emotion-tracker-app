@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Nunito } from 'next/font/google'
+import { Nunito, Cinzel_Decorative } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
@@ -8,10 +8,16 @@ const nunito = Nunito({
   variable: "--font-nunito",
 })
 
+const cinzelDecorative = Cinzel_Decorative({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-cinzel",
+})
+
 export const metadata: Metadata = {
-  title: 'Feels → Moves | Turn feelings into fun actions',
-  description: 'A gamified emotional wellness app for teens, young adults, and immigrants. Name your feelings, get research-backed micro-actions, and level up your emotional skills.',
-  generator: 'v0.app',
+  title: 'Bhava · भाव | The felt sense of being',
+  description: 'Bhava is your gentle sanctuary for emotional wellness. Name what you feel, find what helps, and come back to yourself — one breath at a time.',
+  generator: 'bhava.app',
   icons: {
     icon: [
       {
@@ -45,7 +51,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${nunito.variable} font-sans antialiased`}>
+      <body className={`${nunito.variable} ${cinzelDecorative.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>

@@ -32,7 +32,27 @@ export type GameState = {
   selectedRegion: string | null
 }
 
-const STORAGE_KEY = "feels-moves-game-state"
+const STORAGE_KEY = "bhava-game-state"
+
+export type Level = { name: string; emoji: string; min: number; max: number; next: number | null }
+
+const LEVELS: Level[] = [
+  { name: "Seedling", emoji: "🌱", min: 0,    max: 99,   next: 100  },
+  { name: "Sprout",   emoji: "🌿", min: 100,  max: 299,  next: 300  },
+  { name: "Bloom",    emoji: "🌸", min: 300,  max: 699,  next: 700  },
+  { name: "Garden",   emoji: "🌺", min: 700,  max: 1499, next: 1500 },
+  { name: "Forest",   emoji: "🌳", min: 1500, max: Infinity, next: null },
+]
+
+export function getLevel(points: number): Level {
+  return LEVELS.find((l) => points >= l.min && points <= l.max) ?? LEVELS[0]
+}
+
+export function getDailyGoal(checkIns: CheckIn[]): { target: number; done: number; label: string } {
+  const today = new Date().toISOString().slice(0, 10)
+  const todayCount = checkIns.filter((c) => c.date === today).length
+  return { target: 1, done: todayCount, label: "Check in with yourself today" }
+}
 
 export function getDefaultState(): GameState {
   return {
