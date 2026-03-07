@@ -3,23 +3,19 @@ import type { User, Session } from "@supabase/supabase-js"
 
 export type { User, Session }
 
-export async function signInWithOtp(email: string): Promise<{ error: string | null }> {
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { shouldCreateUser: true },
-  })
-  return { error: error?.message ?? null }
+export async function signUpWithPassword(
+  email: string,
+  password: string
+): Promise<{ user: User | null; error: string | null }> {
+  const { data, error } = await supabase.auth.signUp({ email, password })
+  return { user: data.user ?? null, error: error?.message ?? null }
 }
 
-export async function verifyOtp(
+export async function signInWithPassword(
   email: string,
-  token: string
+  password: string
 ): Promise<{ user: User | null; error: string | null }> {
-  const { data, error } = await supabase.auth.verifyOtp({
-    email,
-    token,
-    type: "email",
-  })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   return { user: data.user ?? null, error: error?.message ?? null }
 }
 

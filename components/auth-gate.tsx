@@ -1,11 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { signInWithOtp, verifyOtp } from "@/lib/auth"
+import { signUpWithPassword, signInWithPassword } from "@/lib/auth"
 import { getProfile, createProfile, isUsernameTaken } from "@/lib/profile"
 import type { Profile } from "@/lib/profile"
+import { Eye, EyeOff } from "lucide-react"
 
-type Step = "welcome" | "email" | "otp" | "profile"
+type Step = "welcome" | "signin" | "signup" | "profile"
 
 type AuthGateProps = {
   onAuthenticated: (profile: Profile) => void
@@ -14,43 +15,55 @@ type AuthGateProps = {
 export function AuthGate({ onAuthenticated }: AuthGateProps) {
   const [step, setStep] = useState<Step>("welcome")
   const [email, setEmail] = useState("")
-  const [otp, setOtp] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [displayName, setDisplayName] = useState("")
   const [username, setUsername] = useState("")
   const [userId, setUserId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function handleEmailSubmit(e: React.FormEvent) {
+  async function handleSignIn(e: React.FormEvent) {
     e.preventDefault()
-    if (!email.trim()) return
+    if (!email.trim() || !password) return
     setLoading(true)
     setError(null)
-    const { error } = await signInWithOtp(email.trim().toLowerCase())
+    const { user, error } = await signInWithPassword(email.trim().toLowerCase(), password)
     setLoading(false)
-    if (error) { setError("Something gentle went wrong. Try again?"); return }
-    setStep("otp")
-  }
-
-  async function handleOtpSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (otp.length < 6) return
-    setLoading(true)
-    setError(null)
-    const { user, error } = await verifyOtp(email.trim().toLowerCase(), otp.trim())
     if (error || !user) {
-      setLoading(false)
-      setError("That code didn't match. Check your inbox and try again.")
+      setError("Couldn't sign you in — double-check your email and password.")
       return
     }
-    setUserId(user.id)
     const existing = await getProfile(user.id)
-    setLoading(false)
     if (existing) {
       onAuthenticated(existing)
     } else {
+      setUserId(user.id)
       setStep("profile")
     }
+  }
+
+  async function handleSignUp(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim() || !password) return
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.")
+      return
+    }
+    setLoading(true)
+    setError(null)
+    const { user, error } = await signUpWithPassword(email.trim().toLowerCase(), password)
+    setLoading(false)
+    if (error || !user) {
+      if (error?.includes("already registered")) {
+        setError("That email already has an account — try signing in instead.")
+      } else {
+        setError("Something went wrong. Please try again.")
+      }
+      return
+    }
+    setUserId(user.id)
+    setStep("profile")
   }
 
   async function handleProfileSubmit(e: React.FormEvent) {
@@ -70,16 +83,22 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
     onAuthenticated(profile)
   }
 
+  function reset() {
+    setError(null)
+    setPassword("")
+    setShowPassword(false)
+  }
+
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background">
-      {/* Soft background glow */}
+      {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 rounded-full bg-accent/10 blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-sm mx-auto px-6 flex flex-col items-center gap-8">
-        {/* Logo + wordmark */}
+        {/* Logo */}
         <div className="flex flex-col items-center gap-3">
           <BhavaLotus size={72} />
           <div className="flex flex-col items-center gap-1">
@@ -103,6 +122,8 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
 
         {/* Card */}
         <div className="w-full bg-card rounded-3xl p-7 shadow-[0_8px_40px_rgba(0,0,0,0.08)] border border-border flex flex-col gap-5">
+
+          {/* ── Welcome ── */}
           {step === "welcome" && (
             <>
               <div className="text-center">
@@ -113,34 +134,33 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
               </div>
               <div className="flex flex-col gap-3">
                 <button
-                  onClick={() => setStep("email")}
+                  onClick={() => { reset(); setStep("signup") }}
                   className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                   style={{ background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
                 >
                   I'm new here ✨
                 </button>
                 <button
-                  onClick={() => setStep("email")}
+                  onClick={() => { reset(); setStep("signin") }}
                   className="w-full py-3.5 rounded-2xl font-bold text-sm border-2 border-primary/30 text-foreground hover:bg-muted transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Welcome back 🌿
                 </button>
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                Both paths use the same secure email code — no password needed.
+                No verification email. You're in instantly.
               </p>
             </>
           )}
 
-          {step === "email" && (
+          {/* ── Sign in ── */}
+          {step === "signin" && (
             <>
               <div className="text-center">
-                <h2 className="text-xl font-bold text-foreground">Welcome home 🌸</h2>
-                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  Enter your email and we'll send you a gentle sign-in code.
-                </p>
+                <h2 className="text-xl font-bold text-foreground">Welcome back 🌿</h2>
+                <p className="text-sm text-muted-foreground mt-1">Sign in to your space.</p>
               </div>
-              <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
+              <form onSubmit={handleSignIn} className="flex flex-col gap-3">
                 <input
                   type="email"
                   value={email}
@@ -150,67 +170,105 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
                   autoFocus
                   className="w-full px-4 py-3 rounded-2xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition text-sm"
                 />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Your password"
+                    required
+                    className="w-full px-4 py-3 pr-11 rounded-2xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition cursor-pointer"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
                 {error && <p className="text-sm text-destructive text-center">{error}</p>}
                 <button
                   type="submit"
-                  disabled={loading || !email.trim()}
+                  disabled={loading || !email.trim() || !password}
                   className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-50 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                   style={{ background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
                 >
-                  {loading ? "Sending..." : "Send my code ✨"}
-                </button>
-              </form>
-              <p className="text-xs text-muted-foreground text-center">
-                No password needed. Your privacy is sacred here.
-              </p>
-            </>
-          )}
-
-          {step === "otp" && (
-            <>
-              <div className="text-center">
-                <h2 className="text-xl font-bold text-foreground">Check your inbox 📬</h2>
-                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  We sent a 6-digit code to <strong>{email}</strong>
-                </p>
-              </div>
-              <form onSubmit={handleOtpSubmit} className="flex flex-col gap-4">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  placeholder="· · · · · ·"
-                  required
-                  autoFocus
-                  className="w-full px-4 py-3 rounded-2xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition text-center text-2xl tracking-[0.5em] font-bold"
-                />
-                {error && <p className="text-sm text-destructive text-center">{error}</p>}
-                <button
-                  type="submit"
-                  disabled={loading || otp.length < 6}
-                  className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-50 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
-                  style={{ background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
-                >
-                  {loading ? "Verifying..." : "Enter Bhava ✨"}
+                  {loading ? "Signing in…" : "Enter Bhava ✨"}
                 </button>
               </form>
               <button
-                onClick={() => { setStep("email"); setOtp(""); setError(null) }}
+                onClick={() => { reset(); setStep("welcome") }}
                 className="text-xs text-muted-foreground text-center hover:text-foreground transition cursor-pointer"
               >
-                ← Use a different email
+                ← Back
               </button>
             </>
           )}
 
+          {/* ── Sign up ── */}
+          {step === "signup" && (
+            <>
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-foreground">Create your space 🌸</h2>
+                <p className="text-sm text-muted-foreground mt-1">Just an email and a password — you're in.</p>
+              </div>
+              <form onSubmit={handleSignUp} className="flex flex-col gap-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  autoFocus
+                  className="w-full px-4 py-3 rounded-2xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition text-sm"
+                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Create a password (8+ characters)"
+                    required
+                    minLength={8}
+                    className="w-full px-4 py-3 pr-11 rounded-2xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition cursor-pointer"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {error && <p className="text-sm text-destructive text-center">{error}</p>}
+                <button
+                  type="submit"
+                  disabled={loading || !email.trim() || password.length < 8}
+                  className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-50 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                  style={{ background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
+                >
+                  {loading ? "Creating your space…" : "Continue →"}
+                </button>
+              </form>
+              <button
+                onClick={() => { reset(); setStep("welcome") }}
+                className="text-xs text-muted-foreground text-center hover:text-foreground transition cursor-pointer"
+              >
+                ← Back
+              </button>
+            </>
+          )}
+
+          {/* ── Profile setup ── */}
           {step === "profile" && (
             <>
               <div className="text-center">
                 <h2 className="text-xl font-bold text-foreground">You're in 🌺</h2>
                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  Let's set up your space. What shall we call you?
+                  One last thing — what shall we call you?
                 </p>
               </div>
               <form onSubmit={handleProfileSubmit} className="flex flex-col gap-4">
@@ -270,14 +328,7 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
 
 function BhavaLotus({ size = 56 }: { size?: number }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
         <linearGradient id="gold-auth" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#C9A84C" />
@@ -290,7 +341,6 @@ function BhavaLotus({ size = 56 }: { size?: number }) {
         </filter>
       </defs>
       <g filter="url(#glow-auth)">
-        {/* Outer petals */}
         <ellipse cx="50" cy="30" rx="8" ry="22" fill="url(#gold-auth)" opacity="0.9" />
         <ellipse cx="50" cy="30" rx="8" ry="22" fill="url(#gold-auth)" opacity="0.9" transform="rotate(45 50 50)" />
         <ellipse cx="50" cy="30" rx="8" ry="22" fill="url(#gold-auth)" opacity="0.9" transform="rotate(90 50 50)" />
@@ -299,7 +349,6 @@ function BhavaLotus({ size = 56 }: { size?: number }) {
         <ellipse cx="50" cy="30" rx="8" ry="22" fill="url(#gold-auth)" opacity="0.9" transform="rotate(225 50 50)" />
         <ellipse cx="50" cy="30" rx="8" ry="22" fill="url(#gold-auth)" opacity="0.9" transform="rotate(270 50 50)" />
         <ellipse cx="50" cy="30" rx="8" ry="22" fill="url(#gold-auth)" opacity="0.9" transform="rotate(315 50 50)" />
-        {/* Center */}
         <circle cx="50" cy="50" r="10" fill="url(#gold-auth)" />
         <circle cx="50" cy="50" r="5" fill="#FFF8E7" opacity="0.8" />
       </g>
