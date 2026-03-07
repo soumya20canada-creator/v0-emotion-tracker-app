@@ -364,20 +364,35 @@ export default function BhavaApp() {
 
         {screen === "context" && selectedEmotion && (
           <div className="flex flex-col gap-8">
-            <div className="flex flex-col items-center gap-3">
-              <h2 className="text-2xl font-extrabold text-foreground text-center text-balance">What is this about?</h2>
-              <p className="text-base text-muted-foreground text-center leading-relaxed">
-                Tag what might be stirring this feeling. Pick as many as feel true.
-              </p>
-            </div>
-            <ContextTagPicker selected={contextTags} onToggle={(tagId) => setContextTags((prev) => prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId])} accentColor={selectedEmotion.color} />
-            <button
-              onClick={() => setScreen("intensity")}
-              className="w-full max-w-sm mx-auto py-4 rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
-              style={{ background: selectedEmotion.color, color: "#FFFFFF", boxShadow: `0 4px 20px ${selectedEmotion.color}44` }}
-            >
-              {contextTags.length > 0 ? `Continue with ${contextTags.length} tag${contextTags.length !== 1 ? "s" : ""}` : "Skip - not sure why"}
-            </button>
+            {(() => {
+              const isJoy   = selectedEmotion.id === "joy"
+              const isCalm  = selectedEmotion.id === "calm"
+              const heading = isJoy  ? "What's behind this happiness?"
+                            : isCalm ? "What's helping you feel at peace?"
+                            : "What is this about?"
+              const subtext = isJoy  ? "What's been a part of this good feeling? Tag as many as feel true."
+                            : isCalm ? "What's been supporting this feeling? Tag as many as feel true."
+                            : "Tag what might be stirring this feeling. Pick as many as feel true."
+              const skipLabel = isJoy  ? "Skip — just feeling it"
+                              : isCalm ? "Skip — just at peace"
+                              : "Skip — not sure why"
+              return (
+                <>
+                  <div className="flex flex-col items-center gap-3">
+                    <h2 className="text-2xl font-extrabold text-foreground text-center text-balance">{heading}</h2>
+                    <p className="text-base text-muted-foreground text-center leading-relaxed">{subtext}</p>
+                  </div>
+                  <ContextTagPicker selected={contextTags} onToggle={(tagId) => setContextTags((prev) => prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId])} accentColor={selectedEmotion.color} />
+                  <button
+                    onClick={() => setScreen("intensity")}
+                    className="w-full max-w-sm mx-auto py-4 rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                    style={{ background: selectedEmotion.color, color: "#FFFFFF", boxShadow: `0 4px 20px ${selectedEmotion.color}44` }}
+                  >
+                    {contextTags.length > 0 ? `Continue with ${contextTags.length} tag${contextTags.length !== 1 ? "s" : ""}` : skipLabel}
+                  </button>
+                </>
+              )
+            })()}
           </div>
         )}
 
