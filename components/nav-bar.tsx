@@ -77,15 +77,6 @@ export function NavBar({ activeScreen, onNavigate, streak, points, displayName, 
                     Hi, {displayName} 👋
                   </div>
                 )}
-                {onShowThemes && (
-                  <button
-                    onClick={() => { onShowThemes(); setShowMenu(false) }}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors cursor-pointer text-foreground"
-                  >
-                    <Palette size={15} />
-                    Change theme
-                  </button>
-                )}
                 <button
                   onClick={handleSignOut}
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-destructive/10 transition-colors cursor-pointer text-destructive"

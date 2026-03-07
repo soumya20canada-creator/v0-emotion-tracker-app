@@ -134,7 +134,7 @@ export const THEMES: Theme[] = [
     id: "midnight",
     name: "Midnight",
     emoji: "🌙",
-    description: "Dark · deep indigo",
+    description: "deep indigo",
     dark: true,
     vars: {
       "--background": "#0F0F23",
@@ -158,7 +158,7 @@ export const THEMES: Theme[] = [
     id: "nebula",
     name: "Nebula",
     emoji: "🌌",
-    description: "Dark · vivid violet",
+    description: "vivid violet",
     dark: true,
     vars: {
       "--background": "#0C0B1E",
@@ -182,7 +182,7 @@ export const THEMES: Theme[] = [
     id: "ember",
     name: "Ember",
     emoji: "🔥",
-    description: "Dark · warm orange",
+    description: "warm orange",
     dark: true,
     vars: {
       "--background": "#0F0A07",
@@ -206,7 +206,7 @@ export const THEMES: Theme[] = [
     id: "aurora",
     name: "Aurora",
     emoji: "🌿",
-    description: "Dark · electric teal",
+    description: "electric teal",
     dark: true,
     vars: {
       "--background": "#06100F",
@@ -230,7 +230,7 @@ export const THEMES: Theme[] = [
     id: "rose-noir",
     name: "Rose Noir",
     emoji: "🌹",
-    description: "Dark · deep rose",
+    description: "deep rose",
     dark: true,
     vars: {
       "--background": "#0F080D",

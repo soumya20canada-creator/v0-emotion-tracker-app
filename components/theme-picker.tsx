@@ -66,11 +66,11 @@ function ThemeCard({
         )}
       </div>
 
-      <div className="px-0.5">
-        <p className="text-xs font-bold text-foreground leading-tight truncate">
+      <div className="px-0.5 text-center">
+        <p className="text-[11px] font-bold text-foreground leading-tight">
           {theme.emoji} {theme.name}
         </p>
-        <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate">
+        <p className="text-[9px] text-muted-foreground leading-tight mt-0.5">
           {theme.description}
         </p>
       </div>
