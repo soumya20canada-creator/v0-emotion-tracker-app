@@ -19,6 +19,8 @@ import { ThemePicker } from "@/components/theme-picker"
 import { MusicPlayer } from "@/components/music-player"
 import { OnboardingTooltips } from "@/components/onboarding-tooltips"
 import { HowItWorks } from "@/components/how-it-works"
+import { BadgesPage } from "@/components/badges-page"
+import { PatternsPage } from "@/components/patterns-page"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -39,7 +41,7 @@ import type { Badge } from "@/lib/emotions-data"
 import type { ThemeId } from "@/lib/themes"
 import { ArrowLeft, Sparkles, X, Lock, Info } from "lucide-react"
 
-type Screen = "home" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress"
+type Screen = "home" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
 
 export default function BhavaApp() {
   const [authReady, setAuthReady] = useState(false)
@@ -191,6 +193,8 @@ export default function BhavaApp() {
   const handleNavigate = useCallback((target: string) => {
     if (target === "home") handleReset()
     else if (target === "progress") setScreen("progress")
+    else if (target === "badges") setScreen("badges")
+    else if (target === "patterns") setScreen("patterns")
   }, [handleReset])
 
   // Loading
@@ -224,7 +228,7 @@ export default function BhavaApp() {
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
         <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-3">
-            {screen !== "home" && screen !== "progress" && (
+            {screen !== "home" && screen !== "progress" && screen !== "badges" && screen !== "patterns" && (
               <button
                 onClick={() => {
                   if (screen === "sub-emotion") setScreen("home")
@@ -478,6 +482,14 @@ export default function BhavaApp() {
         {screen === "progress" && (
           <ProgressTracker gameState={gameState} onClose={handleReset} displayName={greetingName} />
         )}
+
+        {screen === "badges" && (
+          <BadgesPage gameState={gameState} />
+        )}
+
+        {screen === "patterns" && (
+          <PatternsPage gameState={gameState} />
+        )}
       </div>
 
       {/* Ambient music */}
@@ -512,7 +524,7 @@ export default function BhavaApp() {
 
       {/* Bottom nav */}
       <NavBar
-        activeScreen={screen === "progress" ? "progress" : "home"}
+        activeScreen={screen === "progress" ? "progress" : screen === "badges" ? "badges" : screen === "patterns" ? "patterns" : "home"}
         onNavigate={handleNavigate}
         streak={gameState.currentStreak}
         points={gameState.totalPoints}

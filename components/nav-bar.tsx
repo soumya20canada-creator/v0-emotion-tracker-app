@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Flame, Home, BarChart3, Zap, LogOut, Palette } from "lucide-react"
+import { Flame, Home, BarChart3, Zap, LogOut, Palette, Brain, Trophy } from "lucide-react"
 import { getLevel } from "@/lib/game-store"
 import { signOut } from "@/lib/auth"
 
@@ -20,8 +20,10 @@ export function NavBar({ activeScreen, onNavigate, streak, points, displayName, 
   const level = getLevel(points)
 
   const items = [
-    { id: "home", label: "Feel", icon: Home },
-    { id: "progress", label: "Journey", icon: BarChart3 },
+    { id: "home",     label: "Feel",     icon: Home },
+    { id: "progress", label: "Journey",  icon: BarChart3 },
+    { id: "patterns", label: "Patterns", icon: Brain },
+    { id: "badges",   label: "Badges",   icon: Trophy },
   ]
 
   async function handleSignOut() {
@@ -105,7 +107,7 @@ export function NavBar({ activeScreen, onNavigate, streak, points, displayName, 
               <button
                 key={item.id}
                 onClick={() => { onNavigate(item.id); setShowMenu(false) }}
-                className="flex flex-col items-center gap-1 px-8 py-2.5 rounded-xl transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 style={{ background: isActive ? "var(--primary)" : "transparent" }}
                 aria-current={isActive ? "page" : undefined}
               >
