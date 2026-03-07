@@ -137,5 +137,39 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Smooth theme transitions */
+  html {
+    scroll-behavior: smooth;
+    transition: background-color 0.3s ease, color 0.2s ease;
+  }
+
+  /* Text selection */
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 25%, transparent);
+    color: var(--foreground);
+  }
+
+  /* Thin styled scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
 }

@@ -35,7 +35,7 @@ export function NavBar({ activeScreen, onNavigate, streak, points, displayName, 
     <nav className="fixed bottom-0 left-0 right-0 z-50" aria-label="Main navigation">
       <div className="max-w-lg mx-auto">
         {/* Stats bar */}
-        <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center justify-between px-4 py-2 bg-background/60 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-game-coral/10">
               <Zap size={14} className="text-game-coral" />
@@ -99,7 +99,7 @@ export function NavBar({ activeScreen, onNavigate, streak, points, displayName, 
         </div>
 
         {/* Nav items */}
-        <div className="flex items-center justify-around p-3 rounded-t-2xl bg-card border-t border-border shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+        <div className="flex items-center justify-around p-3 rounded-t-3xl bg-card/95 backdrop-blur-xl border-t border-border/60 shadow-[0_-8px_32px_rgba(0,0,0,0.10)]">
           {items.map((item) => {
             const isActive = activeScreen === item.id
             const Icon = item.icon

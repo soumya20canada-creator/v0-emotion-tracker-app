@@ -1,19 +1,23 @@
-export type ThemeId = "default" | "ocean" | "forest" | "sunset" | "lavender" | "midnight"
+export type ThemeId =
+  | "default" | "ocean" | "forest" | "sunset" | "lavender"
+  | "midnight" | "nebula" | "ember" | "aurora" | "rose-noir"
 
 export type Theme = {
   id: ThemeId
   name: string
   emoji: string
   description: string
+  dark?: boolean
   vars: Record<string, string>
 }
 
 export const THEMES: Theme[] = [
+  // ── Light ─────────────────────────────────────────────────────
   {
     id: "default",
     name: "Bhava",
     emoji: "✨",
-    description: "Calm blue focus",
+    description: "Calm blue",
     vars: {
       "--background": "#FFFDF8",
       "--foreground": "#1E293B",
@@ -124,11 +128,14 @@ export const THEMES: Theme[] = [
       "--ring": "#7C3AED",
     },
   },
+
+  // ── Dark ──────────────────────────────────────────────────────
   {
     id: "midnight",
     name: "Midnight",
     emoji: "🌙",
-    description: "Dark & focused",
+    description: "Dark · deep indigo",
+    dark: true,
     vars: {
       "--background": "#0F0F23",
       "--foreground": "#E2E8F0",
@@ -145,6 +152,102 @@ export const THEMES: Theme[] = [
       "--border": "#2D2B55",
       "--input": "#2D2B55",
       "--ring": "#4F46E5",
+    },
+  },
+  {
+    id: "nebula",
+    name: "Nebula",
+    emoji: "🌌",
+    description: "Dark · vivid violet",
+    dark: true,
+    vars: {
+      "--background": "#0C0B1E",
+      "--foreground": "#E8E3FF",
+      "--card": "#130F3A",
+      "--card-foreground": "#E8E3FF",
+      "--primary": "#A78BFA",
+      "--primary-foreground": "#0C0B1E",
+      "--secondary": "#1E1850",
+      "--secondary-foreground": "#E8E3FF",
+      "--muted": "#1A164A",
+      "--muted-foreground": "#9D8FE8",
+      "--accent": "#22D3EE",
+      "--accent-foreground": "#0C0B1E",
+      "--border": "#2D2660",
+      "--input": "#2D2660",
+      "--ring": "#A78BFA",
+    },
+  },
+  {
+    id: "ember",
+    name: "Ember",
+    emoji: "🔥",
+    description: "Dark · warm orange",
+    dark: true,
+    vars: {
+      "--background": "#0F0A07",
+      "--foreground": "#FFF0E6",
+      "--card": "#1C1009",
+      "--card-foreground": "#FFF0E6",
+      "--primary": "#FB923C",
+      "--primary-foreground": "#0F0A07",
+      "--secondary": "#261508",
+      "--secondary-foreground": "#FFF0E6",
+      "--muted": "#201108",
+      "--muted-foreground": "#C07840",
+      "--accent": "#EF4444",
+      "--accent-foreground": "#FFFFFF",
+      "--border": "#3D1E0C",
+      "--input": "#3D1E0C",
+      "--ring": "#FB923C",
+    },
+  },
+  {
+    id: "aurora",
+    name: "Aurora",
+    emoji: "🌿",
+    description: "Dark · electric teal",
+    dark: true,
+    vars: {
+      "--background": "#06100F",
+      "--foreground": "#CCFBF1",
+      "--card": "#0B1F1D",
+      "--card-foreground": "#CCFBF1",
+      "--primary": "#34D399",
+      "--primary-foreground": "#06100F",
+      "--secondary": "#0E2723",
+      "--secondary-foreground": "#CCFBF1",
+      "--muted": "#0D2420",
+      "--muted-foreground": "#5EEAD4",
+      "--accent": "#22D3EE",
+      "--accent-foreground": "#06100F",
+      "--border": "#123B35",
+      "--input": "#123B35",
+      "--ring": "#34D399",
+    },
+  },
+  {
+    id: "rose-noir",
+    name: "Rose Noir",
+    emoji: "🌹",
+    description: "Dark · deep rose",
+    dark: true,
+    vars: {
+      "--background": "#0F080D",
+      "--foreground": "#FCE7F3",
+      "--card": "#1C0F19",
+      "--card-foreground": "#FCE7F3",
+      "--primary": "#F472B6",
+      "--primary-foreground": "#0F080D",
+      "--secondary": "#261122",
+      "--secondary-foreground": "#FCE7F3",
+      "--muted": "#200E1C",
+      "--muted-foreground": "#E879B0",
+      "--accent": "#C084FC",
+      "--accent-foreground": "#0F080D",
+      "--border": "#3D1535",
+      "--input": "#3D1535",
+      "--ring": "#F472B6",
     },
   },
 ]

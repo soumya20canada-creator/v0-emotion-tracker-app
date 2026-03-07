@@ -503,11 +503,16 @@ export default function BhavaApp() {
 
       {/* Theme picker modal */}
       {showThemePicker && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-foreground/20 backdrop-blur-sm" onClick={() => setShowThemePicker(false)}>
-          <div className="w-full max-w-lg bg-card rounded-t-3xl p-6 pb-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-foreground">Your palette</h3>
-              <button onClick={() => setShowThemePicker(false)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-muted cursor-pointer">
+        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-foreground/30 backdrop-blur-sm" onClick={() => setShowThemePicker(false)}>
+          <div className="w-full max-w-lg bg-card rounded-t-3xl p-5 pb-10 shadow-2xl border-t border-border/40" onClick={(e) => e.stopPropagation()}>
+            {/* Drag handle */}
+            <div className="w-10 h-1 rounded-full bg-border mx-auto mb-5" />
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">Your palette</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Pick the look that feels like you.</p>
+              </div>
+              <button onClick={() => setShowThemePicker(false)} className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer">
                 <X size={16} />
               </button>
             </div>
