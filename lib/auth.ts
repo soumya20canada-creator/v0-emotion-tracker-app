@@ -33,11 +33,29 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut()
 }
 
+export async function resetPassword(email: string): Promise<{ error: string | null }> {
+  const redirectTo = typeof window !== "undefined" ? window.location.origin : ""
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
+  return { error: error?.message ?? null }
+}
+
+export async function updatePassword(newPassword: string): Promise<{ error: string | null }> {
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  return { error: error?.message ?? null }
+}
+
 export function onAuthStateChange(
   callback: (user: User | null) => void
 ): () => void {
   const { data } = supabase.auth.onAuthStateChange((_event, session) => {
     callback(session?.user ?? null)
+  })
+  return () => data.subscription.unsubscribe()
+}
+
+export function onPasswordRecovery(callback: () => void): () => void {
+  const { data } = supabase.auth.onAuthStateChange((event) => {
+    if (event === "PASSWORD_RECOVERY") callback()
   })
   return () => data.subscription.unsubscribe()
 }

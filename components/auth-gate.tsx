@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { signUpWithPassword, signInWithPassword } from "@/lib/auth"
+import { signUpWithPassword, signInWithPassword, resetPassword } from "@/lib/auth"
 import { getProfile, createProfile, isUsernameTaken } from "@/lib/profile"
 import type { Profile } from "@/lib/profile"
 import { Eye, EyeOff } from "lucide-react"
 
-type Step = "welcome" | "signin" | "signup" | "profile"
+type Step = "welcome" | "signin" | "signup" | "profile" | "forgot" | "forgot-sent"
 
 type AuthGateProps = {
   onAuthenticated: (profile: Profile) => void
@@ -64,6 +64,17 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
     }
     setUserId(user.id)
     setStep("profile")
+  }
+
+  async function handleForgotPassword(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim()) return
+    setLoading(true)
+    setError(null)
+    const { error } = await resetPassword(email.trim().toLowerCase())
+    setLoading(false)
+    if (error) { setError("Couldn't send the link. Check the email and try again."); return }
+    setStep("forgot-sent")
   }
 
   async function handleProfileSubmit(e: React.FormEvent) {
@@ -199,12 +210,75 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
                 </button>
               </form>
               <button
+                onClick={() => { reset(); setStep("forgot") }}
+                className="text-xs text-muted-foreground text-center hover:text-foreground transition cursor-pointer"
+              >
+                Forgot your password?
+              </button>
+              <button
                 onClick={() => { reset(); setStep("welcome") }}
                 className="text-xs text-muted-foreground text-center hover:text-foreground transition cursor-pointer"
               >
                 ← Back
               </button>
             </>
+          )}
+
+          {/* ── Forgot password ── */}
+          {step === "forgot" && (
+            <>
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-foreground">Reset your password 🔑</h2>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Enter your email and we'll send you a link to create a new password.
+                </p>
+              </div>
+              <form onSubmit={handleForgotPassword} className="flex flex-col gap-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  autoFocus
+                  className="w-full px-4 py-3 rounded-2xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition text-sm"
+                />
+                {error && <p className="text-sm text-destructive text-center">{error}</p>}
+                <button
+                  type="submit"
+                  disabled={loading || !email.trim()}
+                  className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-50 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                  style={{ background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
+                >
+                  {loading ? "Sending…" : "Send reset link ✉️"}
+                </button>
+              </form>
+              <button
+                onClick={() => { reset(); setStep("signin") }}
+                className="text-xs text-muted-foreground text-center hover:text-foreground transition cursor-pointer"
+              >
+                ← Back to sign in
+              </button>
+            </>
+          )}
+
+          {/* ── Forgot sent ── */}
+          {step === "forgot-sent" && (
+            <div className="flex flex-col items-center gap-5 text-center">
+              <span className="text-5xl">📬</span>
+              <div>
+                <h2 className="text-xl font-bold text-foreground">Check your inbox</h2>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                  We sent a password reset link to <strong>{email}</strong>. Click it to create a new password — it's valid for 1 hour.
+                </p>
+              </div>
+              <button
+                onClick={() => { reset(); setStep("signin") }}
+                className="text-xs text-muted-foreground hover:text-foreground transition cursor-pointer"
+              >
+                ← Back to sign in
+              </button>
+            </div>
           )}
 
           {/* ── Sign up ── */}

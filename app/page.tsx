@@ -33,7 +33,7 @@ import {
   saveState,
   processCheckIn,
 } from "@/lib/game-store"
-import { getSession, onAuthStateChange } from "@/lib/auth"
+import { getSession, onAuthStateChange, onPasswordRecovery, updatePassword } from "@/lib/auth"
 import { getProfile, updateProfile, type Profile } from "@/lib/profile"
 import { applyTheme } from "@/lib/themes"
 import { getRegionById } from "@/lib/crisis-resources"
@@ -63,6 +63,7 @@ export default function BhavaApp() {
   const [showCrisis, setShowCrisis] = useState(false)
   const [isNewUser, setIsNewUser] = useState(false)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
+  const [showPasswordReset, setShowPasswordReset] = useState(false)
   const badgeQueueRef = useRef<Badge[]>([])
 
   // Auth check on mount
@@ -87,7 +88,8 @@ export default function BhavaApp() {
         setGameState(null)
       }
     })
-    return unsub
+    const unsubRecovery = onPasswordRecovery(() => setShowPasswordReset(true))
+    return () => { unsub(); unsubRecovery() }
   }, [])
 
   useEffect(() => {
@@ -539,6 +541,11 @@ export default function BhavaApp() {
       {/* How it works modal */}
       {showHowItWorks && <HowItWorks onClose={() => setShowHowItWorks(false)} />}
 
+      {/* Password reset modal — shown when user returns via reset link */}
+      {showPasswordReset && (
+        <PasswordResetModal onDone={() => setShowPasswordReset(false)} />
+      )}
+
       {/* Onboarding tooltips */}
       <OnboardingTooltips isNewUser={isNewUser} />
 
@@ -553,5 +560,98 @@ export default function BhavaApp() {
         onShowThemes={() => setShowThemePicker(true)}
       />
     </main>
+  )
+}
+
+function PasswordResetModal({ onDone }: { onDone: () => void }) {
+  const [password, setPassword] = useState("")
+  const [confirm, setConfirm] = useState("")
+  const [showPw, setShowPw] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (password.length < 8) { setError("Password must be at least 8 characters."); return }
+    if (password !== confirm) { setError("Passwords don't match."); return }
+    setLoading(true)
+    setError(null)
+    const { error } = await updatePassword(password)
+    setLoading(false)
+    if (error) { setError("Couldn't update your password. Please try again."); return }
+    setDone(true)
+    setTimeout(onDone, 2000)
+  }
+
+  return (
+    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-foreground/40 backdrop-blur-sm px-6">
+      <div className="w-full max-w-sm bg-card rounded-3xl p-7 shadow-2xl border border-border flex flex-col gap-5">
+        {done ? (
+          <div className="flex flex-col items-center gap-3 text-center py-4">
+            <span className="text-5xl">✅</span>
+            <p className="text-base font-bold text-foreground">Password updated!</p>
+            <p className="text-sm text-muted-foreground">Taking you back to your space…</p>
+          </div>
+        ) : (
+          <>
+            <div className="text-center">
+              <h2 className="text-xl font-bold text-foreground">Create new password 🔑</h2>
+              <p className="text-sm text-muted-foreground mt-1">Choose something you'll remember.</p>
+            </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+              <div className="relative">
+                <input
+                  type={showPw ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="New password (8+ characters)"
+                  required
+                  autoFocus
+                  className="w-full px-4 py-3 pr-11 rounded-2xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition text-sm"
+                />
+                <button type="button" onClick={() => setShowPw((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition cursor-pointer" tabIndex={-1}>
+                  {showPw ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+              <input
+                type={showPw ? "text" : "password"}
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                placeholder="Confirm new password"
+                required
+                className="w-full px-4 py-3 rounded-2xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition text-sm"
+              />
+              {error && <p className="text-sm text-destructive text-center">{error}</p>}
+              <button
+                type="submit"
+                disabled={loading || !password || !confirm}
+                className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-50 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
+              >
+                {loading ? "Saving…" : "Save new password"}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function EyeIcon() {
+  return (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+  )
+}
+
+function EyeOffIcon() {
+  return (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+    </svg>
   )
 }
