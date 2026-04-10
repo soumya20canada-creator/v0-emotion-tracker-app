@@ -19,6 +19,7 @@ import { ThemePicker } from "@/components/theme-picker"
 import { MusicPlayer } from "@/components/music-player"
 import { OnboardingTooltips } from "@/components/onboarding-tooltips"
 import { HowItWorks } from "@/components/how-it-works"
+import { EmotionDescribe } from "@/components/emotion-describe"
 import { BadgesPage } from "@/components/badges-page"
 import { PatternsPage } from "@/components/patterns-page"
 import {
@@ -41,7 +42,7 @@ import type { Badge } from "@/lib/emotions-data"
 import type { ThemeId } from "@/lib/themes"
 import { ArrowLeft, Sparkles, X, Lock, Info } from "lucide-react"
 
-type Screen = "home" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
+type Screen = "home" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
 
 export default function BhavaApp() {
   const [authReady, setAuthReady] = useState(false)
@@ -111,6 +112,12 @@ export default function BhavaApp() {
   const handleEmotionSelect = useCallback((emotion: EmotionCategory) => {
     setSelectedEmotion(emotion)
     setSubEmotions([])
+    setJournalNote("")
+    setScreen("describe")
+  }, [])
+
+  const handleDescribeContinue = useCallback((note: string) => {
+    setJournalNote(note)
     setScreen("sub-emotion")
   }, [])
 
@@ -248,7 +255,7 @@ export default function BhavaApp() {
             <span
               className="text-2xl tracking-wide"
               style={{
-                fontFamily: "var(--font-cinzel), 'Cinzel Decorative', serif",
+                fontFamily: "var(--font-cormorant), 'Cormorant Garamond', serif",
                 background: "linear-gradient(135deg, #C9A84C 0%, #F5D77E 50%, #C9A84C 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -339,6 +346,13 @@ export default function BhavaApp() {
               </p>
             </div>
           </div>
+        )}
+
+        {screen === "describe" && selectedEmotion && (
+          <EmotionDescribe
+            emotion={selectedEmotion}
+            onContinue={handleDescribeContinue}
+          />
         )}
 
         {screen === "sub-emotion" && selectedEmotion && (

@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from 'next'
-import { Nunito, Cinzel_Decorative } from 'next/font/google'
+import { DM_Sans, Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const nunito = Nunito({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-nunito",
+  weight: ["300", "400", "500"],
+  variable: "--font-dm-sans",
 })
 
-const cinzelDecorative = Cinzel_Decorative({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-cinzel",
+  weight: ["400", "500", "600"],
+  variable: "--font-cormorant",
 })
 
 export const metadata: Metadata = {
@@ -51,7 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${nunito.variable} ${cinzelDecorative.variable} font-sans antialiased`}>
+      <body className={`${dmSans.variable} ${cormorant.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>
