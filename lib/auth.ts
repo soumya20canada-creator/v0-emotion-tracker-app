@@ -19,6 +19,15 @@ export async function signInWithPassword(
   return { user: data.user ?? null, error: error?.message ?? null }
 }
 
+export async function signInWithGoogle(): Promise<{ error: string | null }> {
+  const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/` : undefined
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo },
+  })
+  return { error: error?.message ?? null }
+}
+
 export async function getSession(): Promise<Session | null> {
   const { data } = await supabase.auth.getSession()
   return data.session
