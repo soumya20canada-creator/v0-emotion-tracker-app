@@ -106,6 +106,11 @@ export default function BhavaApp() {
             setCurrentTheme(p.color_theme)
             applyTheme(p.color_theme)
           }
+          if (p) {
+            setIsFirstTimeUser(!p.onboarding_completed)
+            setIsNewUser(!p.onboarding_completed)
+            setShowOnboarding(true)
+          }
           setAuthReady(true)
         })
       } else {
