@@ -40,7 +40,7 @@ import {
   processCheckIn,
 } from "@/lib/game-store"
 import { getSession, onAuthStateChange, onPasswordRecovery, updatePassword } from "@/lib/auth"
-import { getProfile, updateProfile, saveOnboardingSession, type Profile } from "@/lib/profile"
+import { getProfile, createProfile, updateProfile, saveOnboardingSession, type Profile } from "@/lib/profile"
 import { applyTheme } from "@/lib/themes"
 import { getRegionById } from "@/lib/crisis-resources"
 import type { Badge } from "@/lib/emotions-data"
@@ -100,16 +100,33 @@ export default function BhavaApp() {
   useEffect(() => {
     getSession().then((session) => {
       if (session?.user) {
-        getProfile(session.user.id).then((p) => {
-          setProfile(p)
-          if (p?.color_theme) {
-            setCurrentTheme(p.color_theme)
-            applyTheme(p.color_theme)
-          }
+        getProfile(session.user.id).then(async (p) => {
           if (p) {
+            setProfile(p)
+            if (p.color_theme) {
+              setCurrentTheme(p.color_theme)
+              applyTheme(p.color_theme)
+            }
             setIsFirstTimeUser(!p.onboarding_completed)
             setIsNewUser(!p.onboarding_completed)
             setShowOnboarding(true)
+          } else {
+            // New user via Google OAuth — no profile exists yet, create one
+            const u = session.user
+            const firstName =
+              u.user_metadata?.full_name?.split(" ")[0] ??
+              u.user_metadata?.name?.split(" ")[0] ??
+              u.email?.split("@")[0] ??
+              "Friend"
+            const newProfile = await createProfile(u.id, u.email ?? "", firstName)
+            if (newProfile) {
+              setProfile(newProfile)
+              setCurrentTheme(newProfile.color_theme)
+              applyTheme(newProfile.color_theme)
+              setIsFirstTimeUser(true)
+              setIsNewUser(true)
+              setShowOnboarding(true)
+            }
           }
           setAuthReady(true)
         })
