@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Eye, EyeOff } from "lucide-react"
 import { signUpWithPassword, signInWithPassword, resetPassword, signInWithGoogle } from "@/lib/auth"
 import { getProfile, createProfile } from "@/lib/profile"
@@ -35,6 +35,8 @@ type AuthGateProps = {
 
 export function AuthGate({ onAuthenticated }: AuthGateProps) {
   const [step, setStep] = useState<Step>("signin")
+
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }) }, [step])
 
   // Shared fields
   const [email, setEmail] = useState("")
@@ -82,11 +84,16 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
     if (existing) {
       onAuthenticated(existing, false)
     } else {
-      // First time — create profile with email as placeholder name
       const name = user.email?.split("@")[0] ?? "Friend"
       const profile = await createProfile(user.id, user.email ?? "", name)
-      if (profile) onAuthenticated(profile, true)
-      else setError("Could not load your profile. Please try again.")
+      if (profile) {
+        onAuthenticated(profile, true)
+      } else {
+        // Profile may already exist but couldn't be read (RLS timing) — retry once
+        const retry = await getProfile(user.id)
+        if (retry) onAuthenticated(retry, false)
+        else setError("Could not load your profile. Please try again.")
+      }
     }
   }
 

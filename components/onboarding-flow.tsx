@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import {
   IDENTITY_OPTIONS,
   GENDER_OPTIONS,
@@ -47,6 +47,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
   // Screen 4 — support
   const [support, setSupport] = useState<string[]>([])
 
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollTop = () => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: "instant" })
+    window.scrollTo({ top: 0, behavior: "instant" })
+  }
+
   const currentStep = screen - startScreen + 1
 
   function toggle<T>(arr: T[], item: T): T[] {
@@ -69,7 +75,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
   }
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-background overflow-y-auto">
+    <div ref={scrollRef} className="fixed inset-0 z-[200] flex flex-col bg-background overflow-y-auto">
       {/* Progress bar */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b border-border px-6 py-4">
         <div className="max-w-lg mx-auto flex flex-col gap-2">
@@ -224,7 +230,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               )}
             </section>
 
-            <ContinueButton onClick={() => setScreen(2)} />
+            <ContinueButton onClick={() => { scrollTop(); setScreen(2) }} />
           </fieldset>
         )}
 
@@ -271,7 +277,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               </div>
             </section>
 
-            <ContinueButton onClick={() => setScreen(3)} />
+            <ContinueButton onClick={() => { scrollTop(); setScreen(3) }} />
           </fieldset>
         )}
 
@@ -321,7 +327,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             )}
             {!country && <EmergencyNote country="" />}
 
-            <ContinueButton onClick={() => setScreen(4)} />
+            <ContinueButton onClick={() => { scrollTop(); setScreen(4) }} />
           </fieldset>
         )}
 
