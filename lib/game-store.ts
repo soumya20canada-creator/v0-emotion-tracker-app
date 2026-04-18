@@ -1,52 +1,33 @@
-// Client-side game state management using localStorage for instant UI + Supabase cloud sync
-// localStorage is the fast source of truth; Supabase is the durable backup
+// Per-user client state. localStorage is scoped by user ID.
+// On login, state is hydrated from Supabase (source of truth for checkIns + moments).
 
-import { BADGES, type Badge } from "./emotions-data"
+import { MOMENTS, type Moment } from "./emotions-data"
 import { syncCheckIn } from "./supabase-sync"
 
 export type CheckIn = {
   date: string
-  timestamp?: string   // full ISO timestamp for time-of-day analysis
+  timestamp?: string
   emotionId: string
   subEmotion: string
   intensity: number
   actionsCompleted: string[]
-  pointsEarned: number
   usedCrisisMode: boolean
   contextTags: string[]
   journalNote: string
 }
 
 export type GameState = {
-  totalPoints: number
-  currentStreak: number
-  longestStreak: number
   lastCheckInDate: string | null
   checkIns: CheckIn[]
-  badges: Badge[]
+  moments: Moment[]
   uniqueEmotions: string[]
   totalActionsCompleted: number
-  socialActionsCompleted: number
-  bodyActionsCompleted: number
-  mindfulActionsCompleted: number
   usedCrisisMode: boolean
   selectedRegion: string | null
 }
 
-const STORAGE_KEY = "bhava-game-state"
-
-export type Level = { name: string; emoji: string; min: number; max: number; next: number | null }
-
-const LEVELS: Level[] = [
-  { name: "Seedling", emoji: "🌱", min: 0,    max: 99,   next: 100  },
-  { name: "Sprout",   emoji: "🌿", min: 100,  max: 299,  next: 300  },
-  { name: "Bloom",    emoji: "🌸", min: 300,  max: 699,  next: 700  },
-  { name: "Garden",   emoji: "🌺", min: 700,  max: 1499, next: 1500 },
-  { name: "Forest",   emoji: "🌳", min: 1500, max: Infinity, next: null },
-]
-
-export function getLevel(points: number): Level {
-  return LEVELS.find((l) => points >= l.min && points <= l.max) ?? LEVELS[0]
+function storageKey(userId: string): string {
+  return `bhava-state:${userId}`
 }
 
 export function getDailyGoal(checkIns: CheckIn[]): { target: number; done: number; label: string } {
@@ -57,34 +38,26 @@ export function getDailyGoal(checkIns: CheckIn[]): { target: number; done: numbe
 
 export function getDefaultState(): GameState {
   return {
-    totalPoints: 0,
-    currentStreak: 0,
-    longestStreak: 0,
     lastCheckInDate: null,
     checkIns: [],
-    badges: BADGES.map((b) => ({ ...b })),
+    moments: MOMENTS.map((m) => ({ ...m })),
     uniqueEmotions: [],
     totalActionsCompleted: 0,
-    socialActionsCompleted: 0,
-    bodyActionsCompleted: 0,
-    mindfulActionsCompleted: 0,
     usedCrisisMode: false,
     selectedRegion: null,
   }
 }
 
-export function loadState(): GameState {
+export function loadState(userId: string): GameState {
   if (typeof window === "undefined") return getDefaultState()
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
+    const stored = localStorage.getItem(storageKey(userId))
     if (!stored) return getDefaultState()
     const parsed = JSON.parse(stored)
-    // Merge with default to handle new badges
     const state = { ...getDefaultState(), ...parsed }
-    // Ensure all badges exist
-    state.badges = BADGES.map((b) => {
-      const existing = parsed.badges?.find((pb: Badge) => pb.id === b.id)
-      return existing || { ...b }
+    state.moments = MOMENTS.map((m) => {
+      const existing = parsed.moments?.find((pm: Moment) => pm.id === m.id)
+      return existing ?? { ...m }
     })
     return state
   } catch {
@@ -92,26 +65,32 @@ export function loadState(): GameState {
   }
 }
 
-export function saveState(state: GameState): void {
+export function saveState(state: GameState, userId: string): void {
   if (typeof window === "undefined") return
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    localStorage.setItem(storageKey(userId), JSON.stringify(state))
   } catch {
     // localStorage full or unavailable
   }
 }
 
-function isSameDay(date1: string, date2: string): boolean {
-  return date1.slice(0, 10) === date2.slice(0, 10)
+export function clearState(userId: string): void {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.removeItem(storageKey(userId))
+  } catch {
+    // noop
+  }
 }
 
-function isConsecutiveDay(prev: string, current: string): boolean {
-  const d1 = new Date(prev)
-  const d2 = new Date(current)
-  d1.setHours(0, 0, 0, 0)
-  d2.setHours(0, 0, 0, 0)
-  const diff = d2.getTime() - d1.getTime()
-  return diff > 0 && diff <= 86400000 // 1 day in ms
+// Remove any legacy unscoped key that might carry data from another user
+export function clearLegacyState(): void {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.removeItem("bhava-game-state")
+  } catch {
+    // noop
+  }
 }
 
 export function processCheckIn(
@@ -119,110 +98,62 @@ export function processCheckIn(
   emotionId: string,
   subEmotion: string,
   intensity: number,
-  completedActions: { id: string; points: number; category: string }[],
+  completedActions: { id: string; category: string }[],
   usedCrisisMode: boolean,
   contextTags: string[] = [],
-  journalNote: string = ""
+  journalNote: string = "",
+  userId?: string
 ): GameState {
   const now = new Date().toISOString()
   const today = now.slice(0, 10)
-  const pointsEarned = completedActions.reduce((sum, a) => sum + a.points, 0)
-
-  // Calculate streak
-  let newStreak = state.currentStreak
-  if (state.lastCheckInDate) {
-    if (isSameDay(state.lastCheckInDate, now)) {
-      // Same day, streak stays
-    } else if (isConsecutiveDay(state.lastCheckInDate, now)) {
-      newStreak += 1
-    } else {
-      newStreak = 1
-    }
-  } else {
-    newStreak = 1
-  }
 
   const newUniqueEmotions = state.uniqueEmotions.includes(emotionId)
     ? state.uniqueEmotions
     : [...state.uniqueEmotions, emotionId]
 
-  const socialCount =
-    state.socialActionsCompleted + completedActions.filter((a) => a.category === "social").length
-  const bodyCount =
-    state.bodyActionsCompleted + completedActions.filter((a) => a.category === "body").length
-  const mindfulCount =
-    state.mindfulActionsCompleted + completedActions.filter((a) => a.category === "mindful").length
+  const newCheckIn: CheckIn = {
+    date: today,
+    timestamp: now,
+    emotionId,
+    subEmotion,
+    intensity,
+    actionsCompleted: completedActions.map((a) => a.id),
+    usedCrisisMode,
+    contextTags,
+    journalNote,
+  }
 
   const newState: GameState = {
-    totalPoints: state.totalPoints + pointsEarned,
-    currentStreak: newStreak,
-    longestStreak: Math.max(state.longestStreak, newStreak),
     lastCheckInDate: now,
-    checkIns: [
-      ...state.checkIns,
-      {
-        date: today,
-        timestamp: now,
-        emotionId,
-        subEmotion,
-        intensity,
-        actionsCompleted: completedActions.map((a) => a.id),
-        pointsEarned,
-        usedCrisisMode,
-        contextTags,
-        journalNote,
-      },
-    ],
-    badges: state.badges,
+    checkIns: [...state.checkIns, newCheckIn],
+    moments: state.moments,
     uniqueEmotions: newUniqueEmotions,
     totalActionsCompleted: state.totalActionsCompleted + completedActions.length,
-    socialActionsCompleted: socialCount,
-    bodyActionsCompleted: bodyCount,
-    mindfulActionsCompleted: mindfulCount,
     usedCrisisMode: state.usedCrisisMode || usedCrisisMode,
     selectedRegion: state.selectedRegion,
   }
 
-  // Check badge unlocks
-  newState.badges = newState.badges.map((badge) => {
-    if (badge.unlocked) return badge
-    switch (badge.id) {
+  // Soft moment unlocks — gentle markers, not achievements
+  newState.moments = newState.moments.map((m) => {
+    if (m.unlocked) return m
+    switch (m.id) {
       case "first-check":
-        return { ...badge, unlocked: newState.checkIns.length >= 1 }
-      case "explorer":
-        return { ...badge, unlocked: newState.uniqueEmotions.length >= 3 }
-      case "streak-3":
-        return { ...badge, unlocked: newState.currentStreak >= 3 }
-      case "streak-7":
-        return { ...badge, unlocked: newState.currentStreak >= 7 }
-      case "action-hero":
-        return { ...badge, unlocked: newState.totalActionsCompleted >= 10 }
-      case "all-emotions":
-        return { ...badge, unlocked: newState.uniqueEmotions.length >= 6 }
-      case "crisis-calm":
-        return { ...badge, unlocked: newState.usedCrisisMode }
-      case "social-star":
-        return { ...badge, unlocked: newState.socialActionsCompleted >= 5 }
-      case "body-mover":
-        return { ...badge, unlocked: newState.bodyActionsCompleted >= 5 }
-      case "points-100":
-        return { ...badge, unlocked: newState.totalPoints >= 100 }
-      case "points-500":
-        return { ...badge, unlocked: newState.totalPoints >= 500 }
-      case "mindful-5":
-        return { ...badge, unlocked: newState.mindfulActionsCompleted >= 5 }
+        return { ...m, unlocked: newState.checkIns.length >= 1 }
+      case "named-ten":
+        return { ...m, unlocked: newState.checkIns.length >= 10 }
+      case "month-showing-up": {
+        const days = new Set(newState.checkIns.map((c) => c.date))
+        return { ...m, unlocked: days.size >= 30 }
+      }
       default:
-        return badge
+        return m
     }
   })
 
-  saveState(newState)
-
-  // Fire-and-forget Supabase sync (non-blocking)
-  const latestCheckIn = newState.checkIns[newState.checkIns.length - 1]
-  if (latestCheckIn) {
-    syncCheckIn(latestCheckIn, newState).catch(() => {
-      // Sync failures are non-critical; localStorage has the data
+  if (userId) {
+    saveState(newState, userId)
+    syncCheckIn(newCheckIn, newState).catch(() => {
+      // sync failures are non-critical
     })
   }
 
@@ -242,24 +173,23 @@ export function getMoodScore(emotionId: string): number {
 }
 
 export type MoodTrend = {
-  thisWeek: number      // 0–100 wellbeing score
+  thisWeek: number
   lastWeek: number
   thisMonth: number
   lastMonth: number
-  weekDelta: number     // % change vs previous period (can be negative)
+  weekDelta: number
   monthDelta: number
 }
 
 export function getMoodTrend(checkIns: CheckIn[]): MoodTrend | null {
   if (checkIns.length < 3) return null
-
   const now = Date.now()
   const DAY = 86400000
 
   function avgScore(items: CheckIn[]): number {
     if (items.length === 0) return 0
     const avg = items.reduce((sum, c) => sum + (MOOD_SCORES[c.emotionId] ?? 3), 0) / items.length
-    return Math.round(avg * 20) // maps 1–5 → 20–100
+    return Math.round(avg * 20)
   }
 
   const thisWeekItems  = checkIns.filter(c => now - new Date(c.date).getTime() <= 7  * DAY)

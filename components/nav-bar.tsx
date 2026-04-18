@@ -1,45 +1,33 @@
 "use client"
 
 import { useState } from "react"
-import { Flame, Home, BarChart3, Zap, LogOut, Palette, Brain, Trophy, Settings, Globe } from "lucide-react"
-import { getLevel } from "@/lib/game-store"
+import { Home, BarChart3, LogOut, Brain, Sparkles, Settings, Palette } from "lucide-react"
 import { signOut } from "@/lib/auth"
-import { getLanguageByCode } from "@/lib/languages"
 
 type NavBarProps = {
   activeScreen: string
   onNavigate: (screen: string) => void
-  streak: number
-  points: number
   displayName?: string
   avatarEmoji?: string
   onShowThemes?: () => void
   onShowSettings?: () => void
-  language?: string
-  onShowLanguage?: () => void
 }
 
 export function NavBar({
   activeScreen,
   onNavigate,
-  streak,
-  points,
   displayName,
   avatarEmoji = "🌸",
   onShowThemes,
   onShowSettings,
-  language = "en",
-  onShowLanguage,
 }: NavBarProps) {
   const [showMenu, setShowMenu] = useState(false)
-  const level = getLevel(points)
-  const langLabel = getLanguageByCode(language)?.nativeName ?? language.toUpperCase()
 
   const items = [
     { id: "home",     label: "Feel",     icon: Home },
     { id: "progress", label: "Journey",  icon: BarChart3 },
     { id: "patterns", label: "Patterns", icon: Brain },
-    { id: "badges",   label: "Badges",   icon: Trophy },
+    { id: "badges",   label: "Moments",  icon: Sparkles },
   ]
 
   async function handleSignOut() {
@@ -50,46 +38,8 @@ export function NavBar({
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50" aria-label="Main navigation">
       <div className="max-w-lg mx-auto">
-        {/* Stats bar */}
-        <div className="flex items-center justify-between px-4 py-2 bg-background/60 backdrop-blur-md">
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-game-coral/10">
-              <Zap size={14} className="text-game-coral" aria-hidden="true" />
-              <span className="text-xs font-bold text-game-coral">{points} pts</span>
-            </div>
-            {streak > 0 && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-game-teal/10">
-                <Flame size={14} className="text-game-teal" aria-hidden="true" />
-                <span className="text-xs font-bold text-game-teal">{streak}d</span>
-              </div>
-            )}
-            <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-primary/10">
-              <span className="text-xs" aria-hidden="true">{level.emoji}</span>
-              <span className="text-xs font-bold text-primary">{level.name}</span>
-            </div>
-            <button
-              onClick={() => { onShowThemes?.() }}
-              style={{ minHeight: 36 }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="Change app theme"
-            >
-              <Palette size={13} className="text-primary" aria-hidden="true" />
-              <span className="text-xs font-bold text-primary">Themes</span>
-            </button>
-
-            {/* Language toggle */}
-            <button
-              onClick={() => { onShowLanguage?.() }}
-              style={{ minHeight: 36 }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label={`Language: ${langLabel}. Tap to change.`}
-            >
-              <Globe size={13} className="text-primary" aria-hidden="true" />
-              <span className="text-xs font-bold text-primary">{langLabel}</span>
-            </button>
-          </div>
-
-          {/* Avatar / Profile menu */}
+        {/* Avatar row */}
+        <div className="flex items-center justify-end px-4 py-2 bg-background/60 backdrop-blur-md">
           <div className="relative">
             <button
               onClick={() => setShowMenu((s) => !s)}
@@ -111,6 +61,17 @@ export function NavBar({
                   <div className="px-3 py-2 text-sm text-muted-foreground font-medium border-b border-border mb-1">
                     Hi, {displayName}
                   </div>
+                )}
+                {onShowThemes && (
+                  <button
+                    onClick={() => { onShowThemes(); setShowMenu(false) }}
+                    role="menuitem"
+                    style={{ minHeight: 44 }}
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors cursor-pointer text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  >
+                    <Palette size={15} aria-hidden="true" />
+                    Theme
+                  </button>
                 )}
                 <button
                   onClick={() => { onShowSettings?.(); setShowMenu(false) }}

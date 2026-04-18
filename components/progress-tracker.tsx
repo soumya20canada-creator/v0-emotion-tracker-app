@@ -1,9 +1,8 @@
 "use client"
 
-import { type GameState, getLevel, getDailyGoal, getMoodTrend } from "@/lib/game-store"
+import { type GameState, getDailyGoal, getMoodTrend } from "@/lib/game-store"
 import { EMOTION_CATEGORIES } from "@/lib/emotions-data"
 import { MoodCalendar } from "@/components/mood-calendar"
-import { Flame, Trophy, TrendingUp, Target } from "lucide-react"
 
 const EMOTION_EMOJI: Record<string, string> = {
   joy: "😊", calm: "😌", sadness: "😔", anger: "😤", fear: "😰", surprise: "😕",
@@ -26,16 +25,10 @@ type ProgressTrackerProps = {
   displayName?: string
 }
 
-export function ProgressTracker({ gameState, onClose, displayName }: ProgressTrackerProps) {
-  const level = getLevel(gameState.totalPoints)
+export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
   const dailyGoal = getDailyGoal(gameState.checkIns)
   const quoteIndex = gameState.checkIns.length % MOTIVATIONAL_QUOTES.length
   const quote = MOTIVATIONAL_QUOTES[quoteIndex]
-
-  // XP progress to next level
-  const xpProgress = level.next
-    ? Math.round(((gameState.totalPoints - level.min) / (level.next - level.min)) * 100)
-    : 100
 
   // Weekly mood breakdown (last 7 days)
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7); weekAgo.setHours(0, 0, 0, 0)
@@ -51,7 +44,6 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
       cat: EMOTION_CATEGORIES.find(c => c.id === eid),
     }))
 
-  // Mood score trend
   const moodTrend = getMoodTrend(gameState.checkIns)
 
   return (
@@ -66,28 +58,6 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
       {/* Motivational quote */}
       <div className="p-4 rounded-2xl bg-primary/8 border border-primary/15 text-center">
         <p className="text-sm text-foreground italic leading-relaxed">"{quote}"</p>
-      </div>
-
-      {/* Level card */}
-      <div className="p-5 rounded-2xl bg-secondary border border-border">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{level.emoji}</span>
-            <div>
-              <p className="text-base font-bold text-foreground">{level.name}</p>
-              <p className="text-xs text-muted-foreground">{gameState.totalPoints} pts total</p>
-            </div>
-          </div>
-          {level.next && (
-            <p className="text-xs text-muted-foreground">{level.next - gameState.totalPoints} pts to {LEVEL_NAMES[level.next]}</p>
-          )}
-        </div>
-        <div className="w-full h-2.5 rounded-full bg-muted overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{ width: `${xpProgress}%`, background: "var(--primary)" }}
-          />
-        </div>
       </div>
 
       {/* Daily goal */}
@@ -111,31 +81,6 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
           <p className="text-xs text-muted-foreground mt-0.5">
             {dailyGoal.done >= dailyGoal.target ? "Done for today — well done 🌸" : "You've got this. We're here."}
           </p>
-        </div>
-      </div>
-
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="flex flex-col items-center p-4 rounded-2xl bg-secondary">
-          <div className="w-10 h-10 rounded-xl bg-game-coral/20 flex items-center justify-center">
-            <TrendingUp size={20} className="text-game-coral" />
-          </div>
-          <span className="text-3xl font-extrabold text-foreground mt-2">{gameState.totalPoints}</span>
-          <span className="text-xs text-muted-foreground text-center">Total pts</span>
-        </div>
-        <div className="flex flex-col items-center p-4 rounded-2xl bg-secondary">
-          <div className="w-10 h-10 rounded-xl bg-game-teal/20 flex items-center justify-center">
-            <Flame size={20} className="text-game-teal" />
-          </div>
-          <span className="text-3xl font-extrabold text-foreground mt-2">{gameState.currentStreak}</span>
-          <span className="text-xs text-muted-foreground text-center">Day streak</span>
-        </div>
-        <div className="flex flex-col items-center p-4 rounded-2xl bg-secondary">
-          <div className="w-10 h-10 rounded-xl bg-game-yellow/20 flex items-center justify-center">
-            <Target size={20} className="text-game-yellow" />
-          </div>
-          <span className="text-3xl font-extrabold text-foreground mt-2">{gameState.totalActionsCompleted}</span>
-          <span className="text-xs text-muted-foreground text-center">Moves done</span>
         </div>
       </div>
 
@@ -211,29 +156,6 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
         </div>
       )}
 
-      {/* Streak milestone messages */}
-      {gameState.currentStreak >= 3 && (
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-game-teal/10 border border-game-teal/20">
-          <Flame size={18} className="text-game-teal shrink-0" />
-          <p className="text-sm text-foreground">
-            {gameState.currentStreak >= 30
-              ? `${gameState.currentStreak} days of showing up for yourself. That's extraordinary. 🌳`
-              : gameState.currentStreak >= 14
-              ? `${gameState.currentStreak} days in a row — you're building something real. 🌺`
-              : gameState.currentStreak >= 7
-              ? `A full week of check-ins. Your nervous system is noticing. 🌸`
-              : `${gameState.currentStreak} days in a row — you're on your way. 🌿`}
-          </p>
-        </div>
-      )}
-
-      {gameState.longestStreak > gameState.currentStreak && gameState.longestStreak > 0 && (
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-game-yellow/10 border border-game-yellow/20">
-          <Trophy size={18} className="text-game-yellow" />
-          <span className="text-sm text-foreground">Your longest streak: <strong>{gameState.longestStreak} days</strong> — you've done it before, you can do it again.</span>
-        </div>
-      )}
-
       {/* Emotions explored */}
       <div>
         <h4 className="text-base font-bold text-foreground mb-3">Feelings explored</h4>
@@ -271,7 +193,7 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
                       {cat?.label}{checkin.subEmotion ? ` · ${checkin.subEmotion}` : ""}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {checkin.actionsCompleted.length} move{checkin.actionsCompleted.length !== 1 ? "s" : ""} · +{checkin.pointsEarned}pts
+                      {checkin.actionsCompleted.length} move{checkin.actionsCompleted.length !== 1 ? "s" : ""}
                     </p>
                     {checkin.journalNote && (
                       <p className="text-xs text-muted-foreground italic mt-0.5 leading-relaxed">"{checkin.journalNote}"</p>
@@ -287,5 +209,3 @@ export function ProgressTracker({ gameState, onClose, displayName }: ProgressTra
     </div>
   )
 }
-
-const LEVEL_NAMES: Record<number, string> = { 100: "Sprout", 300: "Bloom", 700: "Garden", 1500: "Forest" }

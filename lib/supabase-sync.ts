@@ -1,18 +1,15 @@
 // Supabase sync layer
-// localStorage remains the fast source of truth; Supabase is the durable cloud backup
-// Uses authenticated user IDs from Supabase Auth
+// localStorage remains the fast source of truth; Supabase is the durable cloud backup.
+// Writes on every check-in; reads once at login via hydrateFromSupabase().
 
 import { supabase } from "./supabase"
+import { MOMENTS } from "./emotions-data"
 import type { CheckIn, GameState } from "./game-store"
 
-async function getAuthUserId(): Promise<string | null> {
-  const { data } = await supabase.auth.getUser()
-  return data.user?.id ?? null
-}
-
-export async function syncCheckIn(checkIn: CheckIn, gameState: GameState): Promise<void> {
+export async function syncCheckIn(checkIn: CheckIn, _gameState: GameState): Promise<void> {
   try {
-    const userId = await getAuthUserId()
+    const { data } = await supabase.auth.getUser()
+    const userId = data.user?.id
     if (!userId) return
 
     await supabase.from("mood_entries").insert([{
@@ -23,36 +20,75 @@ export async function syncCheckIn(checkIn: CheckIn, gameState: GameState): Promi
       context_tags: checkIn.contextTags,
       journal_note: checkIn.journalNote,
       actions_completed: checkIn.actionsCompleted,
-      points_earned: checkIn.pointsEarned,
-      created_at: new Date().toISOString(),
+      created_at: checkIn.timestamp ?? new Date().toISOString(),
     }])
-
-    await supabase.from("app_users")
-      .upsert({ id: userId, streak_count: gameState.currentStreak, last_active: new Date().toISOString() })
-      .eq("id", userId)
-
-    await syncBadges(userId, gameState)
   } catch (err) {
     console.error("[bhava] syncCheckIn failed:", err)
   }
 }
 
-async function syncBadges(userId: string, gameState: GameState): Promise<void> {
+type MoodEntryRow = {
+  emotion: string
+  sub_emotion: string | null
+  intensity: number | null
+  context_tags: string[] | null
+  journal_note: string | null
+  actions_completed: string[] | null
+  created_at: string
+}
+
+export async function hydrateFromSupabase(userId: string): Promise<GameState | null> {
   try {
-    const unlockedBadges = gameState.badges.filter((b) => b.unlocked)
-    if (unlockedBadges.length === 0) return
-    const { data: existing } = await supabase
-      .from("badge_progress")
-      .select("badge_name")
+    const { data, error } = await supabase
+      .from("mood_entries")
+      .select("emotion, sub_emotion, intensity, context_tags, journal_note, actions_completed, created_at")
       .eq("user_id", userId)
-    const existingNames = new Set((existing || []).map((b: { badge_name: string }) => b.badge_name))
-    const newBadges = unlockedBadges
-      .filter((b) => !existingNames.has(b.name))
-      .map((b) => ({ user_id: userId, badge_name: b.name, level: 1 }))
-    if (newBadges.length > 0) {
-      await supabase.from("badge_progress").insert(newBadges)
+      .order("created_at", { ascending: true })
+
+    if (error) {
+      console.error("[bhava] hydrateFromSupabase failed:", error)
+      return null
+    }
+
+    const rows = (data ?? []) as MoodEntryRow[]
+
+    const checkIns: CheckIn[] = rows.map((r) => ({
+      date: r.created_at.slice(0, 10),
+      timestamp: r.created_at,
+      emotionId: r.emotion,
+      subEmotion: r.sub_emotion ?? "",
+      intensity: r.intensity ?? 3,
+      actionsCompleted: r.actions_completed ?? [],
+      usedCrisisMode: false,
+      contextTags: r.context_tags ?? [],
+      journalNote: r.journal_note ?? "",
+    }))
+
+    const uniqueEmotions = Array.from(new Set(checkIns.map((c) => c.emotionId)))
+    const uniqueDays = new Set(checkIns.map((c) => c.date))
+    const totalActions = checkIns.reduce((sum, c) => sum + c.actionsCompleted.length, 0)
+    const lastCheckInDate = checkIns.length > 0 ? checkIns[checkIns.length - 1].timestamp ?? null : null
+
+    const moments = MOMENTS.map((m) => {
+      switch (m.id) {
+        case "first-check":       return { ...m, unlocked: checkIns.length >= 1 }
+        case "named-ten":         return { ...m, unlocked: checkIns.length >= 10 }
+        case "month-showing-up":  return { ...m, unlocked: uniqueDays.size >= 30 }
+        default:                  return { ...m }
+      }
+    })
+
+    return {
+      lastCheckInDate,
+      checkIns,
+      moments,
+      uniqueEmotions,
+      totalActionsCompleted: totalActions,
+      usedCrisisMode: false,
+      selectedRegion: null,
     }
   } catch (err) {
-    console.error("[bhava] syncBadges failed:", err)
+    console.error("[bhava] hydrateFromSupabase threw:", err)
+    return null
   }
 }

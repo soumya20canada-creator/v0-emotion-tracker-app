@@ -53,6 +53,11 @@ export async function updatePassword(newPassword: string): Promise<{ error: stri
   return { error: error?.message ?? null }
 }
 
+export async function updateEmail(email: string): Promise<{ error: string | null }> {
+  const { error } = await supabase.auth.updateUser({ email })
+  return { error: error?.message ?? null }
+}
+
 export function onAuthStateChange(
   callback: (user: User | null) => void
 ): () => void {

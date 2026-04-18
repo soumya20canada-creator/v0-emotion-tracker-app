@@ -1,45 +1,21 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import {
-  Star,
-  Compass,
-  Flame,
-  Trophy,
-  Zap,
-  Shield,
-  Heart,
-  Dumbbell,
-  Award,
-  Crown,
-  Brain,
-  Rainbow,
-} from "lucide-react"
-import type { Badge } from "@/lib/emotions-data"
+import { Star, Sparkles, Heart, Moon } from "lucide-react"
+import type { Moment } from "@/lib/emotions-data"
 
 const BADGE_ICON_MAP: Record<string, React.ElementType> = {
-  Star,
-  Compass,
-  Flame,
-  Trophy,
-  Zap,
-  Rainbow,
-  Shield,
-  Heart,
-  Dumbbell,
-  Award,
-  Crown,
-  Brain,
+  Star, Sparkles, Heart, Moon,
 }
 
 type BadgePopupProps = {
-  badge: Badge
+  badge: Moment
   onDone: () => void
 }
 
 export function BadgePopup({ badge, onDone }: BadgePopupProps) {
   const [show, setShow] = useState(true)
-  const Icon = BADGE_ICON_MAP[badge.icon] || Star
+  const Icon = BADGE_ICON_MAP[badge.icon] || Sparkles
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -56,16 +32,15 @@ export function BadgePopup({ badge, onDone }: BadgePopupProps) {
       <div
         className="flex flex-col items-center gap-4 p-8 rounded-3xl bg-card shadow-xl animate-in zoom-in-75 duration-500"
         role="alert"
-        aria-label={`Badge unlocked: ${badge.name}`}
+        aria-label={`Moment: ${badge.name}`}
       >
-        <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-primary">
-          <Icon size={32} style={{ color: "#FFF" }} />
+        <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-primary/15">
+          <Icon size={32} className="text-primary" />
         </div>
-        <p className="text-xl font-extrabold text-foreground">Badge Unlocked!</p>
         <p className="text-lg font-bold" style={{ color: "var(--primary)" }}>
           {badge.name}
         </p>
-        <p className="text-base text-muted-foreground text-center max-w-[240px]">
+        <p className="text-base text-muted-foreground text-center max-w-[280px] leading-relaxed">
           {badge.description}
         </p>
         <button
@@ -76,7 +51,7 @@ export function BadgePopup({ badge, onDone }: BadgePopupProps) {
           className="px-6 py-2 rounded-xl text-sm font-bold bg-primary cursor-pointer hover:scale-105 active:scale-95 transition-transform"
           style={{ color: "#FFF" }}
         >
-          Awesome!
+          Thank you
         </button>
       </div>
     </div>

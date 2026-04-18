@@ -19,14 +19,16 @@ export type MicroAction = {
   researchBasis?: string
 }
 
-export type Badge = {
+export type Moment = {
   id: string
   name: string
   description: string
   icon: string
-  requirement: string
   unlocked: boolean
 }
+
+// Kept for backward compatibility while we migrate UI
+export type Badge = Moment
 
 export const EMOTION_CATEGORIES: EmotionCategory[] = [
   {
@@ -199,20 +201,14 @@ export const MICRO_ACTIONS: Record<string, { low: MicroAction[]; medium: MicroAc
   },
 }
 
-export const BADGES: Badge[] = [
-  { id: "first-check", name: "First Check-In", description: "Complete your first emotion check-in", icon: "Star", requirement: "1 check-in", unlocked: false },
-  { id: "explorer", name: "Emotion Explorer", description: "Check in with 3 different emotions", icon: "Compass", requirement: "3 unique emotions", unlocked: false },
-  { id: "streak-3", name: "3-Day Streak", description: "Check in 3 days in a row", icon: "Flame", requirement: "3-day streak", unlocked: false },
-  { id: "streak-7", name: "Week Warrior", description: "Check in 7 days in a row", icon: "Trophy", requirement: "7-day streak", unlocked: false },
-  { id: "action-hero", name: "Action Hero", description: "Complete 10 micro-actions", icon: "Zap", requirement: "10 actions", unlocked: false },
-  { id: "all-emotions", name: "Full Spectrum", description: "Experience all 6 emotion categories", icon: "Rainbow", requirement: "All 6 emotions", unlocked: false },
-  { id: "crisis-calm", name: "Storm Surfer", description: "Use crisis mode tools and come through", icon: "Shield", requirement: "Use crisis mode", unlocked: false },
-  { id: "social-star", name: "Social Star", description: "Complete 5 social micro-actions", icon: "Heart", requirement: "5 social actions", unlocked: false },
-  { id: "body-mover", name: "Body Mover", description: "Complete 5 body micro-actions", icon: "Dumbbell", requirement: "5 body actions", unlocked: false },
-  { id: "points-100", name: "Century Club", description: "Earn 100 total points", icon: "Award", requirement: "100 points", unlocked: false },
-  { id: "points-500", name: "High Scorer", description: "Earn 500 total points", icon: "Crown", requirement: "500 points", unlocked: false },
-  { id: "mindful-5", name: "Mindful Maven", description: "Complete 5 mindful micro-actions", icon: "Brain", requirement: "5 mindful actions", unlocked: false },
+export const MOMENTS: Moment[] = [
+  { id: "first-check", name: "Your first moment", description: "You showed up and named what you were feeling. That takes courage.", icon: "Sparkles", unlocked: false },
+  { id: "named-ten", name: "Ten feelings named", description: "You've sat with ten moments now — each one a small act of care for yourself.", icon: "Heart", unlocked: false },
+  { id: "month-showing-up", name: "A month of showing up", description: "Thirty days of checking in. Quiet, steady, yours.", icon: "Moon", unlocked: false },
 ]
+
+// Backward-compat alias for any lingering imports
+export const BADGES = MOMENTS
 
 export type IntensityOption = {
   level: number

@@ -43,9 +43,9 @@ export function ActionCards({ actions, emotion, onComplete, completedIds }: Acti
   return (
     <div className="flex flex-col gap-3 w-full max-w-md mx-auto">
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-extrabold text-foreground">Your Moves</h3>
-        <span className="text-sm font-bold px-3 py-1.5 rounded-full" style={{ background: `${emotion.color}15`, color: emotion.color }}>
-          {completedIds.length}/{actions.length} done
+        <h3 className="text-2xl font-extrabold text-foreground">Try one</h3>
+        <span className="text-sm text-muted-foreground">
+          {completedIds.length > 0 ? `${completedIds.length} done` : `${actions.length} to choose from`}
         </span>
       </div>
       {actions.map((action) => {
@@ -89,12 +89,6 @@ export function ActionCards({ actions, emotion, onComplete, completedIds }: Acti
                   <span className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Clock size={14} aria-hidden="true" />
                     {action.timeMinutes}min
-                  </span>
-                  <span
-                    className="text-sm font-bold px-2.5 py-0.5 rounded-full"
-                    style={{ background: `${emotion.color}15`, color: emotion.color }}
-                  >
-                    +{action.points}pts
                   </span>
                   <span className="text-sm text-muted-foreground capitalize">
                     {CATEGORY_LABELS[action.category]}

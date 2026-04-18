@@ -1,5 +1,5 @@
 export type ThemeId =
-  | "default" | "ocean" | "forest" | "sunset" | "lavender"
+  | "default" | "ocean" | "forest" | "sunset"
   | "midnight" | "nebula" | "ember" | "aurora" | "rose-noir"
 
 export type Theme = {
@@ -105,30 +105,6 @@ export const THEMES: Theme[] = [
       "--ring": "#EA580C",
     },
   },
-  {
-    id: "lavender",
-    name: "Lavender",
-    emoji: "💜",
-    description: "Soft & dreamy",
-    vars: {
-      "--background": "#FAF5FF",
-      "--foreground": "#3B0764",
-      "--card": "#F3E8FF",
-      "--card-foreground": "#3B0764",
-      "--primary": "#7C3AED",
-      "--primary-foreground": "#FFFFFF",
-      "--secondary": "#E9D5FF",
-      "--secondary-foreground": "#3B0764",
-      "--muted": "#F3E8FF",
-      "--muted-foreground": "#6D28D9",
-      "--accent": "#DB2777",
-      "--accent-foreground": "#FFFFFF",
-      "--border": "#E9D5FF",
-      "--input": "#E9D5FF",
-      "--ring": "#7C3AED",
-    },
-  },
-
   // ── Dark ──────────────────────────────────────────────────────
   {
     id: "midnight",

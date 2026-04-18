@@ -8,7 +8,6 @@ import { ActionCards } from "@/components/action-cards"
 import { CrisisGames } from "@/components/crisis-games"
 import { ProgressTracker } from "@/components/progress-tracker"
 import { NavBar } from "@/components/nav-bar"
-import { PointPopup } from "@/components/point-popup"
 import { BadgePopup } from "@/components/badge-popup"
 import { AppLogo } from "@/components/app-logo"
 import { LocationPicker } from "@/components/location-picker"
@@ -27,6 +26,7 @@ import { AccountSettings } from "@/components/account-settings"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { AcknowledgmentScreen } from "@/components/acknowledgment-screen"
 import { PathChooser } from "@/components/path-chooser"
+import { ThemeHeader } from "@/components/theme-header"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -38,17 +38,20 @@ import {
   type GameState,
   loadState,
   saveState,
+  clearState,
+  clearLegacyState,
   processCheckIn,
 } from "@/lib/game-store"
+import { hydrateFromSupabase } from "@/lib/supabase-sync"
 import { getSession, onAuthStateChange, onPasswordRecovery, updatePassword } from "@/lib/auth"
 import { getProfile, createProfile, updateProfile, saveOnboardingSession, type Profile } from "@/lib/profile"
 import { applyTheme } from "@/lib/themes"
 import { getRegionById } from "@/lib/crisis-resources"
-import type { Badge } from "@/lib/emotions-data"
+import type { Moment } from "@/lib/emotions-data"
 import type { ThemeId } from "@/lib/themes"
 import type { OnboardingSession, PathChoice } from "@/lib/onboarding-data"
 import { countryToRegionId, situationToContextTags } from "@/lib/onboarding-data"
-import { ArrowLeft, Sparkles, X, Lock, Info, Eye, EyeOff } from "lucide-react"
+import { ArrowLeft, X, Lock, Info, Eye, EyeOff } from "lucide-react"
 
 type Screen = "home" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
 
@@ -80,16 +83,16 @@ export default function BhavaApp() {
   const [actions, setActions] = useState<MicroAction[]>([])
   const [completedActionIds, setCompletedActionIds] = useState<string[]>([])
   const [gameState, setGameState] = useState<GameState | null>(null)
-  const [pointPopup, setPointPopup] = useState<{ points: number; color: string } | null>(null)
-  const [badgePopup, setBadgePopup] = useState<Badge | null>(null)
+  const [momentPopup, setMomentPopup] = useState<Moment | null>(null)
   const [showCrisis, setShowCrisis] = useState(false)
   const [isNewUser, setIsNewUser] = useState(false)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
   const [showPasswordReset, setShowPasswordReset] = useState(false)
-  const badgeQueueRef = useRef<Badge[]>([])
+  const momentQueueRef = useRef<Moment[]>([])
 
   // Auth check on mount
   useEffect(() => {
+    clearLegacyState()
     getSession().then((session) => {
       if (session?.user) {
         getProfile(session.user.id).then(async (p) => {
@@ -128,7 +131,10 @@ export default function BhavaApp() {
     })
     const unsub = onAuthStateChange((user) => {
       if (!user) {
-        setProfile(null)
+        setProfile((prev) => {
+          if (prev) clearState(prev.id)
+          return null
+        })
         setGameState(null)
         setShowOnboarding(false)
         setLastOnboardingSession(null)
@@ -139,14 +145,29 @@ export default function BhavaApp() {
   }, [])
 
   useEffect(() => {
-    if (profile) setGameState(loadState())
+    if (!profile) return
+    let cancelled = false
+    const local = loadState(profile.id)
+    setGameState(local)
+    hydrateFromSupabase(profile.id).then((remote) => {
+      if (cancelled || !remote) return
+      // Supabase is the source of truth for checkIns + derived fields.
+      // Preserve local-only UI state (selectedRegion) if set.
+      const merged: GameState = {
+        ...remote,
+        selectedRegion: local.selectedRegion ?? remote.selectedRegion,
+      }
+      setGameState(merged)
+      saveState(merged, profile.id)
+    })
+    return () => { cancelled = true }
   }, [profile])
 
   const handleAuthenticated = useCallback((p: Profile, newUser: boolean) => {
     setProfile(p)
     setCurrentTheme(p.color_theme)
     applyTheme(p.color_theme)
-    setGameState(loadState())
+    setGameState(loadState(p.id))
     setIsNewUser(newUser || !p.onboarding_completed)
     setIsFirstTimeUser(!p.onboarding_completed)
     setShowOnboarding(true)
@@ -219,57 +240,55 @@ export default function BhavaApp() {
     setScreen("actions")
   }, [selectedEmotion, intensity])
 
-  const showNextBadge = useCallback(() => {
-    if (badgeQueueRef.current.length > 0) {
-      setBadgePopup(badgeQueueRef.current.shift()!)
+  const showNextMoment = useCallback(() => {
+    if (momentQueueRef.current.length > 0) {
+      setMomentPopup(momentQueueRef.current.shift()!)
     }
   }, [])
 
   const handleActionComplete = useCallback((action: MicroAction) => {
-    if (!selectedEmotion || !gameState) return
+    if (!selectedEmotion || !gameState || !profile) return
     setCompletedActionIds((prev) => [...prev, action.id])
-    setPointPopup({ points: action.points, color: selectedEmotion.color })
     const subLabel = subEmotions.length > 0 ? subEmotions.join(", ") : selectedEmotion.label
     const newState = processCheckIn(
       gameState, selectedEmotion.id, subLabel, intensity,
-      [{ id: action.id, points: action.points, category: action.category }],
-      showCrisis, contextTags, journalNote
+      [{ id: action.id, category: action.category }],
+      showCrisis, contextTags, journalNote, profile.id
     )
-    const newlyUnlocked = newState.badges.filter(
-      (b) => b.unlocked && !gameState.badges.find((ob) => ob.id === b.id && ob.unlocked)
+    const newlyUnlocked = newState.moments.filter(
+      (m) => m.unlocked && !gameState.moments.find((om) => om.id === m.id && om.unlocked)
     )
     setGameState(newState)
     if (newlyUnlocked.length > 0) {
-      badgeQueueRef.current.push(...newlyUnlocked)
-      setTimeout(showNextBadge, 1400)
+      momentQueueRef.current.push(...newlyUnlocked)
+      setTimeout(showNextMoment, 1400)
     }
-  }, [selectedEmotion, gameState, subEmotions, intensity, showCrisis, showNextBadge, contextTags, journalNote])
+  }, [selectedEmotion, gameState, profile, subEmotions, intensity, showCrisis, showNextMoment, contextTags, journalNote])
 
   const handleCrisisComplete = useCallback(() => {
-    if (!selectedEmotion || !gameState) return
-    setPointPopup({ points: 25, color: selectedEmotion.color })
+    if (!selectedEmotion || !gameState || !profile) return
     const subLabel = subEmotions.length > 0 ? subEmotions.join(", ") : selectedEmotion.label
     const newState = processCheckIn(
       gameState, selectedEmotion.id, subLabel, intensity,
-      [{ id: "crisis-game", points: 25, category: "mindful" }],
-      true, contextTags, journalNote
+      [{ id: "crisis-game", category: "mindful" }],
+      true, contextTags, journalNote, profile.id
     )
-    const newlyUnlocked = newState.badges.filter(
-      (b) => b.unlocked && !gameState.badges.find((ob) => ob.id === b.id && ob.unlocked)
+    const newlyUnlocked = newState.moments.filter(
+      (m) => m.unlocked && !gameState.moments.find((om) => om.id === m.id && om.unlocked)
     )
     setGameState(newState)
     if (newlyUnlocked.length > 0) {
-      badgeQueueRef.current.push(...newlyUnlocked)
-      setTimeout(showNextBadge, 1400)
+      momentQueueRef.current.push(...newlyUnlocked)
+      setTimeout(showNextMoment, 1400)
     }
-  }, [selectedEmotion, gameState, subEmotions, intensity, showNextBadge, contextTags, journalNote])
+  }, [selectedEmotion, gameState, profile, subEmotions, intensity, showNextMoment, contextTags, journalNote])
 
   const handleRegionSelect = useCallback((regionId: string) => {
-    if (!gameState) return
+    if (!gameState || !profile) return
     const updated = { ...gameState, selectedRegion: regionId }
     setGameState(updated)
-    saveState(updated)
-  }, [gameState])
+    saveState(updated, profile.id)
+  }, [gameState, profile])
 
   const handlePathChoice = useCallback((path: PathChoice) => {
     setShowPathChooser(false)
@@ -297,7 +316,7 @@ export default function BhavaApp() {
         const regionId = countryToRegionId(profile.country)
         const updated = { ...gameState, selectedRegion: regionId }
         setGameState(updated)
-        saveState(updated)
+        saveState(updated, profile.id)
       }
       setShowSupportView(true)
     }
@@ -334,17 +353,25 @@ export default function BhavaApp() {
 
   // Auth gate
   if (!profile) {
-    return <AuthGate onAuthenticated={handleAuthenticated} />
+    return (
+      <div className="min-h-dvh bg-background">
+        <ThemeHeader onThemeChange={(id) => setCurrentTheme(id)} />
+        <AuthGate onAuthenticated={handleAuthenticated} />
+      </div>
+    )
   }
 
   // Onboarding
   if (showOnboarding) {
     return (
-      <OnboardingFlow
-        isNewUser={isFirstTimeUser}
-        onComplete={handleOnboardingComplete}
-        onSkip={handleOnboardingSkip}
-      />
+      <div className="min-h-dvh bg-background">
+        <ThemeHeader onThemeChange={(id) => setCurrentTheme(id)} />
+        <OnboardingFlow
+          isNewUser={isFirstTimeUser}
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      </div>
     )
   }
 
@@ -485,10 +512,6 @@ export default function BhavaApp() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10">
-              <Sparkles size={14} className="text-primary" aria-hidden="true" />
-              <span className="text-sm font-bold text-primary">{gameState.totalPoints}</span>
-            </div>
             <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
           </div>
         </div>
@@ -525,18 +548,10 @@ export default function BhavaApp() {
                     </p>
                     <p className="text-sm text-muted-foreground mt-0.5">
                       {checkedInToday
-                        ? `${gameState.currentStreak}-day streak. Keep going.`
+                        ? "You showed up today. That's enough."
                         : "It takes 30 seconds. You are worth it."}
                     </p>
                   </div>
-                  {checkedInToday && gameState.currentStreak > 1 && (
-                    <div className="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold"
-                      style={{ background: "#F59E0B20", color: "#F59E0B" }}
-                      aria-label={`${gameState.currentStreak} day streak`}
-                    >
-                      {gameState.currentStreak}d
-                    </div>
-                  )}
                 </div>
               )
             })()}
@@ -770,11 +785,8 @@ export default function BhavaApp() {
       {/* Ambient music */}
       <MusicPlayer emotionId={selectedEmotion?.id ?? null} accentColor={selectedEmotion?.color} />
 
-      {/* Point popup */}
-      {pointPopup && <PointPopup points={pointPopup.points} color={pointPopup.color} onDone={() => setPointPopup(null)} />}
-
-      {/* Badge popup */}
-      {badgePopup && <BadgePopup badge={badgePopup} onDone={() => { setBadgePopup(null); showNextBadge() }} />}
+      {/* Soft moment popup */}
+      {momentPopup && <BadgePopup badge={momentPopup} onDone={() => { setMomentPopup(null); showNextMoment() }} />}
 
       {/* Theme picker modal */}
       {showThemePicker && (
@@ -824,8 +836,6 @@ export default function BhavaApp() {
       <NavBar
         activeScreen={screen === "progress" ? "progress" : screen === "badges" ? "badges" : screen === "patterns" ? "patterns" : "home"}
         onNavigate={handleNavigate}
-        streak={gameState.currentStreak}
-        points={gameState.totalPoints}
         displayName={greetingName}
         avatarEmoji={profile.avatar_emoji}
         onShowThemes={() => setShowThemePicker(true)}

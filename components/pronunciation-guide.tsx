@@ -14,13 +14,32 @@ export function PronunciationGuide({ size = "md" }: PronunciationGuideProps) {
     if (!("speechSynthesis" in window)) return
     window.speechSynthesis.cancel()
     setPlaying(true)
-    const utterance = new SpeechSynthesisUtterance("Bhava")
-    utterance.lang = "hi-IN"
-    utterance.rate = 0.8
-    utterance.pitch = 1
-    utterance.onend = () => setPlaying(false)
-    utterance.onerror = () => setPlaying(false)
-    window.speechSynthesis.speak(utterance)
+
+    function doSpeak() {
+      const voices = window.speechSynthesis.getVoices()
+      const preferred =
+        voices.find((v) => v.lang === "hi-IN" && v.name.includes("Google")) ??
+        voices.find((v) => v.lang === "hi-IN") ??
+        voices.find((v) => v.lang.startsWith("hi")) ??
+        null
+      const utterance = new SpeechSynthesisUtterance("Bhava")
+      utterance.lang = "hi-IN"
+      utterance.rate = 0.75
+      utterance.pitch = 1.1
+      if (preferred) utterance.voice = preferred
+      utterance.onend = () => setPlaying(false)
+      utterance.onerror = () => setPlaying(false)
+      window.speechSynthesis.speak(utterance)
+    }
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.onvoiceschanged = null
+        doSpeak()
+      }
+    } else {
+      doSpeak()
+    }
   }, [])
 
   const guideClass = size === "sm"
