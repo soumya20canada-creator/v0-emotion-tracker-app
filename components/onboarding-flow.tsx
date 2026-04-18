@@ -115,6 +115,16 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
           <fieldset className="flex flex-col gap-8 border-none p-0 m-0">
             <legend className="sr-only">Your background and identity</legend>
 
+            {/* Intro */}
+            <section aria-labelledby="intro-heading" className="p-5 rounded-2xl border border-border bg-secondary/40">
+              <h2 id="intro-heading" className="text-lg font-bold text-foreground mb-2">
+                A gentle space to feel seen.
+              </h2>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Bhava helps you notice what you're feeling and try small things that might help. A few soft questions first — skip anything, take your time.
+              </p>
+            </section>
+
             {/* Country */}
             <section aria-labelledby="country-heading">
               <h2 id="country-heading" className="text-2xl font-bold text-foreground mb-1">

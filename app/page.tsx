@@ -22,14 +22,15 @@ import { HowItWorks } from "@/components/how-it-works"
 import { EmotionDescribe } from "@/components/emotion-describe"
 import { BadgesPage } from "@/components/badges-page"
 import { PatternsPage } from "@/components/patterns-page"
-import { LanguagePopup } from "@/components/language-popup"
 import { OnboardingFlow } from "@/components/onboarding-flow"
 import { AccountSettings } from "@/components/account-settings"
-import { PersonalizedResources } from "@/components/personalized-resources"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
+import { AcknowledgmentScreen } from "@/components/acknowledgment-screen"
+import { PathChooser } from "@/components/path-chooser"
 import {
   type EmotionCategory,
   type MicroAction,
+  EMOTION_CATEGORIES,
   INTENSITY_OPTIONS,
   getActionsForEmotion,
 } from "@/lib/emotions-data"
@@ -45,8 +46,8 @@ import { applyTheme } from "@/lib/themes"
 import { getRegionById } from "@/lib/crisis-resources"
 import type { Badge } from "@/lib/emotions-data"
 import type { ThemeId } from "@/lib/themes"
-import { hasSelectedLanguage, getSavedLanguage, saveLanguage } from "@/lib/languages"
-import type { OnboardingSession } from "@/lib/onboarding-data"
+import type { OnboardingSession, PathChoice } from "@/lib/onboarding-data"
+import { countryToRegionId, situationToContextTags } from "@/lib/onboarding-data"
 import { ArrowLeft, Sparkles, X, Lock, Info, Eye, EyeOff } from "lucide-react"
 
 type Screen = "home" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
@@ -57,15 +58,15 @@ export default function BhavaApp() {
   const [showThemePicker, setShowThemePicker] = useState(false)
   const [currentTheme, setCurrentTheme] = useState("default")
 
-  // Language state
-  const [langReady, setLangReady] = useState(false)
-  const [showLangPopup, setShowLangPopup] = useState(false)
-  const [currentLanguage, setCurrentLanguage] = useState("en")
-
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false)
   const [lastOnboardingSession, setLastOnboardingSession] = useState<OnboardingSession | null>(null)
+
+  // Post-onboarding flow state
+  const [showAcknowledgment, setShowAcknowledgment] = useState(false)
+  const [showPathChooser, setShowPathChooser] = useState(false)
+  const [showSupportView, setShowSupportView] = useState(false)
 
   // App settings
   const [showSettings, setShowSettings] = useState(false)
@@ -87,16 +88,7 @@ export default function BhavaApp() {
   const [showPasswordReset, setShowPasswordReset] = useState(false)
   const badgeQueueRef = useRef<Badge[]>([])
 
-  // 1. Check language selection on mount
-  useEffect(() => {
-    const hasLang = hasSelectedLanguage()
-    const savedLang = getSavedLanguage()
-    setCurrentLanguage(savedLang)
-    setShowLangPopup(!hasLang)
-    setLangReady(true)
-  }, [])
-
-  // 2. Auth check on mount
+  // Auth check on mount
   useEffect(() => {
     getSession().then((session) => {
       if (session?.user) {
@@ -150,13 +142,6 @@ export default function BhavaApp() {
     if (profile) setGameState(loadState())
   }, [profile])
 
-  const handleLanguageSelect = useCallback((code: string) => {
-    setCurrentLanguage(code)
-    saveLanguage(code)
-    setShowLangPopup(false)
-    if (profile) updateProfile(profile.id, { language: code })
-  }, [profile])
-
   const handleAuthenticated = useCallback((p: Profile, newUser: boolean) => {
     setProfile(p)
     setCurrentTheme(p.color_theme)
@@ -176,13 +161,12 @@ export default function BhavaApp() {
   ) => {
     setLastOnboardingSession(session)
     setShowOnboarding(false)
+    setShowAcknowledgment(true)
 
     if (!profile) return
 
-    // Save onboarding session to Supabase
     await saveOnboardingSession(profile.id, session)
 
-    // Update profile fields
     const profileUpdates: Partial<Profile> = { onboarding_completed: true }
     if (country) profileUpdates.country = country
     if (identity) profileUpdates.identity_selections = identity
@@ -287,6 +271,38 @@ export default function BhavaApp() {
     saveState(updated)
   }, [gameState])
 
+  const handlePathChoice = useCallback((path: PathChoice) => {
+    setShowPathChooser(false)
+    if (path === "wheel" || path === "look-around") {
+      setScreen("home")
+      return
+    }
+    if (path === "quick-actions") {
+      const calm = EMOTION_CATEGORIES.find((e) => e.id === "calm")!
+      setSelectedEmotion(calm)
+      setSubEmotions([])
+      setContextTags([])
+      setJournalNote("")
+      setIntensity(3)
+      const a = getActionsForEmotion(calm.id, 3)
+      setActions(a)
+      setCompletedActionIds([])
+      setShowCrisis(false)
+      setScreen("actions")
+      return
+    }
+    if (path === "support") {
+      // Auto-map country → region if not already set
+      if (profile?.country && gameState && !gameState.selectedRegion) {
+        const regionId = countryToRegionId(profile.country)
+        const updated = { ...gameState, selectedRegion: regionId }
+        setGameState(updated)
+        saveState(updated)
+      }
+      setShowSupportView(true)
+    }
+  }, [profile, gameState])
+
   const handleReset = useCallback(() => {
     setSelectedEmotion(null)
     setSubEmotions([])
@@ -307,18 +323,13 @@ export default function BhavaApp() {
   }, [handleReset])
 
   // Loading
-  if (!langReady || !authReady) {
+  if (!authReady) {
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center gap-4 bg-background">
         <AppLogo size={48} />
         <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" aria-label="Loading" role="status" />
       </div>
     )
-  }
-
-  // Language popup (shown before everything else when first visit)
-  if (showLangPopup) {
-    return <LanguagePopup onSelect={handleLanguageSelect} />
   }
 
   // Auth gate
@@ -358,8 +369,82 @@ export default function BhavaApp() {
   }
 
   const greetingName = profile.first_name ?? profile.display_name ?? profile.username ?? "friend"
-  const supportPrefs = lastOnboardingSession?.support_preferences ?? []
-  const country = profile.country ?? null
+
+  // Post-onboarding: acknowledgment → path chooser → chosen path
+  if (showAcknowledgment) {
+    return (
+      <AcknowledgmentScreen
+        firstName={greetingName}
+        country={profile.country}
+        session={lastOnboardingSession}
+        onContinue={() => {
+          setShowAcknowledgment(false)
+          setShowPathChooser(true)
+        }}
+      />
+    )
+  }
+
+  if (showPathChooser) {
+    return (
+      <PathChooser
+        supportPreferences={lastOnboardingSession?.support_preferences ?? []}
+        onChoose={handlePathChoice}
+      />
+    )
+  }
+
+  if (showSupportView) {
+    const regionData = gameState.selectedRegion ? getRegionById(gameState.selectedRegion) : null
+    return (
+      <main className="min-h-dvh bg-background pb-16">
+        <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+          <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => { setShowSupportView(false); setScreen("home") }}
+                style={{ minWidth: 44, minHeight: 44 }}
+                className="rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label="Go back"
+              >
+                <ArrowLeft size={20} className="text-foreground" />
+              </button>
+              <AppLogo size={32} />
+            </div>
+            <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
+          </div>
+        </header>
+        <div className="max-w-lg mx-auto px-5 py-8 flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-extrabold text-foreground text-balance leading-tight">
+              You're not alone in this.
+            </h1>
+            <p className="text-base text-muted-foreground leading-relaxed">
+              Real people, in your region, trained to listen. Free and confidential.
+            </p>
+          </div>
+          {regionData ? (
+            <CrisisResources region={regionData} accentColor="#3B82F6" />
+          ) : (
+            <div className="flex flex-col gap-3 p-5 rounded-2xl bg-card border-2 border-accent/30">
+              <p className="text-base font-bold text-foreground">Where are you right now?</p>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Pick a region so we can show you the right helplines.
+              </p>
+              <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
+            </div>
+          )}
+          <button
+            onClick={() => { setShowSupportView(false); setScreen("home") }}
+            style={{ minHeight: 52, background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
+            className="w-full rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Take me to my space
+          </button>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-dvh bg-background pb-32">
@@ -456,14 +541,6 @@ export default function BhavaApp() {
               )
             })()}
 
-            {/* Personalized resources (shown if we have onboarding data) */}
-            {(supportPrefs.length > 0 || country) && (
-              <PersonalizedResources
-                supportPreferences={supportPrefs}
-                country={country}
-              />
-            )}
-
             {/* Hero headline */}
             <div className="text-center flex flex-col gap-2">
               <h1 className="text-3xl font-extrabold text-foreground leading-tight text-balance">
@@ -487,44 +564,6 @@ export default function BhavaApp() {
               <Info size={15} aria-hidden="true" />
               See how it works
             </button>
-
-            {/* Session options */}
-            {supportPrefs.length > 0 && (
-              <div className="w-full flex flex-col gap-3">
-                <div className="w-full h-px bg-border" aria-hidden="true" />
-                <p className="text-sm font-semibold text-muted-foreground text-center">What would you like to do?</p>
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={() => setShowOnboarding(true)}
-                    style={{ minHeight: 48 }}
-                    className="w-full py-3 rounded-2xl text-base font-semibold border border-border text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  >
-                    Look for another resource
-                  </button>
-                  <button
-                    onClick={async () => {
-                      import("@/lib/auth").then(({ signOut }) => signOut().then(() => window.location.reload()))
-                    }}
-                    style={{ minHeight: 48 }}
-                    className="w-full py-3 rounded-2xl text-base font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  >
-                    Save and come back later
-                  </button>
-                  <button
-                    onClick={async () => {
-                      import("@/lib/auth").then(({ signOut }) => {
-                        setLastOnboardingSession(null)
-                        signOut().then(() => window.location.reload())
-                      })
-                    }}
-                    style={{ minHeight: 48 }}
-                    className="w-full py-3 rounded-2xl text-base font-semibold border border-border text-muted-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  >
-                    Log out and start fresh
-                  </button>
-                </div>
-              </div>
-            )}
 
             {/* Privacy badge */}
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground/50">
@@ -596,7 +635,12 @@ export default function BhavaApp() {
                     <h2 className="text-2xl font-extrabold text-foreground text-center text-balance">{heading}</h2>
                     <p className="text-base text-muted-foreground text-center leading-relaxed">{subtext}</p>
                   </div>
-                  <ContextTagPicker selected={contextTags} onToggle={(tagId) => setContextTags((prev) => prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId])} accentColor={selectedEmotion.color} />
+                  <ContextTagPicker
+                    selected={contextTags}
+                    onToggle={(tagId) => setContextTags((prev) => prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId])}
+                    accentColor={selectedEmotion.color}
+                    suggestedTags={situationToContextTags(lastOnboardingSession)}
+                  />
                   <button
                     onClick={() => setScreen("intensity")}
                     style={{ background: selectedEmotion.color, color: "#FFFFFF", boxShadow: `0 4px 20px ${selectedEmotion.color}44`, minHeight: 52 }}
@@ -765,11 +809,6 @@ export default function BhavaApp() {
         </div>
       )}
 
-      {/* Language picker modal */}
-      {showLangPopup && (
-        <LanguagePopup onSelect={handleLanguageSelect} />
-      )}
-
       {/* How it works modal */}
       {showHowItWorks && <HowItWorks onClose={() => setShowHowItWorks(false)} />}
 
@@ -791,8 +830,6 @@ export default function BhavaApp() {
         avatarEmoji={profile.avatar_emoji}
         onShowThemes={() => setShowThemePicker(true)}
         onShowSettings={() => setShowSettings(true)}
-        language={currentLanguage}
-        onShowLanguage={() => setShowLangPopup(true)}
       />
     </main>
   )

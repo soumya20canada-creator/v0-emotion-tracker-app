@@ -81,6 +81,88 @@ export const SUPPORT_OPTIONS = [
   { id: "not-sure", label: "I am not sure yet" },
 ]
 
+export type PathChoice = "wheel" | "quick-actions" | "support" | "look-around"
+
+export function supportPrefToPath(prefs: string[]): PathChoice {
+  if (prefs.includes("figure-out-feelings") || prefs.includes("express")) return "wheel"
+  if (prefs.includes("do-something")) return "quick-actions"
+  if (prefs.includes("community") || prefs.includes("therapist")) return "support"
+  return "wheel"
+}
+
+export function situationToContextTags(session: OnboardingSession | null): string[] {
+  if (!session) return []
+  const suggested = new Set<string>()
+  const going = new Set(session.whats_been_going_on)
+  const sit = new Set(session.current_situation)
+  if (going.has("adjusting")) {
+    suggested.add("immigration")
+    suggested.add("homesick")
+    suggested.add("cultural-pressure")
+    suggested.add("language")
+  }
+  if (going.has("lonely")) suggested.add("loneliness")
+  if (sit.has("student") || sit.has("international-student")) {
+    suggested.add("school")
+    suggested.add("exams")
+  }
+  if (sit.has("employed")) suggested.add("work")
+  if (sit.has("unemployed")) suggested.add("money")
+  if (sit.has("caregiver")) suggested.add("family")
+  return Array.from(suggested)
+}
+
+export function reflectOnboarding(session: OnboardingSession | null, country?: string | null): string {
+  if (!session) return ""
+  const parts: string[] = []
+  const going = session.whats_been_going_on
+  if (going.includes("adjusting")) parts.push("adjusting to life in a new place")
+  if (going.includes("lonely")) parts.push("feeling lonely")
+  if (going.includes("process")) parts.push("processing something")
+  if (going.includes("off")) parts.push("feeling off")
+  const body = session.body_feelings.find((b) => b !== "nothing")
+  const bodyPhrase: Record<string, string> = {
+    "chest-tightness": "a tightness in your chest",
+    "heaviness": "a heaviness",
+    "restlessness": "a restlessness",
+    "stomach-knot": "a knot in your stomach",
+    "numbness": "a numbness",
+    "dizziness": "dizziness",
+    "in-thoughts": "a lot in your thoughts",
+  }
+  const durationPhrase: Record<string, string> = {
+    "just-today": "today",
+    "few-days": "for a few days",
+    "few-weeks": "for a few weeks",
+    "months": "for a few months",
+    "comes-and-goes": "on and off",
+  }
+  const bits: string[] = []
+  if (country) bits.push(`You're in ${country}`)
+  if (parts.length) bits.push(parts.join(" and "))
+  if (body && bodyPhrase[body]) {
+    const dur = session.duration && durationPhrase[session.duration] ? ` ${durationPhrase[session.duration]}` : ""
+    bits.push(`carrying ${bodyPhrase[body]}${dur}`)
+  }
+  return bits.join(", ")
+}
+
+export function countryToRegionId(country: string | null | undefined): string {
+  if (!country) return "global"
+  const map: Record<string, string> = {
+    "United States": "us",
+    "United Kingdom": "uk",
+    "Canada": "ca",
+    "Australia": "au",
+    "India": "in",
+    "Germany": "de",
+    "Philippines": "ph",
+    "Mexico": "mx",
+    "Nigeria": "ng",
+  }
+  return map[country] ?? "global"
+}
+
 export const COUNTRIES = [
   "Afghanistan", "Albania", "Algeria", "Argentina", "Armenia", "Australia",
   "Austria", "Azerbaijan", "Bahrain", "Bangladesh", "Belgium", "Bolivia",
