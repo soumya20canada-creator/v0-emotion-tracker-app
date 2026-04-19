@@ -364,14 +364,11 @@ export default function BhavaApp() {
   // Onboarding
   if (showOnboarding) {
     return (
-      <div className="min-h-dvh bg-background">
-        <ThemeHeader onThemeChange={(id) => setCurrentTheme(id)} />
-        <OnboardingFlow
-          isNewUser={isFirstTimeUser}
-          onComplete={handleOnboardingComplete}
-          onSkip={handleOnboardingSkip}
-        />
-      </div>
+      <OnboardingFlow
+        isNewUser={isFirstTimeUser}
+        onComplete={handleOnboardingComplete}
+        onSkip={handleOnboardingSkip}
+      />
     )
   }
 

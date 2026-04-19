@@ -14,6 +14,8 @@ import {
   type OnboardingSession,
 } from "@/lib/onboarding-data"
 import { getEmergencyNumber } from "@/lib/emergency-numbers"
+import { ThemeHeader } from "@/components/theme-header"
+import { ArrowLeft } from "lucide-react"
 
 type OnboardingFlowProps = {
   isNewUser: boolean
@@ -77,9 +79,22 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
   return (
     <div ref={scrollRef} className="fixed inset-0 z-[200] flex flex-col bg-background overflow-y-auto">
       {/* Progress bar */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b border-border px-6 py-4">
-        <div className="max-w-lg mx-auto flex flex-col gap-2">
-          <div className="flex items-center justify-between">
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
+        <div className="max-w-lg mx-auto flex flex-col gap-2 px-6 pb-4">
+          <div className="flex items-center justify-between gap-3">
+            {screen > startScreen ? (
+              <button
+                type="button"
+                onClick={() => { scrollTop(); setScreen((s) => (s - 1) as Screen) }}
+                style={{ minWidth: 44, minHeight: 44 }}
+                className="flex items-center gap-1 -ml-2 px-2 rounded-xl text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label="Go back to previous step"
+              >
+                <ArrowLeft size={16} aria-hidden="true" />
+                Back
+              </button>
+            ) : <span />}
             <span className="text-sm font-semibold text-foreground">
               Step {currentStep} of {totalScreens}
             </span>
