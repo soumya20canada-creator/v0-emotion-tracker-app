@@ -240,6 +240,50 @@ export function getActionsForEmotion(emotionId: string, intensity: number): Micr
   return shuffled.slice(0, Math.min(5, Math.max(3, shuffled.length)))
 }
 
+export type ScoringContext = {
+  body_feelings: string[]
+  whats_been_going_on: string[]
+  duration: string
+}
+
+export function scoreActionsForSession(
+  emotionId: string,
+  intensity: number,
+  ctx: ScoringContext
+): MicroAction[] {
+  const level = getIntensityLevel(intensity)
+  const pool = MICRO_ACTIONS[emotionId]?.[level] || []
+  if (pool.length === 0) return []
+
+  const body = new Set(ctx.body_feelings)
+  const going = new Set(ctx.whats_been_going_on)
+
+  const preferredCategories = new Set<string>()
+  if (body.has("chest-tightness")) { preferredCategories.add("mindful"); preferredCategories.add("body") }
+  if (body.has("heaviness") || body.has("numbness")) { preferredCategories.add("social"); preferredCategories.add("creative") }
+  if (body.has("restlessness") || body.has("stomach-knot")) preferredCategories.add("body")
+  if (body.has("in-thoughts")) preferredCategories.add("mindful")
+
+  const preferCultural = going.has("adjusting") || going.has("lonely")
+  const preferResearch = going.has("process")
+  const preferLonger = ctx.duration === "months"
+  const preferShorter = ctx.duration === "just-today" || ctx.duration === "few-days"
+
+  const scored = pool.map((a) => {
+    let score = 0
+    if (preferredCategories.has(a.category)) score += 3
+    if (preferCultural && a.culturalNote) score += 2
+    if (preferResearch && a.researchBasis && /CBT|EMDR|ACT|DBT/i.test(a.researchBasis)) score += 2
+    if (preferLonger && a.timeMinutes >= 10) score += 1
+    if (preferShorter && a.timeMinutes <= 5) score += 1
+    score += Math.random() * 0.5
+    return { a, score }
+  })
+  scored.sort((x, y) => y.score - x.score)
+  const count = Math.min(5, Math.max(3, scored.length))
+  return scored.slice(0, count).map((s) => s.a)
+}
+
 export const CATEGORY_ICONS: Record<string, string> = {
   body: "Dumbbell",
   social: "Heart",

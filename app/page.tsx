@@ -25,7 +25,6 @@ import { OnboardingFlow } from "@/components/onboarding-flow"
 import { AccountSettings } from "@/components/account-settings"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { AcknowledgmentScreen } from "@/components/acknowledgment-screen"
-import { PathChooser } from "@/components/path-chooser"
 import { ThemeHeader } from "@/components/theme-header"
 import {
   type EmotionCategory,
@@ -33,6 +32,7 @@ import {
   EMOTION_CATEGORIES,
   INTENSITY_OPTIONS,
   getActionsForEmotion,
+  scoreActionsForSession,
 } from "@/lib/emotions-data"
 import {
   type GameState,
@@ -50,7 +50,7 @@ import { getRegionById } from "@/lib/crisis-resources"
 import type { Moment } from "@/lib/emotions-data"
 import type { ThemeId } from "@/lib/themes"
 import type { OnboardingSession, PathChoice } from "@/lib/onboarding-data"
-import { countryToRegionId, situationToContextTags } from "@/lib/onboarding-data"
+import { countryToRegionId, situationToContextTags, bodyToEmotion, durationToIntensity, bodyFeelingPhrase } from "@/lib/onboarding-data"
 import { ArrowLeft, X, Lock, Info, Eye, EyeOff } from "lucide-react"
 
 type Screen = "home" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
@@ -68,8 +68,8 @@ export default function BhavaApp() {
 
   // Post-onboarding flow state
   const [showAcknowledgment, setShowAcknowledgment] = useState(false)
-  const [showPathChooser, setShowPathChooser] = useState(false)
   const [showSupportView, setShowSupportView] = useState(false)
+  const [actionsHint, setActionsHint] = useState<string | null>(null)
 
   // App settings
   const [showSettings, setShowSettings] = useState(false)
@@ -148,14 +148,20 @@ export default function BhavaApp() {
     if (!profile) return
     let cancelled = false
     const local = loadState(profile.id)
-    setGameState(local)
+    const fallbackRegion = profile.country ? countryToRegionId(profile.country) : null
+    const hydratedLocal: GameState = {
+      ...local,
+      selectedRegion: local.selectedRegion ?? fallbackRegion,
+    }
+    if (hydratedLocal.selectedRegion !== local.selectedRegion) {
+      saveState(hydratedLocal, profile.id)
+    }
+    setGameState(hydratedLocal)
     hydrateFromSupabase(profile.id).then((remote) => {
       if (cancelled || !remote) return
-      // Supabase is the source of truth for checkIns + derived fields.
-      // Preserve local-only UI state (selectedRegion) if set.
       const merged: GameState = {
         ...remote,
-        selectedRegion: local.selectedRegion ?? remote.selectedRegion,
+        selectedRegion: hydratedLocal.selectedRegion ?? remote.selectedRegion ?? fallbackRegion,
       }
       setGameState(merged)
       saveState(merged, profile.id)
@@ -291,27 +297,48 @@ export default function BhavaApp() {
   }, [gameState, profile])
 
   const handlePathChoice = useCallback((path: PathChoice) => {
-    setShowPathChooser(false)
-    if (path === "wheel" || path === "look-around") {
-      setScreen("home")
+    setShowAcknowledgment(false)
+    const session = lastOnboardingSession
+    const inferredEmotionId = session ? bodyToEmotion(session.body_feelings) : "calm"
+    const inferredEmotion =
+      EMOTION_CATEGORIES.find((e) => e.id === inferredEmotionId) ??
+      EMOTION_CATEGORIES.find((e) => e.id === "calm")!
+    const inferredIntensity = session ? durationToIntensity(session.duration) : 3
+    const preselectedTags = situationToContextTags(session)
+
+    if (path === "wheel") {
+      setSelectedEmotion(inferredEmotion)
+      setSubEmotions([])
+      setContextTags(preselectedTags)
+      setJournalNote("")
+      setIntensity(inferredIntensity)
+      setActionsHint(null)
+      setScreen("sub-emotion")
       return
     }
     if (path === "quick-actions") {
-      const calm = EMOTION_CATEGORIES.find((e) => e.id === "calm")!
-      setSelectedEmotion(calm)
+      setSelectedEmotion(inferredEmotion)
       setSubEmotions([])
-      setContextTags([])
+      setContextTags(preselectedTags)
       setJournalNote("")
-      setIntensity(3)
-      const a = getActionsForEmotion(calm.id, 3)
-      setActions(a)
+      setIntensity(inferredIntensity)
+      const scored = session
+        ? scoreActionsForSession(inferredEmotion.id, inferredIntensity, {
+            body_feelings: session.body_feelings,
+            whats_been_going_on: session.whats_been_going_on,
+            duration: session.duration,
+          })
+        : getActionsForEmotion(inferredEmotion.id, inferredIntensity)
+      setActions(scored)
       setCompletedActionIds([])
-      setShowCrisis(false)
+      const option = INTENSITY_OPTIONS.find((o) => o.level === inferredIntensity)
+      setShowCrisis(option?.isCrisis || false)
+      const phrase = session ? bodyFeelingPhrase(session.body_feelings) : ""
+      setActionsHint(phrase ? `I picked these because you mentioned ${phrase}.` : null)
       setScreen("actions")
       return
     }
     if (path === "support") {
-      // Auto-map country → region if not already set
       if (profile?.country && gameState && !gameState.selectedRegion) {
         const regionId = countryToRegionId(profile.country)
         const updated = { ...gameState, selectedRegion: regionId }
@@ -319,8 +346,12 @@ export default function BhavaApp() {
         saveState(updated, profile.id)
       }
       setShowSupportView(true)
+      return
     }
-  }, [profile, gameState])
+    // look-around
+    setActionsHint(null)
+    setScreen("home")
+  }, [profile, gameState, lastOnboardingSession])
 
   const handleReset = useCallback(() => {
     setSelectedEmotion(null)
@@ -331,6 +362,7 @@ export default function BhavaApp() {
     setActions([])
     setCompletedActionIds([])
     setShowCrisis(false)
+    setActionsHint(null)
     setScreen("home")
   }, [])
 
@@ -394,26 +426,14 @@ export default function BhavaApp() {
 
   const greetingName = profile.first_name ?? profile.display_name ?? profile.username ?? "friend"
 
-  // Post-onboarding: acknowledgment → path chooser → chosen path
+  // Post-onboarding: acknowledgment routes directly to chosen destination
   if (showAcknowledgment) {
     return (
       <AcknowledgmentScreen
         firstName={greetingName}
         country={profile.country}
         session={lastOnboardingSession}
-        onContinue={() => {
-          setShowAcknowledgment(false)
-          setShowPathChooser(true)
-        }}
-      />
-    )
-  }
-
-  if (showPathChooser) {
-    return (
-      <PathChooser
-        supportPreferences={lastOnboardingSession?.support_preferences ?? []}
-        onChoose={handlePathChoice}
+        onContinue={handlePathChoice}
       />
     )
   }
@@ -487,6 +507,17 @@ export default function BhavaApp() {
                 style={{ minWidth: 44, minHeight: 44 }}
                 className="rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 aria-label="Go back"
+              >
+                <ArrowLeft size={20} className="text-foreground" />
+              </button>
+            )}
+            {screen === "home" && lastOnboardingSession && (
+              <button
+                onClick={() => setShowAcknowledgment(true)}
+                style={{ minWidth: 44, minHeight: 44 }}
+                className="rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label="Back to your starting point"
+                title="Back to your starting point"
               >
                 <ArrowLeft size={20} className="text-foreground" />
               </button>
@@ -736,6 +767,11 @@ export default function BhavaApp() {
               </div>
             ) : null}
 
+            {actionsHint && (
+              <p className="text-sm text-muted-foreground italic leading-relaxed px-1">
+                {actionsHint}
+              </p>
+            )}
             <ActionCards actions={actions} emotion={selectedEmotion} onComplete={handleActionComplete} completedIds={completedActionIds} />
 
             {completedActionIds.length > 0 && (

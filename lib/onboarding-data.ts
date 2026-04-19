@@ -87,7 +87,55 @@ export function supportPrefToPath(prefs: string[]): PathChoice {
   if (prefs.includes("figure-out-feelings") || prefs.includes("express")) return "wheel"
   if (prefs.includes("do-something")) return "quick-actions"
   if (prefs.includes("community") || prefs.includes("therapist")) return "support"
-  return "wheel"
+  return "look-around"
+}
+
+export type InferredEmotion = "fear" | "sadness" | "surprise" | "calm" | "anger" | "joy"
+
+export function bodyToEmotion(body: string[]): InferredEmotion {
+  const b = new Set(body)
+  if (b.has("chest-tightness") || b.has("restlessness") || b.has("dizziness") || b.has("stomach-knot")) return "fear"
+  if (b.has("heaviness") || b.has("numbness")) return "sadness"
+  if (b.has("in-thoughts")) return "surprise"
+  return "calm"
+}
+
+export function durationToIntensity(duration: string): number {
+  switch (duration) {
+    case "just-today": return 2
+    case "few-days": return 3
+    case "few-weeks": return 3
+    case "months": return 4
+    case "comes-and-goes": return 3
+    default: return 3
+  }
+}
+
+export function bodyFeelingPhrase(body: string[]): string {
+  const map: Record<string, string> = {
+    "chest-tightness": "a tightness in your chest",
+    "heaviness": "a heaviness",
+    "restlessness": "a restlessness",
+    "stomach-knot": "a knot in your stomach",
+    "numbness": "a numbness",
+    "dizziness": "dizziness",
+    "in-thoughts": "a lot in your thoughts",
+  }
+  const first = body.find((b) => map[b])
+  return first ? map[first] : ""
+}
+
+export function pathLabel(path: PathChoice): { label: string; reason: string } {
+  switch (path) {
+    case "wheel":
+      return { label: "a space to name what you're feeling", reason: "so you can put words to it without pressure." }
+    case "quick-actions":
+      return { label: "a few small things you can try right now", reason: "picked from what you just told me." }
+    case "support":
+      return { label: "people who can actually help", reason: "real humans, free, near you." }
+    case "look-around":
+      return { label: "a gentle tour of your space", reason: "no pressure — just look around." }
+  }
 }
 
 export function situationToContextTags(session: OnboardingSession | null): string[] {
