@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { BookOpenText, Wind, Headphones, Music, Feather, ChevronRight, Sparkles, Heart, Moon } from "lucide-react"
 import { Journal } from "@/components/journal"
 import { Breathing } from "@/components/breathing"
+import { GroundingNotes } from "@/components/grounding-notes"
 import { type GameState } from "@/lib/game-store"
 import { getEntries } from "@/lib/journal-store"
 
@@ -17,7 +18,7 @@ type MySpaceProps = {
   firstName?: string
 }
 
-type View = "hub" | "journal" | "breathe"
+type View = "hub" | "journal" | "breathe" | "notes"
 
 export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
   const [view, setView] = useState<View>("hub")
@@ -32,6 +33,9 @@ export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
   }
   if (view === "breathe") {
     return <Breathing onClose={() => setView("hub")} />
+  }
+  if (view === "notes") {
+    return <GroundingNotes onClose={() => setView("hub")} />
   }
 
   const unlockedMoments = gameState.moments.filter((m) => m.unlocked)
@@ -77,8 +81,8 @@ export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
         <HubCard
           icon={Feather}
           title="Grounding notes"
-          subtitle="One short note a day · coming soon"
-          disabled
+          subtitle="One short note for today"
+          onClick={() => setView("notes")}
         />
       </section>
 
