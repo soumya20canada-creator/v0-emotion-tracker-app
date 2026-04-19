@@ -19,7 +19,7 @@ import { MusicPlayer } from "@/components/music-player"
 import { OnboardingTooltips } from "@/components/onboarding-tooltips"
 import { HowItWorks } from "@/components/how-it-works"
 import { EmotionDescribe } from "@/components/emotion-describe"
-import { BadgesPage } from "@/components/badges-page"
+import { MySpace } from "@/components/my-space"
 import { PatternsPage } from "@/components/patterns-page"
 import { OnboardingFlow } from "@/components/onboarding-flow"
 import { AccountSettings } from "@/components/account-settings"
@@ -838,7 +838,7 @@ export default function BhavaApp() {
         )}
 
         {screen === "badges" && (
-          <BadgesPage gameState={gameState} />
+          <MySpace userId={profile.id} gameState={gameState} firstName={greetingName} />
         )}
 
         {screen === "patterns" && (

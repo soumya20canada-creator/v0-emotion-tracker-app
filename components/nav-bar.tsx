@@ -27,7 +27,7 @@ export function NavBar({
     { id: "home",     label: "Feel",     icon: Home },
     { id: "progress", label: "Journey",  icon: BarChart3 },
     { id: "patterns", label: "Patterns", icon: Brain },
-    { id: "badges",   label: "Moments",  icon: Sparkles },
+    { id: "badges",   label: "My Space", icon: Sparkles },
   ]
 
   async function handleSignOut() {
