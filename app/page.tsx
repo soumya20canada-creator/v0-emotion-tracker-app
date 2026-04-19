@@ -25,6 +25,7 @@ import { OnboardingFlow } from "@/components/onboarding-flow"
 import { AccountSettings } from "@/components/account-settings"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { AcknowledgmentScreen } from "@/components/acknowledgment-screen"
+import { WelcomeBack } from "@/components/welcome-back"
 import { ThemeHeader } from "@/components/theme-header"
 import {
   type EmotionCategory,
@@ -63,6 +64,7 @@ export default function BhavaApp() {
 
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false)
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false)
   const [lastOnboardingSession, setLastOnboardingSession] = useState<OnboardingSession | null>(null)
 
@@ -104,7 +106,11 @@ export default function BhavaApp() {
             }
             setIsFirstTimeUser(!p.onboarding_completed)
             setIsNewUser(!p.onboarding_completed)
-            setShowOnboarding(true)
+            if (!p.onboarding_completed) {
+              setShowOnboarding(true)
+            } else {
+              setShowWelcomeBack(true)
+            }
           } else {
             // New user via Google OAuth — no profile exists yet, create one
             const u = session.user
@@ -137,6 +143,7 @@ export default function BhavaApp() {
         })
         setGameState(null)
         setShowOnboarding(false)
+        setShowWelcomeBack(false)
         setLastOnboardingSession(null)
       }
     })
@@ -174,9 +181,14 @@ export default function BhavaApp() {
     setCurrentTheme(p.color_theme)
     applyTheme(p.color_theme)
     setGameState(loadState(p.id))
-    setIsNewUser(newUser || !p.onboarding_completed)
-    setIsFirstTimeUser(!p.onboarding_completed)
-    setShowOnboarding(true)
+    const firstTime = newUser || !p.onboarding_completed
+    setIsNewUser(firstTime)
+    setIsFirstTimeUser(firstTime)
+    if (firstTime) {
+      setShowOnboarding(true)
+    } else {
+      setShowWelcomeBack(true)
+    }
   }, [])
 
   const handleOnboardingComplete = useCallback(async (
@@ -390,6 +402,25 @@ export default function BhavaApp() {
         <ThemeHeader onThemeChange={(id) => setCurrentTheme(id)} />
         <AuthGate onAuthenticated={handleAuthenticated} />
       </div>
+    )
+  }
+
+  // Welcome-back buffer for returning users
+  if (showWelcomeBack) {
+    const lastDate = gameState?.checkIns?.[gameState.checkIns.length - 1]?.date
+    let days: number | null = null
+    if (lastDate) {
+      const diff = Date.now() - new Date(lastDate).getTime()
+      days = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)))
+    }
+    return (
+      <WelcomeBack
+        firstName={profile.first_name ?? profile.display_name ?? profile.username ?? "friend"}
+        avatarEmoji={profile.avatar_emoji}
+        daysSinceLastCheckIn={days}
+        onReady={() => { setShowWelcomeBack(false); setShowOnboarding(true) }}
+        onSkip={() => { setShowWelcomeBack(false) }}
+      />
     )
   }
 
