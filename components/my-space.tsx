@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { BookOpenText, Wind, Headphones, Music, Feather, ChevronRight, Sparkles, Heart, Moon } from "lucide-react"
+import { BookOpenText, Wind, Headphones, Feather, ChevronRight, Sparkles, Heart, Moon } from "lucide-react"
 import { Journal } from "@/components/journal"
 import { Breathing } from "@/components/breathing"
 import { GroundingNotes } from "@/components/grounding-notes"
+import { Meditate } from "@/components/meditate"
 import { type GameState } from "@/lib/game-store"
 import { getEntries } from "@/lib/journal-store"
 
@@ -18,7 +19,7 @@ type MySpaceProps = {
   firstName?: string
 }
 
-type View = "hub" | "journal" | "breathe" | "notes"
+type View = "hub" | "journal" | "breathe" | "notes" | "meditate"
 
 export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
   const [view, setView] = useState<View>("hub")
@@ -36,6 +37,9 @@ export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
   }
   if (view === "notes") {
     return <GroundingNotes onClose={() => setView("hub")} />
+  }
+  if (view === "meditate") {
+    return <Meditate onClose={() => setView("hub")} />
   }
 
   const unlockedMoments = gameState.moments.filter((m) => m.unlocked)
@@ -69,16 +73,10 @@ export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
         <HubCard
           icon={Headphones}
           title="Meditate"
-          subtitle="Free guided sessions · coming soon"
-          disabled
+          subtitle="A quiet timer · 3 to 15 minutes"
+          onClick={() => setView("meditate")}
         />
-        <HubCard
-          icon={Music}
-          title="Comfort sounds"
-          subtitle="Rain, ocean, fire · coming soon"
-          disabled
-        />
-        <HubCard
+<HubCard
           icon={Feather}
           title="Grounding notes"
           subtitle="One short note for today"
