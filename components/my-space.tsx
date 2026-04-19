@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { BookOpenText, Wind, Headphones, Music, Feather, ChevronRight, Sparkles, Heart, Moon } from "lucide-react"
 import { Journal } from "@/components/journal"
+import { Breathing } from "@/components/breathing"
 import { type GameState } from "@/lib/game-store"
 import { getEntries } from "@/lib/journal-store"
 
@@ -16,7 +17,7 @@ type MySpaceProps = {
   firstName?: string
 }
 
-type View = "hub" | "journal"
+type View = "hub" | "journal" | "breathe"
 
 export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
   const [view, setView] = useState<View>("hub")
@@ -28,6 +29,9 @@ export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
 
   if (view === "journal") {
     return <Journal userId={userId} onClose={() => setView("hub")} />
+  }
+  if (view === "breathe") {
+    return <Breathing onClose={() => setView("hub")} />
   }
 
   const unlockedMoments = gameState.moments.filter((m) => m.unlocked)
@@ -55,8 +59,8 @@ export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
         <HubCard
           icon={Wind}
           title="Breathe"
-          subtitle="Guided breathing · coming soon"
-          disabled
+          subtitle="3 gentle patterns · 1–5 minutes"
+          onClick={() => setView("breathe")}
         />
         <HubCard
           icon={Headphones}
