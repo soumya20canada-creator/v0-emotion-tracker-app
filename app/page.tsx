@@ -35,6 +35,7 @@ import { Meditate } from "@/components/meditate"
 import { FindTherapist } from "@/components/find-therapist"
 import { FindCommunity } from "@/components/find-community"
 import { SessionCheckout, type PositiveEmotionId } from "@/components/session-checkout"
+import { CrisisChip } from "@/components/crisis-chip"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -359,6 +360,19 @@ export default function BhavaApp() {
       setTimeout(showNextMoment, 1400)
     }
   }, [selectedEmotion, gameState, profile, subEmotions, intensity, showCrisis, showNextMoment, contextTags, journalNote])
+
+  const handleJustLog = useCallback(() => {
+    if (!selectedEmotion || !gameState || !profile) return
+    const subLabel = subEmotions.length > 0 ? subEmotions.join(", ") : selectedEmotion.label
+    const newState = processCheckIn(
+      gameState, selectedEmotion.id, subLabel, intensity,
+      [{ id: "just-logged", category: "mindful" }],
+      showCrisis, contextTags, journalNote, profile.id
+    )
+    setGameState(newState)
+    if (fromGuidedSession) setShowCheckout(true)
+    else setScreen("home")
+  }, [selectedEmotion, gameState, profile, subEmotions, intensity, showCrisis, contextTags, journalNote, fromGuidedSession])
 
   const handleCrisisComplete = useCallback(() => {
     if (!selectedEmotion || !gameState || !profile) return
@@ -968,7 +982,7 @@ export default function BhavaApp() {
             </button>
 
             {showCrisis && (
-              <CrisisGames emotion={selectedEmotion} onClose={() => setShowCrisis(false)} onComplete={handleCrisisComplete} />
+              <CrisisGames emotion={selectedEmotion} onClose={() => setShowCrisis(false)} onComplete={handleCrisisComplete} defaultGame={intensity >= 5 ? "breathing" : undefined} />
             )}
 
             {gameState.selectedRegion ? (
@@ -992,7 +1006,7 @@ export default function BhavaApp() {
                 {actionsHint}
               </p>
             )}
-            <ActionCards actions={actions} emotion={selectedEmotion} onComplete={handleActionComplete} completedIds={completedActionIds} />
+            <ActionCards actions={actions} emotion={selectedEmotion} onComplete={handleActionComplete} completedIds={completedActionIds} onJustLog={completedActionIds.length === 0 ? handleJustLog : undefined} />
 
             {completedActionIds.length > 0 && (
               <div className="flex flex-col gap-3">
@@ -1090,6 +1104,9 @@ export default function BhavaApp() {
 
       {/* Onboarding tooltips */}
       <OnboardingTooltips isNewUser={isNewUser} />
+
+      {/* Global crisis chip — always reachable on main app screens */}
+      <CrisisChip onOpen={() => setShowSupportView(true)} />
 
       {/* Bottom nav */}
       <NavBar

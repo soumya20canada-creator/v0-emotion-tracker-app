@@ -10,6 +10,7 @@ import {
   type ToolSuggestionId,
 } from "@/lib/onboarding-data"
 import type { OnboardingSession } from "@/lib/onboarding-data"
+import { taglineFor } from "@/lib/cultural-taglines"
 import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, ArrowRight, Stethoscope, Users } from "lucide-react"
 
 type AcknowledgmentScreenProps = {
@@ -41,6 +42,7 @@ export function AcknowledgmentScreen({
 }: AcknowledgmentScreenProps) {
   const reflection = useMemo(() => humanReflection(session, country), [session, country])
   const tools = suggestTools(session)
+  const tagline = taglineFor(country)
 
   return (
     <main className="min-h-dvh bg-background flex flex-col">
@@ -107,7 +109,7 @@ export function AcknowledgmentScreen({
         </div>
 
         <p className="text-sm text-muted-foreground/70 text-center italic">
-          भाव · the felt sense of being
+          {tagline.script} · {tagline.gloss}
         </p>
       </div>
     </main>

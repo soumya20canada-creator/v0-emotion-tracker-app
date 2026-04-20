@@ -35,9 +35,10 @@ type ActionCardsProps = {
   emotion: EmotionCategory
   onComplete: (action: MicroAction) => void
   completedIds: string[]
+  onJustLog?: () => void
 }
 
-export function ActionCards({ actions, emotion, onComplete, completedIds }: ActionCardsProps) {
+export function ActionCards({ actions, emotion, onComplete, completedIds, onJustLog }: ActionCardsProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   return (
@@ -148,6 +149,15 @@ export function ActionCards({ actions, emotion, onComplete, completedIds }: Acti
           </div>
         )
       })}
+      {onJustLog && (
+        <button
+          onClick={onJustLog}
+          style={{ minHeight: 48 }}
+          className="w-full mt-2 rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          I just want to log this and come back later.
+        </button>
+      )}
     </div>
   )
 }

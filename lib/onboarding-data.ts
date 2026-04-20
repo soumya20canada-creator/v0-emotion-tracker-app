@@ -313,6 +313,40 @@ export function suggestTools(session: OnboardingSession | null): ToolSuggestion[
     add("reach-out", "if this is acute right now, real humans are one tap away.", 11)
   }
 
+  // Context-tag doorways — the tags we derive from onboarding unlock real resources.
+  const ctx = new Set(situationToContextTags(session))
+  if (ctx.has("immigration") || ctx.has("language")) {
+    add("find-therapist", pick([
+      "Therapists who know what it's like to rebuild somewhere new.",
+      "You mentioned adjusting — let's find someone who gets that.",
+    ]), 19)
+    add("find-community", pick([
+      "People who already walked this path — near you.",
+      "A community that won't need you to explain where you came from.",
+    ]), 14)
+  }
+  if (ctx.has("homesick") || ctx.has("loneliness")) {
+    add("find-community", pick([
+      "Loneliness eases when you find your people.",
+      "Here's where to stop being the only one in the room.",
+    ]), 15)
+  }
+  if (ctx.has("money")) {
+    // Replace therapist reason with a cost-focused one
+    add("find-therapist", "Free and sliding-scale options — cost shouldn't be the thing that stops you.", 19)
+  }
+  if (ctx.has("cultural-pressure")) {
+    add("journal", "Sometimes you need to put it somewhere your family can't reach.", 13)
+  }
+
+  // Heavy-reflection override — if things are heavy and long, lead with human connection.
+  const inferredIntensity = durationToIntensity(duration)
+  const bodyCount = session.body_feelings.filter((b) => b !== "nothing" && b !== "in-thoughts").length
+  const heavy = (inferredIntensity >= 4 || bodyCount >= 3) && (duration === "few-weeks" || duration === "months")
+  if (heavy) {
+    add("find-therapist", "This is heavier than one night of breathing work. Let's find someone who can sit with you properly.", 22)
+  }
+
   // Fallback
   if (picks.length === 0) {
     add("breathe", "a soft place to start.", 1)

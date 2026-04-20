@@ -8,6 +8,7 @@ type CrisisGamesProps = {
   emotion: EmotionCategory
   onClose: () => void
   onComplete: () => void
+  defaultGame?: "breathing" | "colors" | "puzzle" | "bubble" | "sand" | "tapdot"
 }
 
 // -- BREATHING GAME --
@@ -622,8 +623,8 @@ const GAMES = [
   { id: "tapdot", name: "Tap the Dot", icon: Gamepad2, description: "Chase the dot — stay present" },
 ]
 
-export function CrisisGames({ emotion, onClose, onComplete }: CrisisGamesProps) {
-  const [activeGame, setActiveGame] = useState<string | null>(null)
+export function CrisisGames({ emotion, onClose, onComplete, defaultGame }: CrisisGamesProps) {
+  const [activeGame, setActiveGame] = useState<string | null>(defaultGame ?? null)
 
   function handleGameComplete() {
     onComplete()

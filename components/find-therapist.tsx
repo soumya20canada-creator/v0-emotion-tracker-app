@@ -5,7 +5,7 @@ import { AppLogo } from "@/components/app-logo"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { LocationPicker } from "@/components/location-picker"
 import { getRegionById, type TherapistResource, type TherapistTag } from "@/lib/crisis-resources"
-import { ArrowLeft, ExternalLink, AlertCircle } from "lucide-react"
+import { ArrowLeft, ExternalLink, AlertCircle, ShieldCheck } from "lucide-react"
 
 type FindTherapistProps = {
   region: string | null
@@ -22,7 +22,11 @@ type Section = {
   items: TherapistResource[]
 }
 
-function buildSections(all: TherapistResource[], identity: string[] | null | undefined): Section[] {
+function buildSections(
+  all: TherapistResource[],
+  identity: string[] | null | undefined,
+  isDiaspora: boolean,
+): Section[] {
   const used = new Set<string>()
   const take = (pred: (r: TherapistResource) => boolean): TherapistResource[] => {
     const out: TherapistResource[] = []
@@ -38,14 +42,22 @@ function buildSections(all: TherapistResource[], identity: string[] | null | und
 
   const hasStudent = identity?.includes("immigrant") || identity?.includes("first-gen")
 
-  const sections: Section[] = [
-    { title: "Free or government-covered", subtitle: "Cost is often the biggest barrier. Start here.", items: take((r) => r.tags.includes("free")) },
-    { title: "Low-cost / sliding scale", items: take((r) => r.tags.includes("low-cost")) },
-    { title: "Culturally-matched", subtitle: "Therapists who won't need you to explain your background.", items: take((r) => r.tags.includes("cultural") || r.tags.includes("multilingual")) },
-    { title: "Directories to browse", items: take((r) => r.tags.includes("directory")) },
-    ...(hasStudent ? [{ title: "Student / youth", items: take((r) => r.tags.includes("student")) }] : []),
-    { title: "Online options", items: take((r) => r.tags.includes("online")) },
-  ]
+  const freeSection: Section = { title: "Free or government-covered", subtitle: "Cost is often the biggest barrier. Start here.", items: take((r) => r.tags.includes("free")) }
+  const culturalSection: Section = {
+    title: "Culturally-matched",
+    subtitle: isDiaspora
+      ? "Therapists who won't need you to explain your background — important when you're far from home."
+      : "Therapists who won't need you to explain your background.",
+    items: take((r) => r.tags.includes("cultural") || r.tags.includes("multilingual")),
+  }
+  const lowCost: Section = { title: "Low-cost / sliding scale", items: take((r) => r.tags.includes("low-cost")) }
+  const directories: Section = { title: "Directories to browse", items: take((r) => r.tags.includes("directory")) }
+  const student: Section = { title: "Student / youth", items: take((r) => r.tags.includes("student")) }
+  const online: Section = { title: "Online options", items: take((r) => r.tags.includes("online")) }
+
+  const sections: Section[] = isDiaspora
+    ? [freeSection, culturalSection, lowCost, directories, ...(hasStudent ? [student] : []), online]
+    : [freeSection, lowCost, culturalSection, directories, ...(hasStudent ? [student] : []), online]
   return sections.filter((s) => s.items.length > 0)
 }
 
@@ -64,7 +76,11 @@ function tagBadge(tag: TherapistTag): string {
 
 export function FindTherapist({ region, country, identity, onClose, onCrisis, onPickRegion }: FindTherapistProps) {
   const regionData = region ? getRegionById(region) : null
-  const sections = useMemo(() => regionData ? buildSections(regionData.therapists, identity ?? null) : [], [regionData, identity])
+  const isDiaspora = !!country && !!regionData && country !== regionData.label
+  const sections = useMemo(
+    () => regionData ? buildSections(regionData.therapists, identity ?? null, isDiaspora) : [],
+    [regionData, identity, isDiaspora],
+  )
 
   return (
     <main className="min-h-dvh bg-background">
@@ -111,6 +127,15 @@ export function FindTherapist({ region, country, identity, onClose, onCrisis, on
             </p>
           )}
         </div>
+
+        {isDiaspora && (
+          <div className="flex items-start gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/30">
+            <ShieldCheck size={18} className="text-primary shrink-0 mt-0.5" aria-hidden="true" />
+            <p className="text-sm text-foreground leading-relaxed">
+              Seeing a therapist doesn't affect your visa, PR application, or citizenship case. It's confidential and protected by privacy law.
+            </p>
+          </div>
+        )}
 
         {!regionData && (
           <div className="flex flex-col gap-3 p-5 rounded-2xl bg-card border-2 border-accent/30">
