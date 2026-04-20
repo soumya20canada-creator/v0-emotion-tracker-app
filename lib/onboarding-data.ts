@@ -317,73 +317,195 @@ function finalize(
 }
 
 // Warm, plain-language reflection. Ends with a softly named interpretation.
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+function joinList(items: string[]): string {
+  if (items.length === 0) return ""
+  if (items.length === 1) return items[0]
+  if (items.length === 2) return `${items[0]} and ${items[1]}`
+  return items.slice(0, -1).join(", ") + ", and " + items[items.length - 1]
+}
+
 export function humanReflection(session: OnboardingSession | null, country?: string | null): string {
-  if (!session) return "Thank you for showing up."
+  if (!session) {
+    return pick([
+      "Thank you for showing up.",
+      "I'm glad you're here.",
+      "Whatever brought you here today — welcome.",
+    ])
+  }
 
   const going = new Set(session.whats_been_going_on)
   const body = new Set(session.body_feelings)
+  const situation = new Set(session.current_situation)
   const duration = session.duration
 
-  const bodyPhrase: Record<string, string> = {
-    "chest-tightness": "a tightness in your chest",
-    "heaviness": "a heaviness",
-    "restlessness": "a restlessness",
-    "stomach-knot": "a knot in your stomach",
-    "numbness": "a numbness",
-    "dizziness": "dizziness",
-    "in-thoughts": "a lot moving in your thoughts",
+  // Varied body phrasings — each slot has 2–3 ways to say it
+  const bodyPhrases: Record<string, string[]> = {
+    "chest-tightness": ["a tightness in your chest", "your chest feeling tight", "that tight feeling in your chest"],
+    "heaviness": ["a heaviness", "something heavy sitting on you", "this weight that won't quite lift"],
+    "restlessness": ["a restlessness", "this buzzing you can't put down", "a hum that won't settle"],
+    "stomach-knot": ["a knot in your stomach", "that pit in your stomach", "your gut clenched up"],
+    "numbness": ["a numbness", "a kind of blank feeling", "that cut-off feeling"],
+    "dizziness": ["dizziness", "the world feeling a bit tilted", "that spinny, untethered feeling"],
+    "in-thoughts": ["a lot moving in your thoughts", "a head that won't go quiet", "your mind running laps"],
   }
-  const durationPhrase: Record<string, string> = {
-    "just-today": "today",
-    "few-days": "for a few days",
-    "few-weeks": "for a few weeks",
-    "months": "for months",
-    "comes-and-goes": "on and off",
+  const durationPhrases: Record<string, string[]> = {
+    "just-today": ["today", "just today", "for today at least"],
+    "few-days": ["for a few days", "the last few days", "for the past few days"],
+    "few-weeks": ["for a few weeks now", "the last couple of weeks", "over the last few weeks"],
+    "months": ["for months", "for a long time now", "for months at this point"],
+    "comes-and-goes": ["on and off", "in waves", "coming and going"],
   }
-  const firstBody = session.body_feelings.find((b) => bodyPhrase[b])
-  const durText = durationPhrase[duration] ?? ""
 
-  // Sentence 1: what you told me
+  const firstBody = session.body_feelings.find((b) => bodyPhrases[b])
+  const bodyText = firstBody ? pick(bodyPhrases[firstBody]) : null
+  const durText = duration && durationPhrases[duration] ? pick(durationPhrases[duration]) : ""
+
+  // Situation-tinted openers
+  const situationOpeners: string[] = []
+  if (situation.has("international-student")) {
+    situationOpeners.push("far from home and studying")
+    situationOpeners.push("building a life somewhere new while in school")
+  }
+  if (situation.has("employed")) situationOpeners.push("carrying a job on top of everything else")
+  if (situation.has("between-jobs")) situationOpeners.push("in between jobs right now")
+  if (situation.has("caregiver")) situationOpeners.push("taking care of someone else")
+  if (situation.has("complicated")) situationOpeners.push("in a complicated season")
+
+  // "What you told me" — varied lead-ins, varied clause phrasings
   const told: string[] = []
-  if (going.has("adjusting")) told.push("you're still adjusting to a new place")
-  if (going.has("lonely")) told.push("you've been feeling lonely")
-  if (going.has("process")) told.push("something happened you're trying to process")
-  if (going.has("off")) told.push("things have felt off in a way that's hard to name")
+  if (going.has("adjusting")) {
+    told.push(pick([
+      "you're still adjusting to a new place",
+      "you're trying to settle somewhere new",
+      "you're finding your footing somewhere unfamiliar",
+    ]))
+  }
+  if (going.has("lonely")) {
+    told.push(pick([
+      "you've been feeling lonely",
+      "the loneliness has been real",
+      "you've been missing people",
+    ]))
+  }
+  if (going.has("process")) {
+    told.push(pick([
+      "something happened you're still trying to process",
+      "there's something you're working through",
+      "you're trying to make sense of something",
+    ]))
+  }
+  if (going.has("off")) {
+    told.push(pick([
+      "things have felt off in a way that's hard to name",
+      "something's felt a little off, even if you can't quite say what",
+      "there's a feeling you can't quite put a word to",
+    ]))
+  }
+
+  // Opener templates
+  const openerLeads = [
+    "You told me",
+    "From what you shared,",
+    "What I'm hearing is",
+    "It sounds like",
+    "Reading what you wrote,",
+  ]
 
   const sentences: string[] = []
 
-  if (told.length > 0 || firstBody) {
+  if (told.length > 0 || bodyText || situationOpeners.length > 0) {
     const parts: string[] = []
-    if (told.length > 0) parts.push(told.join(" and "))
-    if (firstBody) {
-      const bp = bodyPhrase[firstBody]
-      parts.push(durText ? `carrying ${bp} ${durText}` : `carrying ${bp}`)
+    if (situationOpeners.length > 0 && Math.random() < 0.5) {
+      parts.push(pick(situationOpeners))
     }
-    sentences.push(`You told me ${parts.join(", and ")}.`)
+    if (told.length > 0) parts.push(joinList(told))
+    if (bodyText) {
+      const bodyClause = durText
+        ? pick([`carrying ${bodyText} ${durText}`, `holding ${bodyText} ${durText}`, `${bodyText}, ${durText}`])
+        : pick([`carrying ${bodyText}`, `holding ${bodyText}`, `with ${bodyText}`])
+      parts.push(bodyClause)
+    }
+    const lead = pick(openerLeads)
+    sentences.push(`${lead} ${joinList(parts)}.`)
   } else {
-    sentences.push("You showed up, and that already counts.")
+    sentences.push(pick([
+      "You showed up, and that already counts for something.",
+      "Even without words, you're here. That matters.",
+      "Sometimes just opening the app is the work.",
+    ]))
   }
 
-  // Sentence 2: soft named interpretation
+  // Soft named interpretation — varied framings
   const interpretations: string[] = []
-  if (going.has("adjusting")) interpretations.push("homesickness")
-  if (going.has("lonely")) interpretations.push("loneliness")
-  if (going.has("process")) interpretations.push("something unresolved")
+  if (going.has("adjusting")) {
+    interpretations.push(pick(["homesickness", "the ache of being far from home", "that homesick feeling"]))
+  }
+  if (going.has("lonely")) {
+    interpretations.push(pick(["loneliness", "a real loneliness", "the quiet kind of lonely"]))
+  }
+  if (going.has("process")) {
+    interpretations.push(pick(["something still unresolved", "grief that hasn't had space yet", "an unfinished feeling"]))
+  }
   if (body.has("chest-tightness") || body.has("restlessness") || body.has("dizziness") || body.has("stomach-knot")) {
-    interpretations.push("fear your body is holding")
+    interpretations.push(pick([
+      "fear your body is holding",
+      "anxiety that's landed in your body",
+      "a nervous system that hasn't been able to rest",
+    ]))
   }
   if (body.has("heaviness") || body.has("numbness")) {
-    interpretations.push("a kind of quiet grief")
+    interpretations.push(pick([
+      "a kind of quiet grief",
+      "something sad sitting underneath",
+      "the kind of tired that isn't about sleep",
+    ]))
   }
 
   if (interpretations.length > 0) {
-    const joined = interpretations.length === 1
-      ? interpretations[0]
-      : interpretations.slice(0, -1).join(", ") + ", and " + interpretations[interpretations.length - 1]
-    sentences.push(`That sounds like ${joined}.`)
+    const interpLead = pick([
+      "That sounds like",
+      "From the outside, that reads as",
+      "If I had to name it, I'd call it",
+      "That has the shape of",
+    ])
+    sentences.push(`${interpLead} ${joinList(interpretations)}.`)
   }
 
-  sentences.push("That's a lot to be holding.")
+  // Closing warmth — varied, responsive to context
+  const closers: string[] = []
+  if (interpretations.length >= 2 || told.length >= 2) {
+    closers.push(
+      "That's a lot to be holding.",
+      "That's more than one thing, and it's a lot.",
+      "No wonder you're tired.",
+      "That's a heavy mix. You're not imagining it.",
+    )
+  } else if (duration === "months" || duration === "comes-and-goes") {
+    closers.push(
+      "Carrying this for that long takes a toll.",
+      "That's a long time to sit with something like this.",
+      "You've been strong about this for a while now.",
+    )
+  } else if (situation.has("international-student") || going.has("adjusting")) {
+    closers.push(
+      "Being far from what's familiar is its own kind of work.",
+      "Rebuilding in a new place is quietly exhausting.",
+      "That's a lot, especially when home isn't nearby.",
+    )
+  } else {
+    closers.push(
+      "Thank you for telling me.",
+      "That's real, and I hear you.",
+      "Whatever this is, you don't have to carry it alone right now.",
+      "You're allowed to feel this.",
+    )
+  }
+  sentences.push(pick(closers))
+
   return sentences.join(" ")
 }
 

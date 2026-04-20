@@ -1,6 +1,8 @@
 "use client"
 
+import { useMemo } from "react"
 import { AppLogo } from "@/components/app-logo"
+import { PronunciationGuide } from "@/components/pronunciation-guide"
 import {
   humanReflection,
   suggestTools,
@@ -35,7 +37,7 @@ export function AcknowledgmentScreen({
   onOpenWheel,
   onSkip,
 }: AcknowledgmentScreenProps) {
-  const reflection = humanReflection(session, country)
+  const reflection = useMemo(() => humanReflection(session, country), [session, country])
   const tools = suggestTools(session)
 
   return (
@@ -55,6 +57,7 @@ export function AcknowledgmentScreen({
           >
             Bhava · भाव
           </span>
+          <PronunciationGuide size="sm" />
         </div>
       </header>
 
