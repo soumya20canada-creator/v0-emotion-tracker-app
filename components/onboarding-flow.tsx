@@ -14,6 +14,7 @@ import {
   type OnboardingSession,
 } from "@/lib/onboarding-data"
 import { getEmergencyNumber } from "@/lib/emergency-numbers"
+import { getRegionById } from "@/lib/crisis-resources"
 import { ThemeHeader } from "@/components/theme-header"
 import { LocationPicker } from "@/components/location-picker"
 import { AppLogo } from "@/components/app-logo"
@@ -376,11 +377,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               </div>
             </section>
 
-            {/* Emergency services note */}
-            {country && (
-              <EmergencyNote country={country} />
-            )}
-            {!country && <EmergencyNote country="" />}
+            {/* Emergency services note — prefer "where are you right now" selection, fall back to onboarding country */}
+            {(() => {
+              const regionLabel = currentRegion ? getRegionById(currentRegion)?.label : undefined
+              const effectiveCountry = regionLabel ?? country ?? ""
+              return <EmergencyNote country={effectiveCountry} />
+            })()}
 
             <ContinueButton onClick={() => { scrollTop(); setScreen(4) }} />
           </fieldset>
