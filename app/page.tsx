@@ -26,7 +26,13 @@ import { AccountSettings } from "@/components/account-settings"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { AcknowledgmentScreen } from "@/components/acknowledgment-screen"
 import { WelcomeBack } from "@/components/welcome-back"
+import { NormalizeHelp } from "@/components/normalize-help"
 import { ThemeHeader } from "@/components/theme-header"
+import { Breathing } from "@/components/breathing"
+import { Journal } from "@/components/journal"
+import { GroundingNotes } from "@/components/grounding-notes"
+import { Meditate } from "@/components/meditate"
+import { SessionCheckout, type PositiveEmotionId } from "@/components/session-checkout"
 import {
   type EmotionCategory,
   type MicroAction,
@@ -50,11 +56,12 @@ import { applyTheme } from "@/lib/themes"
 import { getRegionById } from "@/lib/crisis-resources"
 import type { Moment } from "@/lib/emotions-data"
 import type { ThemeId } from "@/lib/themes"
-import type { OnboardingSession, PathChoice } from "@/lib/onboarding-data"
+import type { OnboardingSession, PathChoice, ToolSuggestionId } from "@/lib/onboarding-data"
 import { countryToRegionId, situationToContextTags, bodyToEmotion, durationToIntensity, bodyFeelingPhrase } from "@/lib/onboarding-data"
-import { ArrowLeft, X, Lock, Info, Eye, EyeOff } from "lucide-react"
+import { monthKey, previousMonthStart } from "@/lib/monthly-report"
+import { ArrowLeft, X, Lock, Info, Eye, EyeOff, Wind, BookOpenText, Feather, Headphones, ArrowRight, ChevronRight } from "lucide-react"
 
-type Screen = "home" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
+type Screen = "home" | "wheel" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
 
 export default function BhavaApp() {
   const [authReady, setAuthReady] = useState(false)
@@ -64,6 +71,7 @@ export default function BhavaApp() {
 
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showNormalizeHelp, setShowNormalizeHelp] = useState(false)
   const [showWelcomeBack, setShowWelcomeBack] = useState(false)
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false)
   const [lastOnboardingSession, setLastOnboardingSession] = useState<OnboardingSession | null>(null)
@@ -75,6 +83,17 @@ export default function BhavaApp() {
 
   // App settings
   const [showSettings, setShowSettings] = useState(false)
+
+  // Monthly report auto-open
+  const [autoOpenMonth, setAutoOpenMonth] = useState(false)
+
+  // Guided-session tool + check-out
+  const [activeTool, setActiveTool] = useState<ToolSuggestionId | null>(null)
+  const [showCheckout, setShowCheckout] = useState(false)
+  const [fromGuidedSession, setFromGuidedSession] = useState(false)
+
+  // Per-session location ask — refresh each time the app opens
+  const locationSessionClearedRef = useRef(false)
 
   const [screen, setScreen] = useState<Screen>("home")
   const [selectedEmotion, setSelectedEmotion] = useState<EmotionCategory | null>(null)
@@ -107,7 +126,7 @@ export default function BhavaApp() {
             setIsFirstTimeUser(!p.onboarding_completed)
             setIsNewUser(!p.onboarding_completed)
             if (!p.onboarding_completed) {
-              setShowOnboarding(true)
+              setShowNormalizeHelp(true)
             } else {
               setShowWelcomeBack(true)
             }
@@ -126,7 +145,7 @@ export default function BhavaApp() {
               applyTheme(newProfile.color_theme)
               setIsFirstTimeUser(true)
               setIsNewUser(true)
-              setShowOnboarding(true)
+              setShowNormalizeHelp(true)
             }
           }
           setAuthReady(true)
@@ -143,6 +162,7 @@ export default function BhavaApp() {
         })
         setGameState(null)
         setShowOnboarding(false)
+        setShowNormalizeHelp(false)
         setShowWelcomeBack(false)
         setLastOnboardingSession(null)
       }
@@ -155,25 +175,67 @@ export default function BhavaApp() {
     if (!profile) return
     let cancelled = false
     const local = loadState(profile.id)
-    const fallbackRegion = profile.country ? countryToRegionId(profile.country) : null
-    const hydratedLocal: GameState = {
-      ...local,
-      selectedRegion: local.selectedRegion ?? fallbackRegion,
-    }
-    if (hydratedLocal.selectedRegion !== local.selectedRegion) {
-      saveState(hydratedLocal, profile.id)
-    }
-    setGameState(hydratedLocal)
+    setGameState(local)
     hydrateFromSupabase(profile.id).then((remote) => {
       if (cancelled || !remote) return
       const merged: GameState = {
         ...remote,
-        selectedRegion: hydratedLocal.selectedRegion ?? remote.selectedRegion ?? fallbackRegion,
+        selectedRegion: local.selectedRegion ?? remote.selectedRegion ?? null,
       }
       setGameState(merged)
       saveState(merged, profile.id)
     })
     return () => { cancelled = true }
+  }, [profile])
+
+  // Per-session location ask — clear selectedRegion once per browser session
+  // so the user is always asked "where are you right now?"
+  useEffect(() => {
+    if (!profile || !gameState || locationSessionClearedRef.current) return
+    locationSessionClearedRef.current = true
+    try {
+      const key = `bhava-region-session-set:${profile.id}`
+      const alreadySet = typeof window !== "undefined" ? sessionStorage.getItem(key) : null
+      if (!alreadySet && gameState.selectedRegion) {
+        setGameState({ ...gameState, selectedRegion: null })
+      }
+    } catch {
+      // noop
+    }
+  }, [profile, gameState])
+
+  // Auto-open monthly report once per month (only for returning, onboarded users)
+  useEffect(() => {
+    if (!profile || !gameState) return
+    if (showOnboarding || showNormalizeHelp || showWelcomeBack || showAcknowledgment) return
+    if (autoOpenMonth) return
+    try {
+      const key = `bhava-last-monthly-report-viewed:${profile.id}`
+      const prevKey = monthKey(previousMonthStart())
+      const lastViewed = typeof window !== "undefined" ? localStorage.getItem(key) : null
+      if (lastViewed === prevKey) return
+      const prevStart = previousMonthStart()
+      const prevEnd = new Date(prevStart.getFullYear(), prevStart.getMonth() + 1, 1)
+      const hasCheckIns = gameState.checkIns.some((c) => {
+        const d = c.timestamp ? new Date(c.timestamp) : new Date(`${c.date}T00:00:00`)
+        return d >= prevStart && d < prevEnd
+      })
+      if (!hasCheckIns) return
+      setAutoOpenMonth(true)
+      setScreen("badges")
+    } catch {
+      // noop
+    }
+  }, [profile, gameState, showOnboarding, showNormalizeHelp, showWelcomeBack, showAcknowledgment, autoOpenMonth])
+
+  const handleMonthReportViewed = useCallback((mKey: string) => {
+    if (!profile) return
+    try {
+      localStorage.setItem(`bhava-last-monthly-report-viewed:${profile.id}`, mKey)
+    } catch {
+      // noop
+    }
+    setAutoOpenMonth(false)
   }, [profile])
 
   const handleAuthenticated = useCallback((p: Profile, newUser: boolean) => {
@@ -185,7 +247,7 @@ export default function BhavaApp() {
     setIsNewUser(firstTime)
     setIsFirstTimeUser(firstTime)
     if (firstTime) {
-      setShowOnboarding(true)
+      setShowNormalizeHelp(true)
     } else {
       setShowWelcomeBack(true)
     }
@@ -196,11 +258,22 @@ export default function BhavaApp() {
     country?: string,
     identity?: string[],
     gender?: string[],
-    pronouns?: string
+    pronouns?: string,
+    currentRegion?: string | null
   ) => {
     setLastOnboardingSession(session)
     setShowOnboarding(false)
     setShowAcknowledgment(true)
+
+    if (currentRegion && profile) {
+      setGameState((prev) => {
+        if (!prev) return prev
+        const updated = { ...prev, selectedRegion: currentRegion }
+        saveState(updated, profile.id)
+        try { sessionStorage.setItem(`bhava-region-session-set:${profile.id}`, "1") } catch {}
+        return updated
+      })
+    }
 
     if (!profile) return
 
@@ -306,9 +379,28 @@ export default function BhavaApp() {
     const updated = { ...gameState, selectedRegion: regionId }
     setGameState(updated)
     saveState(updated, profile.id)
+    try {
+      sessionStorage.setItem(`bhava-region-session-set:${profile.id}`, "1")
+    } catch {
+      // noop
+    }
   }, [gameState, profile])
 
-  const handlePathChoice = useCallback((path: PathChoice) => {
+  const openTool = useCallback((id: ToolSuggestionId, guided: boolean) => {
+    setFromGuidedSession(guided)
+    if (id === "reach-out") {
+      setShowSupportView(true)
+      return
+    }
+    setActiveTool(id)
+  }, [profile, gameState])
+
+  const handlePickTool = useCallback((id: ToolSuggestionId) => {
+    setShowAcknowledgment(false)
+    openTool(id, true)
+  }, [openTool])
+
+  const handleOpenWheel = useCallback(() => {
     setShowAcknowledgment(false)
     const session = lastOnboardingSession
     const inferredEmotionId = session ? bodyToEmotion(session.body_feelings) : "calm"
@@ -317,53 +409,63 @@ export default function BhavaApp() {
       EMOTION_CATEGORIES.find((e) => e.id === "calm")!
     const inferredIntensity = session ? durationToIntensity(session.duration) : 3
     const preselectedTags = situationToContextTags(session)
-
-    if (path === "wheel") {
-      setSelectedEmotion(inferredEmotion)
-      setSubEmotions([])
-      setContextTags(preselectedTags)
-      setJournalNote("")
-      setIntensity(inferredIntensity)
-      setActionsHint(null)
-      setScreen("sub-emotion")
-      return
-    }
-    if (path === "quick-actions") {
-      setSelectedEmotion(inferredEmotion)
-      setSubEmotions([])
-      setContextTags(preselectedTags)
-      setJournalNote("")
-      setIntensity(inferredIntensity)
-      const scored = session
-        ? scoreActionsForSession(inferredEmotion.id, inferredIntensity, {
-            body_feelings: session.body_feelings,
-            whats_been_going_on: session.whats_been_going_on,
-            duration: session.duration,
-          })
-        : getActionsForEmotion(inferredEmotion.id, inferredIntensity)
-      setActions(scored)
-      setCompletedActionIds([])
-      const option = INTENSITY_OPTIONS.find((o) => o.level === inferredIntensity)
-      setShowCrisis(option?.isCrisis || false)
-      const phrase = session ? bodyFeelingPhrase(session.body_feelings) : ""
-      setActionsHint(phrase ? `I picked these because you mentioned ${phrase}.` : null)
-      setScreen("actions")
-      return
-    }
-    if (path === "support") {
-      if (profile?.country && gameState && !gameState.selectedRegion) {
-        const regionId = countryToRegionId(profile.country)
-        const updated = { ...gameState, selectedRegion: regionId }
-        setGameState(updated)
-        saveState(updated, profile.id)
-      }
-      setShowSupportView(true)
-      return
-    }
-    // look-around
+    setSelectedEmotion(inferredEmotion)
+    setSubEmotions([])
+    setContextTags(preselectedTags)
+    setJournalNote("")
+    setIntensity(inferredIntensity)
     setActionsHint(null)
+    setFromGuidedSession(true)
+    setScreen("sub-emotion")
+  }, [lastOnboardingSession])
+
+  const handleToolClose = useCallback(() => {
+    const guided = fromGuidedSession
+    setActiveTool(null)
+    if (guided) {
+      setShowCheckout(true)
+    }
+  }, [fromGuidedSession])
+
+  const handleCheckoutDone = useCallback(() => {
+    setShowCheckout(false)
+    setFromGuidedSession(false)
     setScreen("home")
-  }, [profile, gameState, lastOnboardingSession])
+  }, [])
+
+  const handleCheckoutNeedMore = useCallback(() => {
+    setShowCheckout(false)
+    setActiveTool("grounding-note")
+    // fromGuidedSession stays true so closing the note returns to checkout flow state
+  }, [])
+
+  const handleSavePositive = useCallback((positiveId: PositiveEmotionId) => {
+    if (!gameState || !profile) {
+      handleCheckoutDone()
+      return
+    }
+    const contextTagsFromSession = situationToContextTags(lastOnboardingSession)
+    const newState = processCheckIn(
+      gameState, "joy", positiveId, 2,
+      [], false, contextTagsFromSession, "", profile.id
+    )
+    const newlyUnlocked = newState.moments.filter(
+      (m) => m.unlocked && !gameState.moments.find((om) => om.id === m.id && om.unlocked)
+    )
+    setGameState(newState)
+    if (newlyUnlocked.length > 0) {
+      momentQueueRef.current.push(...newlyUnlocked)
+      setTimeout(showNextMoment, 1400)
+    }
+    handleCheckoutDone()
+  }, [gameState, profile, lastOnboardingSession, showNextMoment, handleCheckoutDone])
+
+  // Legacy helper retained for the wheel-routed flow — used when user enters via doorway
+  // and completes action-cards. Not used for the reflection-hub path anymore.
+  const handlePathChoice = useCallback((_: PathChoice) => {
+    setShowAcknowledgment(false)
+    setScreen("home")
+  }, [])
 
   const handleReset = useCallback(() => {
     setSelectedEmotion(null)
@@ -424,6 +526,15 @@ export default function BhavaApp() {
     )
   }
 
+  // Normalize help-seeking (shown once before onboarding for new users)
+  if (showNormalizeHelp) {
+    return (
+      <NormalizeHelp
+        onContinue={() => { setShowNormalizeHelp(false); setShowOnboarding(true) }}
+      />
+    )
+  }
+
   // Onboarding
   if (showOnboarding) {
     return (
@@ -457,17 +568,36 @@ export default function BhavaApp() {
 
   const greetingName = profile.first_name ?? profile.display_name ?? profile.username ?? "friend"
 
-  // Post-onboarding: acknowledgment routes directly to chosen destination
+  // Post-onboarding reflection hub: reflection + tool suggestions + wheel doorway
   if (showAcknowledgment) {
     return (
       <AcknowledgmentScreen
         firstName={greetingName}
         country={profile.country}
         session={lastOnboardingSession}
-        onContinue={handlePathChoice}
+        onPickTool={handlePickTool}
+        onOpenWheel={handleOpenWheel}
+        onSkip={() => { setShowAcknowledgment(false); setScreen("home") }}
       />
     )
   }
+
+  // End-of-session check-out (after a guided tool or action-cards completion)
+  if (showCheckout) {
+    return (
+      <SessionCheckout
+        onDone={handleCheckoutDone}
+        onNeedMore={handleCheckoutNeedMore}
+        onSavePositive={handleSavePositive}
+      />
+    )
+  }
+
+  // Active tool overlay (reflection-hub tool pick OR home tool tile)
+  if (activeTool === "breathe") return <Breathing onClose={handleToolClose} />
+  if (activeTool === "journal") return <Journal userId={profile.id} onClose={handleToolClose} />
+  if (activeTool === "grounding-note") return <GroundingNotes onClose={handleToolClose} />
+  if (activeTool === "meditate") return <Meditate onClose={handleToolClose} />
 
   if (showSupportView) {
     const regionData = gameState.selectedRegion ? getRegionById(gameState.selectedRegion) : null
@@ -530,7 +660,9 @@ export default function BhavaApp() {
             {screen !== "home" && screen !== "progress" && screen !== "badges" && screen !== "patterns" && (
               <button
                 onClick={() => {
-                  if (screen === "sub-emotion") setScreen("home")
+                  if (screen === "wheel") setScreen("home")
+                  else if (screen === "describe") setScreen("wheel")
+                  else if (screen === "sub-emotion") setScreen("describe")
                   else if (screen === "context") setScreen("sub-emotion")
                   else if (screen === "intensity") setScreen("context")
                   else if (screen === "actions") setScreen("intensity")
@@ -579,46 +711,11 @@ export default function BhavaApp() {
       {/* Main Content */}
       <div className="max-w-lg mx-auto px-5 py-8">
         {screen === "home" && (
-          <div className="flex flex-col items-center gap-8">
-            {/* Daily check-in status */}
-            {(() => {
-              const today = new Date().toISOString().slice(0, 10)
-              const checkedInToday = gameState.checkIns.some(c => c.date === today)
-              return (
-                <div className="w-full p-4 rounded-2xl flex items-center gap-3 border border-border"
-                  style={{ background: checkedInToday ? "#10B98110" : "var(--secondary)" }}>
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: checkedInToday ? "#10B98120" : "var(--muted)" }}
-                    aria-hidden="true"
-                  >
-                    {checkedInToday ? (
-                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    ) : (
-                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-                      </svg>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-bold text-foreground">
-                      {checkedInToday ? "Checked in today" : "No check-in yet today"}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      {checkedInToday
-                        ? "You showed up today. That's enough."
-                        : "It takes 30 seconds. You are worth it."}
-                    </p>
-                  </div>
-                </div>
-              )
-            })()}
-
+          <div className="flex flex-col items-stretch gap-7">
             {/* Hero headline */}
             <div className="text-center flex flex-col gap-2">
               <h1 className="text-3xl font-extrabold text-foreground leading-tight text-balance">
-                Understand your emotions,<br />one day at a time.
+                How can I be here for you?
               </h1>
               <p className="text-base text-muted-foreground italic">
                 Welcome back, {greetingName} {profile.avatar_emoji}
@@ -626,14 +723,47 @@ export default function BhavaApp() {
               <p className="text-sm text-muted-foreground/50 tracking-widest">भाव · the felt sense of being</p>
             </div>
 
-            {/* Emotion wheel */}
-            <EmotionWheel onSelect={handleEmotionSelect} selectedId={selectedEmotion?.id || null} />
+            {/* Where are you right now? — per-session ask */}
+            {!gameState.selectedRegion && (
+              <div className="flex flex-col gap-3 p-5 rounded-2xl bg-secondary/70 border border-border">
+                <div className="flex flex-col gap-1">
+                  <p className="text-base font-bold text-foreground">Where are you right now?</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Places change, and so can you. Pick where you are today so we can show the right resources.
+                  </p>
+                </div>
+                <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
+              </div>
+            )}
+
+            {/* Tool tiles — pick up what helps */}
+            <section className="flex flex-col gap-3">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1">
+                Something to pick up
+              </p>
+              <div className="flex flex-col gap-2">
+                <HomeToolTile icon={Wind} title="Breathe" subtitle="3 gentle patterns · 1–5 minutes" onClick={() => openTool("breathe", false)} />
+                <HomeToolTile icon={BookOpenText} title="Write it down" subtitle="A private page, just for you" onClick={() => openTool("journal", false)} />
+                <HomeToolTile icon={Feather} title="A small note for today" subtitle="Short · rotates daily" onClick={() => openTool("grounding-note", false)} />
+                <HomeToolTile icon={Headphones} title="Sit quietly" subtitle="A silent timer · 3 to 15 minutes" onClick={() => openTool("meditate", false)} />
+              </div>
+            </section>
+
+            {/* Wheel doorway — opt-in */}
+            <button
+              onClick={() => { setFromGuidedSession(false); setScreen("wheel") }}
+              style={{ minHeight: 52 }}
+              className="w-full flex items-center justify-center gap-1.5 text-sm font-semibold text-foreground/80 hover:text-foreground hover:bg-muted transition-colors cursor-pointer rounded-2xl border border-border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              Want to name a feeling? Open the emotion wheel
+              <ArrowRight size={14} />
+            </button>
 
             {/* See how it works */}
             <button
               onClick={() => setShowHowItWorks(true)}
               style={{ minHeight: 44 }}
-              className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-2"
+              className="mx-auto flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-2"
             >
               <Info size={15} aria-hidden="true" />
               See how it works
@@ -654,6 +784,20 @@ export default function BhavaApp() {
                 <span className="text-sm opacity-60">Lieberman et al., 2007 · Lejuez et al., 2001</span>
               </p>
             </div>
+          </div>
+        )}
+
+        {screen === "wheel" && (
+          <div className="flex flex-col items-center gap-8">
+            <div className="text-center flex flex-col gap-2">
+              <h1 className="text-2xl font-extrabold text-foreground leading-tight text-balance">
+                What are you feeling?
+              </h1>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Tap what fits. No right answers.
+              </p>
+            </div>
+            <EmotionWheel onSelect={handleEmotionSelect} selectedId={selectedEmotion?.id || null} />
           </div>
         )}
 
@@ -808,18 +952,18 @@ export default function BhavaApp() {
             {completedActionIds.length > 0 && (
               <div className="flex flex-col gap-3">
                 <button
+                  onClick={() => { setFromGuidedSession(true); setShowCheckout(true) }}
+                  style={{ minHeight: 52, background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
+                  className="w-full rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  How are you feeling now?
+                </button>
+                <button
                   onClick={() => setScreen("progress")}
                   style={{ minHeight: 48, borderColor: selectedEmotion?.color, color: selectedEmotion?.color, background: `${selectedEmotion?.color}10` }}
                   className="w-full rounded-2xl text-base font-semibold border-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Track your journey
-                </button>
-                <button
-                  onClick={handleReset}
-                  style={{ minHeight: 52, boxShadow: "0 4px 20px rgba(59, 130, 246, 0.3)" }}
-                  className="w-full rounded-2xl text-lg font-bold bg-primary text-primary-foreground cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  Come back to yourself again
                 </button>
               </div>
             )}
@@ -838,7 +982,13 @@ export default function BhavaApp() {
         )}
 
         {screen === "badges" && (
-          <MySpace userId={profile.id} gameState={gameState} firstName={greetingName} />
+          <MySpace
+            userId={profile.id}
+            gameState={gameState}
+            firstName={greetingName}
+            autoOpenMonth={autoOpenMonth}
+            onMonthReportViewed={handleMonthReportViewed}
+          />
         )}
 
         {screen === "patterns" && (
@@ -1006,5 +1156,32 @@ function PasswordResetModal({ onDone }: { onDone: () => void }) {
         )}
       </div>
     </div>
+  )
+}
+
+function HomeToolTile({
+  icon: Icon, title, subtitle, onClick,
+}: {
+  icon: React.ElementType
+  title: string
+  subtitle: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{ minHeight: 68 }}
+      className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:bg-muted cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      aria-label={title}
+    >
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/15 shrink-0">
+        <Icon size={18} className="text-primary" aria-hidden="true" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-base font-bold text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{subtitle}</p>
+      </div>
+      <ChevronRight size={16} className="text-muted-foreground shrink-0" aria-hidden="true" />
+    </button>
   )
 }

@@ -71,40 +71,34 @@ function phaseDuration(p: Phase, preset: Preset): number {
   }
 }
 
+type Tick = { phase: Phase; remaining: number }
+
 export function Breathing({ onClose }: BreathingProps) {
   const [preset, setPreset] = useState<Preset>(PRESETS[0])
   const [running, setRunning] = useState(false)
-  const [phase, setPhase] = useState<Phase>("inhale")
-  const [remaining, setRemaining] = useState<number>(PRESETS[0].inhale)
+  const [tick, setTick] = useState<Tick>({ phase: "inhale", remaining: PRESETS[0].inhale })
   const [cycles, setCycles] = useState(0)
   const tickRef = useRef<number | null>(null)
 
-  // Reset on preset change
+  const { phase, remaining } = tick
+
   useEffect(() => {
     setRunning(false)
-    setPhase("inhale")
-    setRemaining(preset.inhale)
+    setTick({ phase: "inhale", remaining: preset.inhale })
     setCycles(0)
   }, [preset])
 
-  // Timer
   useEffect(() => {
     if (!running) {
       if (tickRef.current) { window.clearInterval(tickRef.current); tickRef.current = null }
       return
     }
     tickRef.current = window.setInterval(() => {
-      setRemaining((r) => {
-        if (r > 1) return r - 1
-        // phase complete
-        setPhase((p) => {
-          const np = nextPhase(p, preset)
-          const dur = phaseDuration(np, preset)
-          setRemaining(dur)
-          if (np === "inhale") setCycles((c) => c + 1)
-          return np
-        })
-        return 0
+      setTick((t) => {
+        if (t.remaining > 1) return { phase: t.phase, remaining: t.remaining - 1 }
+        const np = nextPhase(t.phase, preset)
+        if (np === "inhale") setCycles((c) => c + 1)
+        return { phase: np, remaining: phaseDuration(np, preset) }
       })
     }, 1000) as unknown as number
     return () => {

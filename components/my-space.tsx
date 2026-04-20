@@ -1,13 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { BookOpenText, Wind, Headphones, Feather, ChevronRight, Sparkles, Heart, Moon } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { BookOpenText, Wind, Headphones, Feather, CalendarRange, ChevronRight, Sparkles, Heart, Moon } from "lucide-react"
 import { Journal } from "@/components/journal"
 import { Breathing } from "@/components/breathing"
 import { GroundingNotes } from "@/components/grounding-notes"
 import { Meditate } from "@/components/meditate"
+import { MonthlyReportView } from "@/components/monthly-report"
 import { type GameState } from "@/lib/game-store"
 import { getEntries } from "@/lib/journal-store"
+import { generateMonthlyReport, previousMonthStart } from "@/lib/monthly-report"
 
 const MOMENT_ICON_MAP: Record<string, React.ElementType> = {
   Sparkles, Heart, Moon,
@@ -17,17 +19,34 @@ type MySpaceProps = {
   userId: string
   gameState: GameState
   firstName?: string
+  autoOpenMonth?: boolean
+  onMonthReportViewed?: (monthKey: string) => void
 }
 
-type View = "hub" | "journal" | "breathe" | "notes" | "meditate"
+type View = "hub" | "journal" | "breathe" | "notes" | "meditate" | "month"
 
-export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
+export function MySpace({ userId, gameState, firstName, autoOpenMonth, onMonthReportViewed }: MySpaceProps) {
   const [view, setView] = useState<View>("hub")
   const [entryCount, setEntryCount] = useState(0)
 
   useEffect(() => {
     setEntryCount(getEntries(userId).length)
   }, [userId, view])
+
+  const monthReport = useMemo(
+    () => generateMonthlyReport(gameState.checkIns, previousMonthStart()),
+    [gameState.checkIns]
+  )
+
+  useEffect(() => {
+    if (autoOpenMonth && view === "hub") {
+      setView("month")
+    }
+  }, [autoOpenMonth, view])
+
+  useEffect(() => {
+    if (view === "month") onMonthReportViewed?.(monthReport.monthKey)
+  }, [view, monthReport.monthKey, onMonthReportViewed])
 
   if (view === "journal") {
     return <Journal userId={userId} onClose={() => setView("hub")} />
@@ -40,6 +59,9 @@ export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
   }
   if (view === "meditate") {
     return <Meditate onClose={() => setView("hub")} />
+  }
+  if (view === "month") {
+    return <MonthlyReportView report={monthReport} onClose={() => setView("hub")} />
   }
 
   const unlockedMoments = gameState.moments.filter((m) => m.unlocked)
@@ -81,6 +103,12 @@ export function MySpace({ userId, gameState, firstName }: MySpaceProps) {
           title="Grounding notes"
           subtitle="One short note for today"
           onClick={() => setView("notes")}
+        />
+        <HubCard
+          icon={CalendarRange}
+          title="Your month"
+          subtitle={`A gentle look back at ${monthReport.monthLabel}`}
+          onClick={() => setView("month")}
         />
       </section>
 

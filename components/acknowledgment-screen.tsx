@@ -1,25 +1,42 @@
 "use client"
 
-import { useState } from "react"
 import { AppLogo } from "@/components/app-logo"
-import { reflectOnboarding, supportPrefToPath, pathLabel, type PathChoice } from "@/lib/onboarding-data"
+import {
+  humanReflection,
+  suggestTools,
+  type ToolSuggestion,
+  type ToolSuggestionId,
+} from "@/lib/onboarding-data"
 import type { OnboardingSession } from "@/lib/onboarding-data"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, ArrowRight } from "lucide-react"
 
 type AcknowledgmentScreenProps = {
   firstName: string
   country: string | null
   session: OnboardingSession | null
-  onContinue: (path: PathChoice) => void
+  onPickTool: (tool: ToolSuggestionId) => void
+  onOpenWheel: () => void
+  onSkip: () => void
 }
 
-const ALT_PATHS: PathChoice[] = ["wheel", "quick-actions", "support", "look-around"]
+const TOOL_ICONS: Record<ToolSuggestionId, React.ElementType> = {
+  "breathe": Wind,
+  "journal": BookOpenText,
+  "grounding-note": Feather,
+  "meditate": Headphones,
+  "reach-out": HeartHandshake,
+}
 
-export function AcknowledgmentScreen({ firstName, country, session, onContinue }: AcknowledgmentScreenProps) {
-  const reflection = reflectOnboarding(session, country)
-  const suggested = supportPrefToPath(session?.support_preferences ?? [])
-  const suggestedMeta = pathLabel(suggested)
-  const [overrideOpen, setOverrideOpen] = useState(false)
+export function AcknowledgmentScreen({
+  firstName,
+  country,
+  session,
+  onPickTool,
+  onOpenWheel,
+  onSkip,
+}: AcknowledgmentScreenProps) {
+  const reflection = humanReflection(session, country)
+  const tools = suggestTools(session)
 
   return (
     <main className="min-h-dvh bg-background flex flex-col">
@@ -41,66 +58,43 @@ export function AcknowledgmentScreen({ firstName, country, session, onContinue }
         </div>
       </header>
 
-      <div className="flex-1 max-w-lg mx-auto w-full px-6 py-10 flex flex-col gap-8 justify-center">
-        <div className="flex flex-col gap-5">
+      <div className="flex-1 max-w-lg mx-auto w-full px-6 py-8 flex flex-col gap-7">
+        <div className="flex flex-col gap-4">
           <h1 className="text-3xl font-extrabold text-foreground text-balance leading-tight">
             Hi {firstName}.
           </h1>
-
-          {reflection ? (
-            <p className="text-lg text-foreground leading-relaxed">
-              {reflection}. That's a lot to hold.
-            </p>
-          ) : (
-            <p className="text-lg text-foreground leading-relaxed">
-              Thank you for showing up.
-            </p>
-          )}
-
-          <div className="p-5 rounded-2xl border border-border bg-secondary/50">
-            <p className="text-base text-foreground leading-relaxed">
-              Based on what you said, I'll start you with{" "}
-              <span className="font-bold">{suggestedMeta.label}</span> — {suggestedMeta.reason}
-            </p>
-          </div>
+          <p className="text-lg text-foreground leading-relaxed text-balance">
+            {reflection}
+          </p>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={() => onContinue(suggested)}
-            style={{ minHeight: 56, background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
-            className="w-full rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            Take me there
-          </button>
+        <section className="flex flex-col gap-3">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+            Here's what might help right now
+          </p>
+          <div className="flex flex-col gap-2">
+            {tools.map((tool) => (
+              <ToolCard key={tool.id} tool={tool} onClick={() => onPickTool(tool.id)} />
+            ))}
+          </div>
+        </section>
 
+        <div className="flex flex-col gap-2 pt-2 border-t border-border">
           <button
-            onClick={() => setOverrideOpen((v) => !v)}
+            onClick={onOpenWheel}
+            style={{ minHeight: 48 }}
+            className="w-full flex items-center justify-center gap-1.5 text-sm font-semibold text-foreground/80 hover:text-foreground hover:bg-muted transition-colors cursor-pointer rounded-xl px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            Want to name what you're feeling? Open the emotion wheel
+            <ArrowRight size={14} />
+          </button>
+          <button
+            onClick={onSkip}
             style={{ minHeight: 44 }}
-            className="flex items-center justify-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            aria-expanded={overrideOpen}
+            className="w-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-xl px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            Somewhere else {overrideOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            I just want to look around
           </button>
-
-          {overrideOpen && (
-            <div className="flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border">
-              {ALT_PATHS.filter((p) => p !== suggested).map((p) => {
-                const meta = pathLabel(p)
-                return (
-                  <button
-                    key={p}
-                    onClick={() => onContinue(p)}
-                    style={{ minHeight: 52 }}
-                    className="w-full text-left px-4 py-3 rounded-xl bg-background hover:bg-muted transition-colors cursor-pointer border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  >
-                    <p className="text-sm font-bold text-foreground capitalize">{meta.label}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{meta.reason}</p>
-                  </button>
-                )
-              })}
-            </div>
-          )}
         </div>
 
         <p className="text-sm text-muted-foreground/70 text-center italic">
@@ -108,5 +102,26 @@ export function AcknowledgmentScreen({ firstName, country, session, onContinue }
         </p>
       </div>
     </main>
+  )
+}
+
+function ToolCard({ tool, onClick }: { tool: ToolSuggestion; onClick: () => void }) {
+  const Icon = TOOL_ICONS[tool.id]
+  return (
+    <button
+      onClick={onClick}
+      style={{ minHeight: 72 }}
+      className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:bg-muted cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      aria-label={tool.title}
+    >
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/15 shrink-0">
+        <Icon size={18} className="text-primary" aria-hidden="true" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-base font-bold text-foreground">{tool.title}</p>
+        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{tool.reason}</p>
+      </div>
+      <ChevronRight size={16} className="text-muted-foreground shrink-0" aria-hidden="true" />
+    </button>
   )
 }

@@ -2,6 +2,8 @@
 
 import { AppLogo } from "@/components/app-logo"
 import { ThemeHeader } from "@/components/theme-header"
+import { PronunciationGuide } from "@/components/pronunciation-guide"
+import { Sparkles } from "lucide-react"
 
 type WelcomeBackProps = {
   firstName: string
@@ -39,6 +41,7 @@ export function WelcomeBack({ firstName, avatarEmoji, daysSinceLastCheckIn, onRe
           >
             Bhava · भाव
           </span>
+          <PronunciationGuide size="sm" />
         </div>
       </header>
 
@@ -56,6 +59,19 @@ export function WelcomeBack({ firstName, avatarEmoji, daysSinceLastCheckIn, onRe
           <p className="text-base text-muted-foreground/80 leading-relaxed max-w-sm">
             Take a breath before we begin. There's no rush. You can tell me how today feels, or skip straight to your space.
           </p>
+        </div>
+
+        <div className="flex gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20">
+          <Sparkles size={20} className="text-primary shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-bold text-foreground leading-relaxed">
+              Coming back is strength.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Checking in with yourself — again and again — is one of the bravest, most loving things you can do.
+              You're taking care of you. That matters.
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-col gap-3">

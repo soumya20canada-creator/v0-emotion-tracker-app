@@ -15,11 +15,14 @@ import {
 } from "@/lib/onboarding-data"
 import { getEmergencyNumber } from "@/lib/emergency-numbers"
 import { ThemeHeader } from "@/components/theme-header"
+import { LocationPicker } from "@/components/location-picker"
+import { AppLogo } from "@/components/app-logo"
+import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { ArrowLeft } from "lucide-react"
 
 type OnboardingFlowProps = {
   isNewUser: boolean
-  onComplete: (session: OnboardingSession, country?: string, identity?: string[], gender?: string[], pronouns?: string) => void
+  onComplete: (session: OnboardingSession, country?: string, identity?: string[], gender?: string[], pronouns?: string, currentRegion?: string | null) => void
   onSkip: () => void
 }
 
@@ -39,6 +42,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
   const [customPronouns, setCustomPronouns] = useState("")
 
   // Screen 2 — situation
+  const [currentRegion, setCurrentRegion] = useState<string | null>(null)
   const [situation, setSituation] = useState<string[]>([])
   const [goingOn, setGoingOn] = useState<string[]>([])
 
@@ -73,7 +77,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
     const finalGender = gender.includes("different-term") && customGender
       ? [...gender.filter((g) => g !== "different-term"), customGender]
       : gender
-    onComplete(session, country || undefined, identity.length ? identity : undefined, finalGender.length ? finalGender : undefined, finalPronouns || undefined)
+    onComplete(session, country || undefined, identity.length ? identity : undefined, finalGender.length ? finalGender : undefined, finalPronouns || undefined, currentRegion)
   }
 
   return (
@@ -81,6 +85,22 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
       {/* Progress bar */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b border-border">
         <ThemeHeader />
+        <div className="max-w-lg mx-auto flex items-center gap-3 px-6 pt-1 pb-3">
+          <AppLogo size={28} />
+          <span
+            className="text-xl tracking-wide"
+            style={{
+              fontFamily: "var(--font-cormorant), 'Cormorant Garamond', serif",
+              background: "linear-gradient(135deg, #C9A84C 0%, #F5D77E 50%, #C9A84C 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            Bhava · भाव
+          </span>
+          <PronunciationGuide size="sm" />
+        </div>
         <div className="max-w-lg mx-auto flex flex-col gap-2 px-6 pb-4">
           <div className="flex items-center justify-between gap-3">
             {screen > startScreen ? (
@@ -263,6 +283,16 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
         {screen === 2 && (
           <fieldset className="flex flex-col gap-8 border-none p-0 m-0">
             <legend className="sr-only">Your current situation</legend>
+
+            <section aria-labelledby="where-now-heading">
+              <h2 id="where-now-heading" className="text-2xl font-bold text-foreground mb-1">
+                Where are you right now?
+              </h2>
+              <p className="text-base text-muted-foreground mb-4 leading-relaxed">
+                You might be travelling or somewhere new. This helps us show the right local support.
+              </p>
+              <LocationPicker selectedRegion={currentRegion} onSelect={setCurrentRegion} />
+            </section>
 
             <section aria-labelledby="situation-heading">
               <h2 id="situation-heading" className="text-2xl font-bold text-foreground mb-1">
