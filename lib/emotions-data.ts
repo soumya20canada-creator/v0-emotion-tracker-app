@@ -30,6 +30,46 @@ export type Moment = {
 // Kept for backward compatibility while we migrate UI
 export type Badge = Moment
 
+// Collectivist / culture-specific sub-emotions, merged into the default pool when profile.country matches.
+// These name feelings that Western-centric lists tend to miss. Opt-in, never replacing.
+export const COLLECTIVIST_SUB_EMOTIONS: Record<string, Partial<Record<string, string[]>>> = {
+  India:      { sadness: ["filial guilt", "duty-heavy"], fear: ["log-kya-kahenge"], anger: ["sharam"] },
+  Pakistan:   { sadness: ["filial guilt", "duty-heavy"], fear: ["log-kya-kahenge"], anger: ["sharam"] },
+  Bangladesh: { sadness: ["filial guilt", "duty-heavy"], fear: ["what-will-they-say"] },
+  Nepal:      { sadness: ["filial guilt", "duty-heavy"] },
+  "Sri Lanka":{ sadness: ["filial guilt"] },
+  China:      { sadness: ["face-loss", "not-filial"], fear: ["disappointing-family"], anger: ["held-in"] },
+  Taiwan:     { sadness: ["face-loss", "not-filial"], fear: ["disappointing-family"] },
+  "Hong Kong":{ sadness: ["face-loss"], fear: ["disappointing-family"] },
+  Japan:      { sadness: ["meiwaku-burden"], fear: ["standing-out"] },
+  "South Korea": { sadness: ["han (deep ache)", "filial guilt"], fear: ["disappointing-family"] },
+  Vietnam:    { sadness: ["filial guilt"], fear: ["family-honor"] },
+  Philippines:{ sadness: ["utang-na-loob"], fear: ["hiya"] },
+  Mexico:     { sadness: ["familial-distance"], fear: ["qué-dirán"], anger: ["coraje"] },
+  Colombia:   { sadness: ["familial-distance"], fear: ["qué-dirán"] },
+  Brazil:     { sadness: ["saudade"] },
+  Nigeria:    { sadness: ["missing-my-people"], fear: ["community-expectation"] },
+  Ghana:      { sadness: ["missing-my-people"] },
+  Kenya:      { sadness: ["missing-my-people"] },
+  Iran:       { sadness: ["ghorbat (exile ache)"] },
+  "Saudi Arabia": { sadness: ["ghurbah"] },
+  Egypt:      { sadness: ["ghurbah"] },
+  Morocco:    { sadness: ["ghurbah"] },
+  Lebanon:    { sadness: ["ghurbah"] },
+  Turkey:     { sadness: ["gurbet"] },
+}
+
+export function getSubEmotions(emotion: EmotionCategory, country?: string | null): string[] {
+  if (!country) return emotion.subEmotions
+  const extras = COLLECTIVIST_SUB_EMOTIONS[country]?.[emotion.id]
+  if (!extras || extras.length === 0) return emotion.subEmotions
+  // De-dupe while preserving order: defaults first, then collectivist additions.
+  const seen = new Set(emotion.subEmotions)
+  const merged = [...emotion.subEmotions]
+  for (const s of extras) if (!seen.has(s)) { merged.push(s); seen.add(s) }
+  return merged
+}
+
 export const EMOTION_CATEGORIES: EmotionCategory[] = [
   {
     id: "joy",

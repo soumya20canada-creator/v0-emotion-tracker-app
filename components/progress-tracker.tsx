@@ -3,6 +3,7 @@
 import { type GameState, getDailyGoal, getMoodTrend } from "@/lib/game-store"
 import { EMOTION_CATEGORIES } from "@/lib/emotions-data"
 import { MoodCalendar } from "@/components/mood-calendar"
+import { Download } from "lucide-react"
 
 const EMOTION_EMOJI: Record<string, string> = {
   joy: "😊", calm: "😌", sadness: "😔", anger: "😤", fear: "😰", surprise: "😕",
@@ -46,13 +47,51 @@ export function ProgressTracker({ gameState, onClose }: ProgressTrackerProps) {
 
   const moodTrend = getMoodTrend(gameState.checkIns)
 
+  function handleExportCsv() {
+    const header = ["date", "time", "emotion", "sub_emotion", "intensity", "context_tags", "actions", "crisis_mode", "note"]
+    const esc = (v: string) => `"${(v ?? "").replace(/"/g, '""')}"`
+    const rows = gameState.checkIns.map((c) => {
+      const t = c.timestamp ? new Date(c.timestamp).toISOString().slice(11, 19) : ""
+      return [
+        c.date, t, c.emotionId, c.subEmotion, String(c.intensity),
+        (c.contextTags ?? []).join("|"),
+        (c.actionsCompleted ?? []).join("|"),
+        c.usedCrisisMode ? "true" : "false",
+        c.journalNote ?? "",
+      ].map(esc).join(",")
+    })
+    const csv = [header.join(","), ...rows].join("\n")
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `bhava-moods-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="flex flex-col gap-6 w-full max-w-md mx-auto pb-6">
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-extrabold text-foreground">Your Journey</h3>
-        <button onClick={onClose} className="text-base text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-semibold">
-          Close
-        </button>
+        <div className="flex items-center gap-3">
+          {gameState.checkIns.length > 0 && (
+            <button
+              onClick={handleExportCsv}
+              style={{ minHeight: 36 }}
+              className="flex items-center gap-1.5 px-3 rounded-full bg-muted hover:bg-border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-xs font-semibold"
+              aria-label="Export moods as CSV"
+            >
+              <Download size={14} />
+              CSV
+            </button>
+          )}
+          <button onClick={onClose} className="text-base text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-semibold">
+            Close
+          </button>
+        </div>
       </div>
 
       {/* Motivational quote */}

@@ -6,11 +6,12 @@ import { PronunciationGuide } from "@/components/pronunciation-guide"
 import {
   humanReflection,
   suggestTools,
+  situationToContextTags,
   type ToolSuggestion,
   type ToolSuggestionId,
 } from "@/lib/onboarding-data"
 import type { OnboardingSession } from "@/lib/onboarding-data"
-import { taglineFor } from "@/lib/cultural-taglines"
+import { taglineFor, homeTimeLineFor } from "@/lib/cultural-taglines"
 import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, ArrowRight, Stethoscope, Users } from "lucide-react"
 
 type AcknowledgmentScreenProps = {
@@ -43,6 +44,8 @@ export function AcknowledgmentScreen({
   const reflection = useMemo(() => humanReflection(session, country), [session, country])
   const tools = suggestTools(session)
   const tagline = taglineFor(country)
+  const contextTags = new Set(situationToContextTags(session))
+  const homeTimeLine = contextTags.has("homesick") || contextTags.has("loneliness") ? homeTimeLineFor(country) : null
 
   return (
     <main className="min-h-dvh bg-background flex flex-col">
@@ -73,6 +76,9 @@ export function AcknowledgmentScreen({
           <p className="text-lg text-foreground leading-relaxed text-balance">
             {reflection}
           </p>
+          {homeTimeLine && (
+            <p className="text-sm text-muted-foreground italic leading-relaxed">{homeTimeLine}</p>
+          )}
         </div>
 
         <section className="flex flex-col gap-3">

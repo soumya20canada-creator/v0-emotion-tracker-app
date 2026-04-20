@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowLeft, Plus, Trash2, Download, Lock, Pencil } from "lucide-react"
+import { ArrowLeft, Plus, Trash2, Download, Lock, Pencil, Search } from "lucide-react"
 import {
   type JournalEntry,
   addEntry,
@@ -23,6 +23,7 @@ type Mode =
 export function Journal({ userId, onClose }: JournalProps) {
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [mode, setMode] = useState<Mode>({ kind: "list" })
+  const [query, setQuery] = useState("")
 
   useEffect(() => {
     setEntries(getEntries(userId))
@@ -121,6 +122,20 @@ export function Journal({ userId, onClose }: JournalProps) {
           New entry
         </button>
 
+        {entries.length > 0 && (
+          <div className="relative">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search your entries"
+              style={{ minHeight: 44 }}
+              className="w-full pl-10 pr-4 rounded-xl border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary transition"
+            />
+          </div>
+        )}
+
         {entries.length === 0 ? (
           <div className="text-center p-8 rounded-2xl bg-muted/50">
             <p className="text-4xl mb-3">🌱</p>
@@ -131,14 +146,23 @@ export function Journal({ userId, onClose }: JournalProps) {
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {entries.map((e) => (
+            {(() => {
+              const q = query.trim().toLowerCase()
+              const filtered = q
+                ? entries.filter((e) => e.title.toLowerCase().includes(q) || e.body.toLowerCase().includes(q))
+                : entries
+              if (filtered.length === 0) {
+                return <p className="text-sm text-muted-foreground text-center py-6">No entries match "{query}".</p>
+              }
+              return filtered.map((e) => (
               <EntryCard
                 key={e.id}
                 entry={e}
                 onEdit={() => setMode({ kind: "edit", entry: e })}
                 onDelete={() => handleDelete(e.id)}
               />
-            ))}
+            ))
+            })()}
           </div>
         )}
       </div>

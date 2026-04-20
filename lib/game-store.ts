@@ -36,6 +36,34 @@ export function getDailyGoal(checkIns: CheckIn[]): { target: number; done: numbe
   return { target: 1, done: todayCount, label: "Check in with yourself today" }
 }
 
+// Days since the most recent check-in. 0 = today, 1 = yesterday, etc.
+export function daysSinceLastCheckIn(state: GameState): number | null {
+  if (!state.lastCheckInDate) return null
+  const last = new Date(state.lastCheckInDate)
+  const now = new Date()
+  const ms = now.setHours(0, 0, 0, 0) - last.setHours(0, 0, 0, 0)
+  return Math.max(0, Math.floor(ms / 86400000))
+}
+
+// Longest run of consecutive days with at least one check-in.
+export function longestStreak(checkIns: CheckIn[]): number {
+  if (checkIns.length === 0) return 0
+  const days = Array.from(new Set(checkIns.map((c) => c.date))).sort()
+  let best = 1
+  let cur = 1
+  for (let i = 1; i < days.length; i++) {
+    const prev = new Date(days[i - 1]).getTime()
+    const next = new Date(days[i]).getTime()
+    if (next - prev === 86400000) {
+      cur += 1
+      best = Math.max(best, cur)
+    } else {
+      cur = 1
+    }
+  }
+  return best
+}
+
 export function getDefaultState(): GameState {
   return {
     lastCheckInDate: null,

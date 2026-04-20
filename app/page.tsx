@@ -51,6 +51,8 @@ import {
   clearState,
   clearLegacyState,
   processCheckIn,
+  daysSinceLastCheckIn,
+  longestStreak,
 } from "@/lib/game-store"
 import { hydrateFromSupabase } from "@/lib/supabase-sync"
 import { getSession, onAuthStateChange, onPasswordRecovery, updatePassword } from "@/lib/auth"
@@ -61,6 +63,7 @@ import type { Moment } from "@/lib/emotions-data"
 import type { ThemeId } from "@/lib/themes"
 import type { OnboardingSession, PathChoice, ToolSuggestionId } from "@/lib/onboarding-data"
 import { countryToRegionId, situationToContextTags, bodyToEmotion, durationToIntensity, bodyFeelingPhrase } from "@/lib/onboarding-data"
+import { upcomingCulturalDay } from "@/lib/cultural-calendar"
 import { monthKey, previousMonthStart } from "@/lib/monthly-report"
 import { ArrowLeft, X, Lock, Info, Eye, EyeOff, Wind, BookOpenText, Feather, Headphones, ArrowRight, ChevronRight } from "lucide-react"
 
@@ -770,6 +773,31 @@ export default function BhavaApp() {
       <div className="max-w-lg mx-auto px-5 py-8">
         {screen === "home" && (
           <div className="flex flex-col items-stretch gap-7">
+            {(() => {
+              const gap = daysSinceLastCheckIn(gameState)
+              const best = longestStreak(gameState.checkIns)
+              if (gap !== null && gap >= 2 && best >= 1) {
+                return (
+                  <div className="p-4 rounded-2xl bg-accent/20 border border-accent/30">
+                    <p className="text-sm text-foreground leading-relaxed">
+                      You missed a few days. That's allowed. Your longest run is still <strong>{best}</strong> {best === 1 ? "day" : "days"} — pick up where you left off whenever you're ready.
+                    </p>
+                  </div>
+                )
+              }
+              return null
+            })()}
+            {(() => {
+              const up = upcomingCulturalDay(profile.country, 5)
+              if (!up) return null
+              const when = up.daysUntil === 0 ? "today" : up.daysUntil === 1 ? "tomorrow" : `in ${up.daysUntil} days`
+              return (
+                <div className="p-4 rounded-2xl bg-primary/10 border border-primary/25">
+                  <p className="text-sm font-bold text-foreground">{up.day.name} is {when}.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed mt-1">{up.day.note} It's okay to log it.</p>
+                </div>
+              )
+            })()}
             {/* Hero headline */}
             <div className="text-center flex flex-col gap-2">
               <h1 className="text-3xl font-extrabold text-foreground leading-tight text-balance">
@@ -880,7 +908,7 @@ export default function BhavaApp() {
               </h2>
               <p className="text-base text-muted-foreground text-center">Can you get more specific?</p>
             </div>
-            <SubEmotionPicker emotion={selectedEmotion} selected={subEmotions} onToggle={handleSubEmotionToggle} />
+            <SubEmotionPicker emotion={selectedEmotion} selected={subEmotions} onToggle={handleSubEmotionToggle} country={profile.country} />
             <button
               onClick={() => setScreen("context")}
               style={{ background: selectedEmotion.color, color: "#FFFFFF", boxShadow: `0 4px 20px ${selectedEmotion.color}44`, minHeight: 52 }}

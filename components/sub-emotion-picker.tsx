@@ -1,22 +1,24 @@
 "use client"
 
-import { type EmotionCategory } from "@/lib/emotions-data"
+import { type EmotionCategory, getSubEmotions } from "@/lib/emotions-data"
 import { Check } from "lucide-react"
 
 type SubEmotionPickerProps = {
   emotion: EmotionCategory
   selected: string[]
   onToggle: (sub: string) => void
+  country?: string | null
 }
 
-export function SubEmotionPicker({ emotion, selected, onToggle }: SubEmotionPickerProps) {
+export function SubEmotionPicker({ emotion, selected, onToggle, country }: SubEmotionPickerProps) {
+  const subEmotions = getSubEmotions(emotion, country)
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-sm mx-auto">
       <p className="text-base text-muted-foreground text-center leading-relaxed">
         Pick as many as feel true right now.
       </p>
       <div className="flex flex-wrap justify-center gap-2">
-        {emotion.subEmotions.map((sub) => {
+        {subEmotions.map((sub) => {
           const isSelected = selected.includes(sub)
           return (
             <button
