@@ -10,7 +10,7 @@ import {
   type ToolSuggestionId,
 } from "@/lib/onboarding-data"
 import type { OnboardingSession } from "@/lib/onboarding-data"
-import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, ArrowRight } from "lucide-react"
+import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, ArrowRight, Stethoscope, Users } from "lucide-react"
 
 type AcknowledgmentScreenProps = {
   firstName: string
@@ -22,6 +22,8 @@ type AcknowledgmentScreenProps = {
 }
 
 const TOOL_ICONS: Record<ToolSuggestionId, React.ElementType> = {
+  "find-therapist": Stethoscope,
+  "find-community": Users,
   "breathe": Wind,
   "journal": BookOpenText,
   "grounding-note": Feather,
@@ -73,7 +75,11 @@ export function AcknowledgmentScreen({
 
         <section className="flex flex-col gap-3">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            Here's what might help right now
+            {tools[0]?.id === "find-therapist"
+              ? "Here's where to find real support"
+              : tools[0]?.id === "find-community"
+              ? "Here's where to find people near you"
+              : "Here's what might help right now"}
           </p>
           <div className="flex flex-col gap-2">
             {tools.map((tool) => (

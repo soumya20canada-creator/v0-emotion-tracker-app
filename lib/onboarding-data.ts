@@ -194,7 +194,14 @@ export function reflectOnboarding(session: OnboardingSession | null, country?: s
   return bits.join(", ")
 }
 
-export type ToolSuggestionId = "breathe" | "journal" | "grounding-note" | "meditate" | "reach-out"
+export type ToolSuggestionId =
+  | "find-therapist"
+  | "find-community"
+  | "breathe"
+  | "journal"
+  | "grounding-note"
+  | "meditate"
+  | "reach-out"
 
 export type ToolSuggestion = {
   id: ToolSuggestionId
@@ -203,6 +210,8 @@ export type ToolSuggestion = {
 }
 
 const TOOL_TITLES: Record<ToolSuggestionId, string> = {
+  "find-therapist": "Find a therapist",
+  "find-community": "Find community",
   "breathe": "Breathe",
   "journal": "Write it down",
   "grounding-note": "A small note for today",
@@ -273,15 +282,35 @@ export function suggestTools(session: OnboardingSession | null): ToolSuggestion[
     add("journal", "writing it down over time helps you see the shape of it.", 6)
   }
 
-  // Support-preference-driven
-  if (support.has("therapist") || support.has("community")) {
-    add("reach-out", "here's who's near you, if you'd like to reach out.", 9)
+  // Support-preference-driven — these take the top slot when present.
+  if (support.has("therapist")) {
+    add("find-therapist", pick([
+      "You asked for a therapist — let's find one who fits.",
+      "Real therapists — free and paid options, curated for where you are.",
+      "Here's who can actually help, not a breathing exercise.",
+    ]), 20)
   }
-  if (support.has("do-something")) {
-    add("breathe", "something small you can do right now.", 6)
+  if (support.has("community")) {
+    add("find-community", pick([
+      "You asked for community — here's a starting point.",
+      "People near you, not platitudes.",
+      "Where to find others who get it.",
+    ]), 18)
   }
   if (support.has("express")) {
-    add("journal", "a private page, just for you.", 7)
+    add("journal", "a private page, just for you.", 15)
+  }
+  if (support.has("figure-out-feelings")) {
+    add("journal", "so you can put it into words, at your own pace.", 12)
+  }
+  if (support.has("do-something")) {
+    add("breathe", "something small you can do right now.", 12)
+  }
+
+  // Crisis-coded body signals — high intensity AND just-today escalates to reach-out.
+  const crisisBody = body.has("chest-tightness") && body.has("stomach-knot") && body.has("dizziness")
+  if (crisisBody && duration === "just-today") {
+    add("reach-out", "if this is acute right now, real humans are one tap away.", 11)
   }
 
   // Fallback
@@ -340,6 +369,7 @@ export function humanReflection(session: OnboardingSession | null, country?: str
   const going = new Set(session.whats_been_going_on)
   const body = new Set(session.body_feelings)
   const situation = new Set(session.current_situation)
+  const support = new Set(session.support_preferences)
   const duration = session.duration
 
   // Varied body phrasings — each slot has 2–3 ways to say it
@@ -477,7 +507,19 @@ export function humanReflection(session: OnboardingSession | null, country?: str
 
   // Closing warmth — varied, responsive to context
   const closers: string[] = []
-  if (interpretations.length >= 2 || told.length >= 2) {
+  if (support.has("therapist")) {
+    closers.push(
+      "You asked for a therapist — let's find one who fits.",
+      "You already named what you need. Let me show you who can help.",
+      "I'll pull up the people who are trained for exactly this.",
+    )
+  } else if (support.has("community")) {
+    closers.push(
+      "You're not looking to be alone in this — let's find your people.",
+      "Community first. Here's where to start.",
+      "Let's see who's near you.",
+    )
+  } else if (interpretations.length >= 2 || told.length >= 2) {
     closers.push(
       "That's a lot to be holding.",
       "That's more than one thing, and it's a lot.",

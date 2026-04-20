@@ -32,6 +32,8 @@ import { Breathing } from "@/components/breathing"
 import { Journal } from "@/components/journal"
 import { GroundingNotes } from "@/components/grounding-notes"
 import { Meditate } from "@/components/meditate"
+import { FindTherapist } from "@/components/find-therapist"
+import { FindCommunity } from "@/components/find-community"
 import { SessionCheckout, type PositiveEmotionId } from "@/components/session-checkout"
 import {
   type EmotionCategory,
@@ -79,6 +81,8 @@ export default function BhavaApp() {
   // Post-onboarding flow state
   const [showAcknowledgment, setShowAcknowledgment] = useState(false)
   const [showSupportView, setShowSupportView] = useState(false)
+  const [showFindTherapist, setShowFindTherapist] = useState(false)
+  const [showFindCommunity, setShowFindCommunity] = useState(false)
   const [actionsHint, setActionsHint] = useState<string | null>(null)
 
   // App settings
@@ -392,6 +396,14 @@ export default function BhavaApp() {
       setShowSupportView(true)
       return
     }
+    if (id === "find-therapist") {
+      setShowFindTherapist(true)
+      return
+    }
+    if (id === "find-community") {
+      setShowFindCommunity(true)
+      return
+    }
     setActiveTool(id)
   }, [profile, gameState])
 
@@ -598,6 +610,38 @@ export default function BhavaApp() {
   if (activeTool === "journal") return <Journal userId={profile.id} onClose={handleToolClose} />
   if (activeTool === "grounding-note") return <GroundingNotes onClose={handleToolClose} />
   if (activeTool === "meditate") return <Meditate onClose={handleToolClose} />
+
+  if (showFindTherapist) {
+    return (
+      <FindTherapist
+        region={gameState.selectedRegion}
+        country={profile.country}
+        identity={profile.identity_selections}
+        onPickRegion={handleRegionSelect}
+        onClose={() => {
+          setShowFindTherapist(false)
+          if (fromGuidedSession) setShowCheckout(true)
+        }}
+        onCrisis={() => { setShowFindTherapist(false); setShowSupportView(true) }}
+      />
+    )
+  }
+
+  if (showFindCommunity) {
+    return (
+      <FindCommunity
+        region={gameState.selectedRegion}
+        country={profile.country}
+        identity={profile.identity_selections}
+        onPickRegion={handleRegionSelect}
+        onClose={() => {
+          setShowFindCommunity(false)
+          if (fromGuidedSession) setShowCheckout(true)
+        }}
+        onSwitchToTherapist={() => { setShowFindCommunity(false); setShowFindTherapist(true) }}
+      />
+    )
+  }
 
   if (showSupportView) {
     const regionData = gameState.selectedRegion ? getRegionById(gameState.selectedRegion) : null

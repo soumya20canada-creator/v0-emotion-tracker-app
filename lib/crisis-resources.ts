@@ -15,12 +15,33 @@ export type SupportGroup = {
   type: "community" | "peer" | "cultural" | "youth" | "online"
 }
 
+export type TherapistTag = "directory" | "low-cost" | "cultural" | "online" | "free" | "student" | "multilingual"
+export type CommunityTag = "newcomer" | "diaspora" | "lgbtq" | "youth" | "women" | "faith" | "local-meetup" | "online"
+
+export type TherapistResource = {
+  name: string
+  description: string
+  url: string
+  tags: TherapistTag[]
+  note?: string
+}
+
+export type CommunityResource = {
+  name: string
+  description: string
+  url: string
+  tags: CommunityTag[]
+  note?: string
+}
+
 export type RegionResources = {
   id: string
   label: string
   flag: string
   helplines: CrisisHelpline[]
   supportGroups: SupportGroup[]
+  therapists: TherapistResource[]
+  community: CommunityResource[]
 }
 
 export const REGIONS: RegionResources[] = [
@@ -76,6 +97,24 @@ export const REGIONS: RegionResources[] = [
       { name: "Immigrant Hope", description: "Support and resources for immigrant communities", url: "immigranthope.org", type: "cultural" },
       { name: "To Write Love on Her Arms", description: "Community for people struggling with depression, self-harm, addiction", url: "twloha.com", type: "community" },
     ],
+    therapists: [
+      { name: "Open Path Collective", description: "In-network therapists offering sessions at reduced rates to members.", url: "https://openpathcollective.org", tags: ["low-cost", "directory"], note: "$40–80 / session · one-time $65 membership" },
+      { name: "Inclusive Therapists", description: "Directory centering marginalized and multicultural communities.", url: "https://www.inclusivetherapists.com", tags: ["directory", "cultural", "multilingual"] },
+      { name: "Therapy for Black Girls", description: "Directory of Black women therapists and a podcast community.", url: "https://therapyforblackgirls.com", tags: ["directory", "cultural"] },
+      { name: "Latinx Therapy", description: "Bilingual directory of Latinx mental health professionals.", url: "https://latinxtherapy.com", tags: ["directory", "cultural", "multilingual"] },
+      { name: "Asian Mental Health Collective", description: "Directory of Asian and Asian-American therapists plus subsidy fund.", url: "https://www.asianmhc.org", tags: ["directory", "cultural"] },
+      { name: "National Queer & Trans Therapists of Color Network", description: "Directory of QTBIPOC-identified mental health practitioners.", url: "https://nqttcn.com/en/", tags: ["directory", "cultural"] },
+      { name: "SAMHSA Treatment Locator", description: "Federal search tool for confidential, free treatment referrals.", url: "https://findtreatment.gov", tags: ["free", "directory"], note: "Free" },
+      { name: "Psychology Today US", description: "Largest US therapist directory, filter by insurance and specialty.", url: "https://www.psychologytoday.com/us/therapists", tags: ["directory"] },
+      { name: "7 Cups", description: "Free trained listeners plus online therapy add-on.", url: "https://www.7cups.com", tags: ["free", "online"], note: "Peer support free · therapy from $150/mo" },
+    ],
+    community: [
+      { name: "NAMI Local Affiliates", description: "Free peer-led support groups in every state.", url: "https://www.nami.org/findsupport", tags: ["local-meetup"] },
+      { name: "International Institute of New England", description: "Newcomer services, English classes, community events.", url: "https://iine.org", tags: ["newcomer"] },
+      { name: "Meetup — Mental Health", description: "Location-based groups and wellness meetups.", url: "https://www.meetup.com/find/?keywords=mental%20health", tags: ["local-meetup", "online"] },
+      { name: "The Trevor Project Community", description: "Peer spaces for LGBTQ+ young people under 25.", url: "https://www.thetrevorproject.org/get-help/", tags: ["lgbtq", "youth"] },
+      { name: "Sister Song", description: "Women of color reproductive justice and wellness community.", url: "https://www.sistersong.net", tags: ["women", "diaspora"] },
+    ],
   },
   {
     id: "uk",
@@ -124,6 +163,21 @@ export const REGIONS: RegionResources[] = [
       { name: "Refugee Council", description: "Support services for refugees and asylum seekers", url: "refugeecouncil.org.uk", type: "cultural" },
       { name: "Togetherall", description: "Free online mental health community", url: "togetherall.com", type: "peer" },
     ],
+    therapists: [
+      { name: "NHS Talking Therapies", description: "Free NHS-funded talking therapy — self-referral, no GP needed in most areas.", url: "https://www.nhs.uk/mental-health/talking-therapies-medicine-treatments/talking-therapies-and-counselling/nhs-talking-therapies/", tags: ["free"], note: "NHS covered" },
+      { name: "BACP Therapist Directory", description: "Accredited UK counsellors and psychotherapists.", url: "https://www.bacp.co.uk/search/Therapists", tags: ["directory"] },
+      { name: "BAATN", description: "Black, African and Asian Therapy Network — culturally-matched practitioners.", url: "https://www.baatn.org.uk", tags: ["directory", "cultural"] },
+      { name: "Pink Therapy", description: "Directory of gender and sexual diversity-friendly therapists.", url: "https://www.pinktherapy.com", tags: ["directory", "cultural"] },
+      { name: "Counselling Directory", description: "UK-wide search by issue, location, fee.", url: "https://www.counselling-directory.org.uk", tags: ["directory"] },
+      { name: "Student Minds", description: "UK student mental health charity with peer support and uni services guide.", url: "https://www.studentminds.org.uk", tags: ["student", "free"] },
+    ],
+    community: [
+      { name: "Mind Local Branches", description: "Community groups, befriending, local wellbeing services.", url: "https://www.mind.org.uk/about-us/local-minds/", tags: ["local-meetup"] },
+      { name: "Migrants Organise", description: "Community organisation by and for refugees and migrants.", url: "https://www.migrantsorganise.org", tags: ["newcomer"] },
+      { name: "Refugee Council", description: "Casework, therapy groups, and community for refugees.", url: "https://www.refugeecouncil.org.uk", tags: ["newcomer"] },
+      { name: "Meetup UK — Wellbeing", description: "Local wellness and support meetups.", url: "https://www.meetup.com/find/?location=gb&keywords=wellbeing", tags: ["local-meetup"] },
+      { name: "Switchboard LGBT+", description: "LGBTQ+ listening line and community directory.", url: "https://switchboard.lgbt", tags: ["lgbtq"] },
+    ],
   },
   {
     id: "ca",
@@ -166,6 +220,22 @@ export const REGIONS: RegionResources[] = [
       { name: "Newcomers Centre", description: "Support for immigrants and refugees", url: "newcomerscentre.ca", type: "cultural" },
       { name: "Wellness Together Canada", description: "Free mental health and substance use support", url: "wellnesstogether.ca", type: "online" },
     ],
+    therapists: [
+      { name: "Wellness Together Canada", description: "Free, government-funded counselling, coaching, and self-guided programs.", url: "https://www.wellnesstogether.ca", tags: ["free"], note: "Free · gov-funded" },
+      { name: "BounceBack", description: "Free CBT-based coaching by phone in ON, BC, MB, SK, NS, NL, PEI.", url: "https://bouncebackontario.ca", tags: ["free"], note: "Free · provincial coverage" },
+      { name: "Psychology Today Canada", description: "Canada-wide directory — filter by province, fee, and specialty.", url: "https://www.psychologytoday.com/ca/therapists", tags: ["directory"] },
+      { name: "Affordable Therapy Network", description: "Canadian therapists offering sliding-scale and reduced-fee sessions.", url: "https://affordabletherapynetwork.com", tags: ["low-cost", "directory"] },
+      { name: "Counsellors of Colour Collective", description: "BIPOC-identified Canadian therapists for culturally-matched care.", url: "https://counsellorsofcolour.ca", tags: ["cultural", "directory"] },
+      { name: "Healthy Minds Canada — Student Fund", description: "Grants and student-focused mental health resources.", url: "https://healthymindscanada.ca", tags: ["student"] },
+      { name: "7 Cups", description: "Free trained listeners; paid online therapy available.", url: "https://www.7cups.com", tags: ["free", "online"] },
+    ],
+    community: [
+      { name: "MOSAIC", description: "Vancouver-area newcomer settlement, counselling, and community programs.", url: "https://mosaicbc.org", tags: ["newcomer", "diaspora"] },
+      { name: "COSTI", description: "Toronto-area settlement services and mental health programs.", url: "https://www.costi.org", tags: ["newcomer", "diaspora"] },
+      { name: "CMHA Branches", description: "Canadian Mental Health Association — local community programs.", url: "https://cmha.ca/find-your-cmha", tags: ["local-meetup"] },
+      { name: "YMCA Newcomer Services", description: "Orientation, language, and connection programs for newcomers.", url: "https://www.ymca.ca/what-we-do/newcomer-services", tags: ["newcomer"] },
+      { name: "Meetup Canada", description: "Local wellbeing and community groups across Canada.", url: "https://www.meetup.com/find/?location=ca&keywords=mental%20health", tags: ["local-meetup"] },
+    ],
   },
   {
     id: "au",
@@ -206,6 +276,19 @@ export const REGIONS: RegionResources[] = [
       { name: "SANE Australia", description: "Support for people affected by complex mental health issues", url: "sane.org", type: "peer" },
       { name: "Settlement Services International", description: "Support for refugees and migrants", url: "ssi.org.au", type: "cultural" },
     ],
+    therapists: [
+      { name: "Medicare Better Access", description: "Up to 10 subsidised sessions per year with a GP Mental Health Plan.", url: "https://www.health.gov.au/our-work/better-access-initiative", tags: ["low-cost"], note: "Medicare rebate" },
+      { name: "APS Find a Psychologist", description: "Australian Psychological Society's official practitioner directory.", url: "https://psychology.org.au/find-a-psychologist", tags: ["directory"] },
+      { name: "Psychology Today Australia", description: "AU directory, filter by fee and focus.", url: "https://www.psychologytoday.com/au/psychologists", tags: ["directory"] },
+      { name: "headspace", description: "Free mental health support for 12–25-year-olds, in-person and online.", url: "https://headspace.org.au", tags: ["free", "student"], note: "Ages 12–25" },
+      { name: "Embrace Multicultural Mental Health", description: "Resources and practitioner search for CALD communities.", url: "https://embracementalhealth.org.au", tags: ["cultural", "multilingual"] },
+    ],
+    community: [
+      { name: "Settlement Services International", description: "Settlement, community, and wellbeing programs for new arrivals.", url: "https://www.ssi.org.au", tags: ["newcomer"] },
+      { name: "Multicultural Mental Health Australia", description: "Cultural community programs and resources.", url: "https://embracementalhealth.org.au", tags: ["diaspora"] },
+      { name: "Meetup Australia", description: "Local wellbeing meetups across AU cities.", url: "https://www.meetup.com/find/?location=au&keywords=wellbeing", tags: ["local-meetup"] },
+      { name: "QLife Community", description: "LGBTQ+ peer support and community linkage.", url: "https://qlife.org.au", tags: ["lgbtq"] },
+    ],
   },
   {
     id: "in",
@@ -244,6 +327,19 @@ export const REGIONS: RegionResources[] = [
       { name: "The Live Love Laugh Foundation", description: "Mental health awareness and support", url: "thelivelovelaughfoundation.org", type: "community" },
       { name: "YourDOST", description: "Online counseling and emotional wellness", url: "yourdost.com", type: "online" },
       { name: "Mpower", description: "Youth mental health programs", url: "mpowerminds.com", type: "youth" },
+    ],
+    therapists: [
+      { name: "iCall (TISS)", description: "Free counselling by phone, email, and chat from Tata Institute.", url: "https://icallhelpline.org", tags: ["free", "multilingual"], note: "Free · multiple languages" },
+      { name: "YourDOST", description: "Online counselling platform with sliding-fee options.", url: "https://yourdost.com", tags: ["online", "low-cost"] },
+      { name: "The MindClan", description: "Curated directory of queer- and trauma-informed therapists.", url: "https://themindclan.com", tags: ["directory", "cultural"] },
+      { name: "Manastha", description: "Affordable online therapy platform with Indian therapists.", url: "https://www.manastha.com", tags: ["online", "low-cost"] },
+      { name: "Mpower Helpline", description: "Free 24/7 helpline and therapist network.", url: "https://mpowerminds.com", tags: ["free"] },
+      { name: "Live Love Laugh Directory", description: "Curated list of psychiatrists and therapists across India.", url: "https://www.thelivelovelaughfoundation.org", tags: ["directory"] },
+    ],
+    community: [
+      { name: "Mariwala Health Initiative", description: "Community mental health programs grounded in social justice.", url: "https://mhi.org.in", tags: ["local-meetup"] },
+      { name: "Nazariya LGBTQ+ Community", description: "Queer feminist resource group and community spaces.", url: "https://nazariyaqfrg.wordpress.com", tags: ["lgbtq"] },
+      { name: "Meetup India", description: "Local wellness meetups in Indian cities.", url: "https://www.meetup.com/find/?location=in&keywords=wellbeing", tags: ["local-meetup"] },
     ],
   },
   {
@@ -284,6 +380,17 @@ export const REGIONS: RegionResources[] = [
       { name: "Deutsche Depressionshilfe", description: "Depression support and information", url: "deutsche-depressionshilfe.de", type: "peer" },
       { name: "Caritas Migrationsberatung", description: "Counseling for immigrants and refugees", url: "caritas.de", type: "cultural" },
     ],
+    therapists: [
+      { name: "KBV Arztsuche", description: "Official search for psychotherapists with statutory insurance.", url: "https://arztsuche.kbv.de", tags: ["free"], note: "Covered by gesetzliche Krankenkasse" },
+      { name: "Psychotherapiesuche (BPtK)", description: "Federal chamber directory of licensed psychotherapists.", url: "https://www.psychotherapiesuche.de", tags: ["directory"] },
+      { name: "Deutsche PsychotherapeutenVereinigung", description: "Association directory with specialist filters.", url: "https://www.dptv.de", tags: ["directory"] },
+      { name: "Minds International", description: "English-speaking therapists for expats across Germany.", url: "https://minds-international.com", tags: ["cultural", "multilingual"] },
+    ],
+    community: [
+      { name: "Caritas Migrationsberatung", description: "Local counselling and community linkage for migrants.", url: "https://www.caritas.de", tags: ["newcomer"] },
+      { name: "Meetup Germany", description: "Expat and wellbeing meetups across German cities.", url: "https://www.meetup.com/find/?location=de&keywords=wellbeing", tags: ["local-meetup"] },
+      { name: "Expats in Berlin Groups", description: "Community meetups and social support for internationals.", url: "https://www.meetup.com/find/?location=de--Berlin&keywords=expats", tags: ["newcomer", "local-meetup"] },
+    ],
   },
   {
     id: "ph",
@@ -315,6 +422,16 @@ export const REGIONS: RegionResources[] = [
       { name: "Philippine Mental Health Association", description: "Community mental health programs", url: "pmha.org.ph", type: "community" },
       { name: "MindNation", description: "Mental health support for Filipino youth", url: "mindnation.com", type: "youth" },
     ],
+    therapists: [
+      { name: "MindNation", description: "Affordable therapy and wellness coaching for Filipinos.", url: "https://www.mindnation.com", tags: ["online", "low-cost"] },
+      { name: "MentalHealthPH Directory", description: "Community-maintained list of Filipino mental health professionals.", url: "https://mentalhealthph.org", tags: ["directory"] },
+      { name: "Empath", description: "Online therapy platform with licensed Filipino therapists.", url: "https://empath.ph", tags: ["online"] },
+      { name: "NCMH Crisis Hotline", description: "Government mental health line — also refers to ongoing care.", url: "https://ncmh.gov.ph", tags: ["free"] },
+    ],
+    community: [
+      { name: "MentalHealthPH Peer Groups", description: "Online peer spaces and local advocacy chapters.", url: "https://mentalhealthph.org/community", tags: ["online", "local-meetup"] },
+      { name: "Meetup Philippines", description: "Local wellbeing meetups across Manila and beyond.", url: "https://www.meetup.com/find/?location=ph&keywords=wellness", tags: ["local-meetup"] },
+    ],
   },
   {
     id: "mx",
@@ -339,6 +456,15 @@ export const REGIONS: RegionResources[] = [
     supportGroups: [
       { name: "Voz Pro Salud Mental", description: "Mental health advocacy and support", url: "vozprosaludmental.org.mx", type: "community" },
     ],
+    therapists: [
+      { name: "SAPTEL", description: "Free 24/7 psychological support line operated by UNAM/Cruz Roja.", url: "https://www.saptel.org.mx", tags: ["free"], note: "Gratuito" },
+      { name: "Terapify", description: "Online therapy platform with Mexican licensed therapists.", url: "https://terapify.com", tags: ["online"] },
+      { name: "Voz Pro Salud Mental", description: "Directory and advocacy with family support groups.", url: "https://vozprosaludmental.org.mx", tags: ["directory"] },
+    ],
+    community: [
+      { name: "CAPA (Centros de Atención Primaria)", description: "Local community addictions and mental health centers.", url: "https://www.gob.mx/salud/conadic", tags: ["local-meetup"] },
+      { name: "Meetup México", description: "Local bienestar and community meetups.", url: "https://www.meetup.com/find/?location=mx&keywords=bienestar", tags: ["local-meetup"] },
+    ],
   },
   {
     id: "ng",
@@ -362,6 +488,15 @@ export const REGIONS: RegionResources[] = [
     supportGroups: [
       { name: "She Writes Woman", description: "Mental health advocacy and community support", url: "shewriteswoman.org", type: "community" },
       { name: "Mentally Aware Nigeria Initiative", description: "Youth mental health awareness", url: "mentallyaware.org", type: "youth" },
+    ],
+    therapists: [
+      { name: "Mentally Aware Nigeria (MANI)", description: "Counselling referrals and low-cost therapist network.", url: "https://www.mentallyaware.org", tags: ["low-cost", "directory"] },
+      { name: "She Writes Woman", description: "Women-led mental health support with safe-space therapy.", url: "https://shewriteswoman.org", tags: ["cultural"] },
+      { name: "Mind Africa", description: "Nigerian counsellor and therapist directory.", url: "https://mindafrica.org", tags: ["directory"] },
+    ],
+    community: [
+      { name: "MANI Peer Groups", description: "Youth-led peer support groups and online community.", url: "https://www.mentallyaware.org/community", tags: ["youth", "online"] },
+      { name: "She Writes Woman Safe Place", description: "Community space and weekly circles for women.", url: "https://shewriteswoman.org", tags: ["women"] },
     ],
   },
   {
@@ -395,6 +530,17 @@ export const REGIONS: RegionResources[] = [
       { name: "7 Cups", description: "Free online emotional support chat", url: "7cups.com", type: "online" },
       { name: "TalkLife", description: "Peer support app for young people worldwide", url: "talklife.com", type: "youth" },
       { name: "Refugees Welcome", description: "International community for refugee support", url: "refugees-welcome.net", type: "cultural" },
+    ],
+    therapists: [
+      { name: "Inclusive Therapists (Global)", description: "Multicultural, trauma-informed directory — many offer virtual sessions across borders where licensing allows.", url: "https://www.inclusivetherapists.com", tags: ["directory", "cultural", "online"] },
+      { name: "7 Cups", description: "Free trained peer listeners in 140+ countries, plus paid online therapy.", url: "https://www.7cups.com", tags: ["free", "online"] },
+      { name: "International Therapist Directory", description: "Worldwide directory of English-speaking therapists for expats.", url: "https://internationaltherapistdirectory.com", tags: ["directory", "online", "multilingual"] },
+      { name: "Online-Therapy.com", description: "Structured CBT-based online therapy — check local licensing.", url: "https://www.online-therapy.com", tags: ["online"], note: "Paid · verify coverage in your country" },
+    ],
+    community: [
+      { name: "7 Cups Community", description: "Free global peer support forums and group chats.", url: "https://www.7cups.com/connect/", tags: ["online"] },
+      { name: "Meetup (Global)", description: "Find wellbeing and community meetups in most major cities.", url: "https://www.meetup.com/find/?keywords=mental%20health", tags: ["local-meetup", "online"] },
+      { name: "InterNations", description: "Expat communities and meetups worldwide.", url: "https://www.internations.org", tags: ["newcomer", "diaspora"] },
     ],
   },
 ]
