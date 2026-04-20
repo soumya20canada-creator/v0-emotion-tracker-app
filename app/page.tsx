@@ -858,6 +858,7 @@ export default function BhavaApp() {
                     onToggle={(tagId) => setContextTags((prev) => prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId])}
                     accentColor={selectedEmotion.color}
                     suggestedTags={situationToContextTags(lastOnboardingSession)}
+                    emotionId={selectedEmotion.id}
                   />
                   <button
                     onClick={() => setScreen("intensity")}

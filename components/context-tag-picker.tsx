@@ -1,6 +1,6 @@
 "use client"
 
-import { CONTEXT_TAGS } from "@/lib/context-tags"
+import { contextTagsForEmotion } from "@/lib/context-tags"
 import {
   GraduationCap,
   Briefcase,
@@ -16,6 +16,10 @@ import {
   Activity,
   CloudRain,
   MessageCircle,
+  Sparkles,
+  Leaf,
+  Palette,
+  Award,
   Check,
 } from "lucide-react"
 
@@ -34,6 +38,10 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Activity,
   CloudRain,
   MessageCircle,
+  Sparkles,
+  Leaf,
+  Palette,
+  Award,
 }
 
 type ContextTagPickerProps = {
@@ -41,17 +49,19 @@ type ContextTagPickerProps = {
   onToggle: (tagId: string) => void
   accentColor: string
   suggestedTags?: string[]
+  emotionId?: string | null
 }
 
-export function ContextTagPicker({ selected, onToggle, accentColor, suggestedTags = [] }: ContextTagPickerProps) {
-  const suggested = new Set(suggestedTags)
-  const ordered = suggestedTags.length
-    ? [...CONTEXT_TAGS].sort((a, b) => (suggested.has(a.id) ? -1 : suggested.has(b.id) ? 1 : 0))
-    : CONTEXT_TAGS
+export function ContextTagPicker({ selected, onToggle, accentColor, suggestedTags = [], emotionId }: ContextTagPickerProps) {
+  const availableTags = contextTagsForEmotion(emotionId)
+  const suggested = new Set(suggestedTags.filter((id) => availableTags.some((t) => t.id === id)))
+  const ordered = suggested.size
+    ? [...availableTags].sort((a, b) => (suggested.has(a.id) ? -1 : suggested.has(b.id) ? 1 : 0))
+    : availableTags
 
   return (
     <div className="flex flex-col gap-3">
-      {suggestedTags.length > 0 && (
+      {suggested.size > 0 && (
         <p className="text-sm text-muted-foreground">
           Based on what you shared, these might fit — tap any that feel true.
         </p>
