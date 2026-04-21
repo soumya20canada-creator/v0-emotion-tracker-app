@@ -12,7 +12,7 @@ import {
 } from "@/lib/onboarding-data"
 import type { OnboardingSession } from "@/lib/onboarding-data"
 import { taglineFor, homeTimeLineFor } from "@/lib/cultural-taglines"
-import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, ArrowRight, Stethoscope, Users } from "lucide-react"
+import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, ArrowRight, Stethoscope, Users, Scale, LifeBuoy, Music, TrendingUp, Lock } from "lucide-react"
 
 type AcknowledgmentScreenProps = {
   firstName: string
@@ -32,6 +32,29 @@ const TOOL_ICONS: Record<ToolSuggestionId, React.ElementType> = {
   "grounding-note": Feather,
   "meditate": Headphones,
   "reach-out": HeartHandshake,
+  "legal-aid": Scale,
+  "crisis-resources": LifeBuoy,
+  "music": Music,
+  "patterns": TrendingUp,
+  "my-space": Lock,
+}
+
+function headingFor(topId: ToolSuggestionId | undefined): string {
+  switch (topId) {
+    case "find-therapist": return "Here's where to find real support"
+    case "find-community": return "Here's where to find people near you"
+    case "legal-aid": return "Visa stress is its own kind of heavy — here's help"
+    case "crisis-resources": return "Right now, let's get you grounded"
+    case "music":
+    case "breathe":
+    case "meditate": return "A soft place to land for a minute"
+    case "patterns": return "Let's see the shape of what you're carrying"
+    case "journal":
+    case "my-space":
+    case "grounding-note": return "Here's a private place to start"
+    case "reach-out": return "You don't have to sit with this alone"
+    default: return "Here's what might help right now"
+  }
 }
 
 export function AcknowledgmentScreen({
@@ -85,11 +108,7 @@ export function AcknowledgmentScreen({
 
         <section className="flex flex-col gap-3">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            {tools[0]?.id === "find-therapist"
-              ? "Here's where to find real support"
-              : tools[0]?.id === "find-community"
-              ? "Here's where to find people near you"
-              : "Here's what might help right now"}
+            {headingFor(tools[0]?.id)}
           </p>
           <div className="flex flex-col gap-2">
             {tools.map((tool) => (

@@ -447,6 +447,28 @@ export default function BhavaApp() {
       setShowFindCommunity(true)
       return
     }
+    if (id === "legal-aid") {
+      setShowLegalAid(true)
+      return
+    }
+    if (id === "crisis-resources") {
+      // Reuses the existing support view (CrisisResources renders there).
+      setShowSupportView(true)
+      return
+    }
+    if (id === "patterns") {
+      setScreen("patterns")
+      return
+    }
+    if (id === "my-space") {
+      setScreen("badges")
+      return
+    }
+    if (id === "music") {
+      // Floating MusicPlayer is always mounted — closing acknowledgment surfaces it.
+      setActionsHint("Tap the music note at the bottom to pick something soft.")
+      return
+    }
     setActiveTool(id)
   }, [profile, gameState])
 

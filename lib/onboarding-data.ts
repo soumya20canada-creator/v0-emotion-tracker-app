@@ -202,6 +202,11 @@ export type ToolSuggestionId =
   | "grounding-note"
   | "meditate"
   | "reach-out"
+  | "legal-aid"
+  | "crisis-resources"
+  | "music"
+  | "patterns"
+  | "my-space"
 
 export type ToolSuggestion = {
   id: ToolSuggestionId
@@ -217,6 +222,26 @@ const TOOL_TITLES: Record<ToolSuggestionId, string> = {
   "grounding-note": "A small note for today",
   "meditate": "Sit quietly",
   "reach-out": "Reach out to someone",
+  "legal-aid": "Free legal help",
+  "crisis-resources": "Talk to someone now",
+  "music": "Put on something soft",
+  "patterns": "See the shape of it",
+  "my-space": "A private page, just yours",
+}
+
+const TOOL_FAMILY: Record<ToolSuggestionId, "connection" | "action" | "reflection" | "resource"> = {
+  "find-therapist": "resource",
+  "find-community": "connection",
+  "legal-aid": "resource",
+  "crisis-resources": "resource",
+  "reach-out": "connection",
+  "breathe": "action",
+  "meditate": "action",
+  "music": "action",
+  "journal": "reflection",
+  "grounding-note": "reflection",
+  "patterns": "reflection",
+  "my-space": "reflection",
 }
 
 // Build up to 3 tool suggestions from onboarding answers. Ordered by confidence.
@@ -337,6 +362,34 @@ export function suggestTools(session: OnboardingSession | null): ToolSuggestion[
   }
   if (ctx.has("cultural-pressure")) {
     add("journal", "Sometimes you need to put it somewhere your family can't reach.", 13)
+    add("my-space", "A page they'll never see. Write what you can't say out loud.", 12)
+  }
+
+  // Visa / immigration legal stress — surfaces when the journey itself is the weight.
+  const sit = new Set(session.current_situation)
+  if (ctx.has("immigration") && (sit.has("international-student") || sit.has("unemployed") || duration === "months")) {
+    add("legal-aid", pick([
+      "Paperwork panic is its own kind of heavy. Free immigration help exists.",
+      "Visa stress isn't a therapy problem — it's a legal one. Here's real help.",
+    ]), 17)
+  }
+
+  // Crisis-coded body — acute right-now signal. Bring crisis resources to the front.
+  if (crisisBody) {
+    add("crisis-resources", "Three body alarms going off at once. Real humans, right now, one tap away.", duration === "just-today" ? 21 : 16)
+  }
+
+  // Heaviness / numbness / off → music can reach past words.
+  if (body.has("heaviness") || body.has("numbness") || going.has("off")) {
+    add("music", pick([
+      "Something in your ear while the rest figures itself out.",
+      "When words are too much, a song can carry you.",
+    ]), 9)
+  }
+
+  // Long / recurring → let them see the pattern instead of writing another entry.
+  if (duration === "months" || duration === "comes-and-goes") {
+    add("patterns", "You've been here before. Let's see when it tends to land.", 10)
   }
 
   // Heavy-reflection override — if things are heavy and long, lead with human connection.
@@ -355,15 +408,16 @@ export function suggestTools(session: OnboardingSession | null): ToolSuggestion[
 
   // If the user said "just today," keep it light — one tool.
   if (duration === "just-today") {
-    const top = finalize(picks).slice(0, 1)
+    const top = finalize(picks, session).slice(0, 1)
     return top
   }
 
-  return finalize(picks)
+  return finalize(picks, session)
 }
 
 function finalize(
-  picks: { id: ToolSuggestionId; reason: string; priority: number }[]
+  picks: { id: ToolSuggestionId; reason: string; priority: number }[],
+  session?: OnboardingSession | null,
 ): ToolSuggestion[] {
   // Keep highest-priority reason per tool id.
   const byId = new Map<ToolSuggestionId, { reason: string; priority: number }>()
@@ -373,10 +427,73 @@ function finalize(
       byId.set(p.id, { reason: p.reason, priority: p.priority })
     }
   }
-  return Array.from(byId.entries())
+  const ranked = Array.from(byId.entries())
     .sort((a, b) => b[1].priority - a[1].priority)
-    .slice(0, 3)
-    .map(([id, v]) => ({ id, title: TOOL_TITLES[id], reason: v.reason }))
+    .map(([id, v]) => ({ id, reason: v.reason, priority: v.priority }))
+
+  // Family diversity: keep top, then prefer highest-priority unseen family for slots 2-3.
+  const result: typeof ranked = []
+  const seenFamilies = new Set<string>()
+  if (ranked.length > 0) {
+    result.push(ranked[0])
+    seenFamilies.add(TOOL_FAMILY[ranked[0].id])
+  }
+  // Slot 2: highest-priority from a different family if possible.
+  const rest = ranked.slice(1)
+  for (let slot = 0; slot < 2; slot++) {
+    if (rest.length === 0) break
+    let idx = rest.findIndex((r) => !seenFamilies.has(TOOL_FAMILY[r.id]))
+    if (idx === -1) idx = 0
+    result.push(rest[idx])
+    seenFamilies.add(TOOL_FAMILY[rest[idx].id])
+    rest.splice(idx, 1)
+  }
+
+  // Personalize the top card's reason with a fragment from the session.
+  const phrase = session ? phraseFor(session) : ""
+  return result.slice(0, 3).map((r, i) => {
+    let reason = r.reason
+    if (i === 0 && phrase) {
+      reason = `${phrase} ${r.reason}`
+    }
+    return { id: r.id, title: TOOL_TITLES[r.id], reason }
+  })
+}
+
+// One short personalized fragment built from what the user named in onboarding.
+// Used to prepend the top card's reason so it doesn't feel canned.
+function phraseFor(session: OnboardingSession | null): string {
+  if (!session) return ""
+  const bodyLabel: Record<string, string> = {
+    "chest-tightness": "a tight chest",
+    "heaviness": "heaviness",
+    "restlessness": "restlessness",
+    "stomach-knot": "a knot in your stomach",
+    "numbness": "numbness",
+    "dizziness": "dizziness",
+    "in-thoughts": "a lot in your head",
+  }
+  const goingLabel: Record<string, string> = {
+    adjusting: "adjusting",
+    lonely: "loneliness",
+    process: "something you're processing",
+    off: "feeling off",
+  }
+  const durLabel: Record<string, string> = {
+    "just-today": "today",
+    "few-days": "a few days of this",
+    "few-weeks": "a few weeks of this",
+    "months": "months of this",
+    "comes-and-goes": "this coming and going",
+  }
+  const bodies = session.body_feelings.map((b) => bodyLabel[b]).filter(Boolean) as string[]
+  const goings = session.whats_been_going_on.map((g) => goingLabel[g]).filter(Boolean) as string[]
+  const parts: string[] = []
+  if (bodies.length) parts.push(joinList(bodies.slice(0, 2)))
+  if (goings.length) parts.push(joinList(goings.slice(0, 2)))
+  if (session.duration && durLabel[session.duration]) parts.push(durLabel[session.duration])
+  if (parts.length === 0) return ""
+  return `You named ${joinList(parts.slice(0, 3))} —`
 }
 
 // Warm, plain-language reflection. Ends with a softly named interpretation.
