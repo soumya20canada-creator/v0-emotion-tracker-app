@@ -7,11 +7,12 @@ import { HeartHandshake } from "lucide-react"
 
 type NormalizeHelpProps = {
   country?: string | null
+  regionLabel?: string | null
   onContinue: () => void
 }
 
-export function NormalizeHelp({ country, onContinue }: NormalizeHelpProps) {
-  const tagline = taglineFor(country)
+export function NormalizeHelp({ country, regionLabel, onContinue }: NormalizeHelpProps) {
+  const tagline = taglineFor(country, regionLabel)
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">

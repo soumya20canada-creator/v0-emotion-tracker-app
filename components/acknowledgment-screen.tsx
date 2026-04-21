@@ -17,6 +17,7 @@ import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, 
 type AcknowledgmentScreenProps = {
   firstName: string
   country: string | null
+  regionLabel?: string | null
   session: OnboardingSession | null
   identity?: string[] | null
   onPickTool: (tool: ToolSuggestionId) => void
@@ -60,6 +61,7 @@ function headingFor(topId: ToolSuggestionId | undefined): string {
 export function AcknowledgmentScreen({
   firstName,
   country,
+  regionLabel,
   session,
   identity,
   onPickTool,
@@ -68,7 +70,7 @@ export function AcknowledgmentScreen({
 }: AcknowledgmentScreenProps) {
   const reflection = useMemo(() => humanReflection(session, country, identity ?? undefined), [session, country, identity])
   const tools = suggestTools(session)
-  const tagline = taglineFor(country)
+  const tagline = taglineFor(country, regionLabel)
   const contextTags = new Set(situationToContextTags(session))
   const homeTimeLine = contextTags.has("homesick") || contextTags.has("loneliness") ? homeTimeLineFor(country) : null
 

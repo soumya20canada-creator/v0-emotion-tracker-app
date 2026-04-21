@@ -10,6 +10,7 @@ type WelcomeBackProps = {
   firstName: string
   avatarEmoji?: string
   country?: string | null
+  regionLabel?: string | null
   daysSinceLastCheckIn: number | null
   onReady: () => void
   onSkip: () => void
@@ -24,8 +25,8 @@ function timeAgoPhrase(days: number | null): string {
   return "It's been a while. I'm glad you came back."
 }
 
-export function WelcomeBack({ firstName, avatarEmoji, country, daysSinceLastCheckIn, onReady, onSkip }: WelcomeBackProps) {
-  const tagline = taglineFor(country)
+export function WelcomeBack({ firstName, avatarEmoji, country, regionLabel, daysSinceLastCheckIn, onReady, onSkip }: WelcomeBackProps) {
+  const tagline = taglineFor(country, regionLabel)
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <ThemeHeader />

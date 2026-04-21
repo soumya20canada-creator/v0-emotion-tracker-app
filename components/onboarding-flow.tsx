@@ -15,6 +15,7 @@ import {
 } from "@/lib/onboarding-data"
 import { getEmergencyNumber } from "@/lib/emergency-numbers"
 import { getRegionById } from "@/lib/crisis-resources"
+import { taglineFor } from "@/lib/cultural-taglines"
 import { ThemeHeader } from "@/components/theme-header"
 import { LocationPicker } from "@/components/location-picker"
 import { AppLogo } from "@/components/app-logo"
@@ -62,6 +63,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
 
   const currentStep = screen - startScreen + 1
 
+  // Tagline script follows whichever location the user has picked so far:
+  // "Where are you living right now?" (country, screen 1) wins over
+  // "Where are you right now?" (currentRegion, screen 2) to match taglineFor's contract.
+  const regionLabel = currentRegion ? getRegionById(currentRegion)?.label : undefined
+  const tagline = taglineFor(country || undefined, regionLabel)
+
   function toggle<T>(arr: T[], item: T): T[] {
     return arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]
   }
@@ -98,7 +105,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               backgroundClip: "text",
             }}
           >
-            Bhava · भाव
+            Bhava · {tagline.script}
           </span>
           <PronunciationGuide size="sm" />
         </div>

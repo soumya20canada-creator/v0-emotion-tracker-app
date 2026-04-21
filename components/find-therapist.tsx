@@ -117,7 +117,7 @@ export function FindTherapist({ region, country, identity, favoriteIds, onToggle
               backgroundClip: "text",
             }}
           >
-            Bhava · {taglineFor(country).script}
+            Bhava · {taglineFor(country, regionData?.label).script}
           </span>
           <PronunciationGuide size="sm" />
         </div>

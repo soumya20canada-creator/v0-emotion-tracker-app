@@ -102,6 +102,11 @@ export default function BhavaApp() {
   const [activeTool, setActiveTool] = useState<ToolSuggestionId | null>(null)
   const [showCheckout, setShowCheckout] = useState(false)
   const [fromGuidedSession, setFromGuidedSession] = useState(false)
+  // Origin of the most recent tool/screen launch, so "back" returns naturally
+  // instead of dumping users into the check-out flow. "ack" = Acknowledgment
+  // hub, "home" = main home. Tools don't auto-trigger Checkout on close;
+  // Checkout only fires after completing a real guided session (wheel path).
+  const [toolOrigin, setToolOrigin] = useState<"ack" | "home" | null>(null)
 
   // Per-session location ask — refresh each time the app opens
   const locationSessionClearedRef = useRef(false)
@@ -491,7 +496,10 @@ export default function BhavaApp() {
 
   const handlePickTool = useCallback((id: ToolSuggestionId) => {
     setShowAcknowledgment(false)
-    openTool(id, true)
+    setToolOrigin("ack")
+    // guided=false — picking a tool from the hub is exploration, not a
+    // full check-in session. Back from the tool returns to the hub.
+    openTool(id, false)
   }, [openTool])
 
   const handleOpenWheel = useCallback(() => {
@@ -514,12 +522,21 @@ export default function BhavaApp() {
   }, [lastOnboardingSession])
 
   const handleToolClose = useCallback(() => {
+    const origin = toolOrigin
     const guided = fromGuidedSession
     setActiveTool(null)
+    // Return to where the user came from. Only push Checkout if this tool
+    // was part of a completed guided session (wheel → actions path) AND
+    // the user didn't come from the Ack hub (free exploration).
+    if (origin === "ack") {
+      setToolOrigin(null)
+      setShowAcknowledgment(true)
+      return
+    }
     if (guided) {
       setShowCheckout(true)
     }
-  }, [fromGuidedSession])
+  }, [toolOrigin, fromGuidedSession])
 
   const handleCheckoutDone = useCallback(() => {
     setShowCheckout(false)
@@ -610,7 +627,7 @@ export default function BhavaApp() {
       days = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)))
     }
     return (
-      <WelcomeBack
+      <WelcomeBack regionLabel={gameState?.selectedRegion ? getRegionById(gameState.selectedRegion)?.label : undefined}
         firstName={profile.first_name ?? profile.display_name ?? profile.username ?? "friend"}
         avatarEmoji={profile.avatar_emoji}
         country={profile.country}
@@ -626,6 +643,7 @@ export default function BhavaApp() {
     return (
       <NormalizeHelp
         country={profile.country}
+        regionLabel={gameState?.selectedRegion ? getRegionById(gameState.selectedRegion)?.label : undefined}
         onContinue={() => { setShowNormalizeHelp(false); setShowOnboarding(true) }}
       />
     )
@@ -642,7 +660,11 @@ export default function BhavaApp() {
           <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => { setShowSupportView(false); setScreen("home") }}
+                onClick={() => {
+                  setShowSupportView(false)
+                  if (toolOrigin === "ack") { setToolOrigin(null); setShowAcknowledgment(true); return }
+                  setScreen("home")
+                }}
                 style={{ minWidth: 44, minHeight: 44 }}
                 className="rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 aria-label="Go back"
@@ -722,6 +744,13 @@ export default function BhavaApp() {
 
   const greetingName = profile.first_name ?? profile.display_name ?? profile.username ?? "friend"
 
+  // Tagline script — country wins, but fall back to the region picked via
+  // "Where are you right now?" so travellers see localized script even without
+  // a saved profile.country. Computed up here so every downstream screen
+  // (Acknowledgment, FindTherapist, LegalAid, etc.) can reuse it.
+  const regionLabel = gameState.selectedRegion ? getRegionById(gameState.selectedRegion)?.label : undefined
+  const headerTagline = taglineFor(profile.country, regionLabel)
+
   // Post-onboarding reflection hub: reflection + tool suggestions + wheel doorway
   if (showAcknowledgment) {
     return (
@@ -729,6 +758,7 @@ export default function BhavaApp() {
         <AcknowledgmentScreen
           firstName={greetingName}
           country={profile.country}
+          regionLabel={regionLabel}
           session={lastOnboardingSession}
           identity={profile.identity_selections}
           onPickTool={handlePickTool}
@@ -745,6 +775,7 @@ export default function BhavaApp() {
     return (
       <SessionCheckout
         country={profile.country}
+        regionLabel={regionLabel}
         onDone={handleCheckoutDone}
         onNeedMore={handleCheckoutNeedMore}
         onSavePositive={handleSavePositive}
@@ -763,7 +794,10 @@ export default function BhavaApp() {
       <LegalAid
         region={gameState.selectedRegion}
         country={profile.country}
-        onClose={() => setShowLegalAid(false)}
+        onClose={() => {
+          setShowLegalAid(false)
+          if (toolOrigin === "ack") { setToolOrigin(null); setShowAcknowledgment(true) }
+        }}
       />
     )
   }
@@ -780,6 +814,7 @@ export default function BhavaApp() {
         onPickRegion={handleRegionSelect}
         onClose={() => {
           setShowFindTherapist(false)
+          if (toolOrigin === "ack") { setToolOrigin(null); setShowAcknowledgment(true); return }
           if (fromGuidedSession) setShowCheckout(true)
         }}
         onCrisis={() => { setShowFindTherapist(false); setShowSupportView(true) }}
@@ -798,6 +833,7 @@ export default function BhavaApp() {
         onPickRegion={handleRegionSelect}
         onClose={() => {
           setShowFindCommunity(false)
+          if (toolOrigin === "ack") { setToolOrigin(null); setShowAcknowledgment(true); return }
           if (fromGuidedSession) setShowCheckout(true)
         }}
         onSwitchToTherapist={() => { setShowFindCommunity(false); setShowFindTherapist(true) }}
@@ -851,7 +887,7 @@ export default function BhavaApp() {
                   backgroundClip: "text",
                 }}
               >
-                Bhava · {taglineFor(profile.country).script}
+                Bhava · {headerTagline.script}
               </span>
               <PronunciationGuide size="sm" />
             </div>
@@ -899,7 +935,7 @@ export default function BhavaApp() {
               <p className="text-base text-muted-foreground italic">
                 Welcome back, {greetingName} {profile.avatar_emoji}
               </p>
-              <p className="text-sm text-muted-foreground/50 tracking-widest">{taglineFor(profile.country).script} · {taglineFor(profile.country).gloss}</p>
+              <p className="text-sm text-muted-foreground/50 tracking-widest">{headerTagline.script} · {headerTagline.gloss}</p>
             </div>
 
             {/* Where are you right now? — per-session ask */}

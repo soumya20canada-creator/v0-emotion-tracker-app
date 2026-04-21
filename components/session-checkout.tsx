@@ -9,6 +9,7 @@ export type PositiveEmotionId = "calm" | "grateful" | "relieved" | "hopeful" | "
 
 type SessionCheckoutProps = {
   country?: string | null
+  regionLabel?: string | null
   onDone: () => void
   onNeedMore: () => void
   onSavePositive?: (positiveId: PositiveEmotionId) => void
@@ -23,9 +24,9 @@ const POSITIVE_CHIPS: { id: PositiveEmotionId; label: string }[] = [
   { id: "loved", label: "loved" },
 ]
 
-export function SessionCheckout({ country, onDone, onNeedMore, onSavePositive }: SessionCheckoutProps) {
+export function SessionCheckout({ country, regionLabel, onDone, onNeedMore, onSavePositive }: SessionCheckoutProps) {
   const [feel, setFeel] = useState<CheckoutFeel | null>(null)
-  const tagline = taglineFor(country)
+  const tagline = taglineFor(country, regionLabel)
 
   return (
     <main className="min-h-dvh bg-background flex flex-col">

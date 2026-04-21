@@ -40,7 +40,7 @@ export function LegalAid({ region, country, onClose }: LegalAidProps) {
               backgroundClip: "text",
             }}
           >
-            Bhava · {taglineFor(country).script}
+            Bhava · {taglineFor(country, regionData?.label).script}
           </span>
           <PronunciationGuide size="sm" />
         </div>
