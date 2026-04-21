@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import { AppLogo } from "@/components/app-logo"
+import { taglineFor } from "@/lib/cultural-taglines"
 
 export type CheckoutFeel = "lighter" | "same" | "need-more" | "okay"
 export type PositiveEmotionId = "calm" | "grateful" | "relieved" | "hopeful" | "proud" | "loved"
 
 type SessionCheckoutProps = {
+  country?: string | null
   onDone: () => void
   onNeedMore: () => void
   onSavePositive?: (positiveId: PositiveEmotionId) => void
@@ -21,8 +23,9 @@ const POSITIVE_CHIPS: { id: PositiveEmotionId; label: string }[] = [
   { id: "loved", label: "loved" },
 ]
 
-export function SessionCheckout({ onDone, onNeedMore, onSavePositive }: SessionCheckoutProps) {
+export function SessionCheckout({ country, onDone, onNeedMore, onSavePositive }: SessionCheckoutProps) {
   const [feel, setFeel] = useState<CheckoutFeel | null>(null)
+  const tagline = taglineFor(country)
 
   return (
     <main className="min-h-dvh bg-background flex flex-col">
@@ -39,7 +42,7 @@ export function SessionCheckout({ onDone, onNeedMore, onSavePositive }: SessionC
               backgroundClip: "text",
             }}
           >
-            Bhava · भाव
+            Bhava · {tagline.script}
           </span>
         </div>
       </header>

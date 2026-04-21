@@ -5,6 +5,7 @@ import { AppLogo } from "@/components/app-logo"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { LocationPicker } from "@/components/location-picker"
 import { getRegionById, type TherapistResource, type TherapistTag } from "@/lib/crisis-resources"
+import { taglineFor } from "@/lib/cultural-taglines"
 import { ArrowLeft, ExternalLink, AlertCircle, ShieldCheck } from "lucide-react"
 
 type FindTherapistProps = {
@@ -105,7 +106,7 @@ export function FindTherapist({ region, country, identity, onClose, onCrisis, on
               backgroundClip: "text",
             }}
           >
-            Bhava · भाव
+            Bhava · {taglineFor(country).script}
           </span>
           <PronunciationGuide size="sm" />
         </div>

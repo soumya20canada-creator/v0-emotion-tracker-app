@@ -3,11 +3,13 @@
 import { AppLogo } from "@/components/app-logo"
 import { ThemeHeader } from "@/components/theme-header"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
+import { taglineFor } from "@/lib/cultural-taglines"
 import { Sparkles } from "lucide-react"
 
 type WelcomeBackProps = {
   firstName: string
   avatarEmoji?: string
+  country?: string | null
   daysSinceLastCheckIn: number | null
   onReady: () => void
   onSkip: () => void
@@ -22,7 +24,8 @@ function timeAgoPhrase(days: number | null): string {
   return "It's been a while. I'm glad you came back."
 }
 
-export function WelcomeBack({ firstName, avatarEmoji, daysSinceLastCheckIn, onReady, onSkip }: WelcomeBackProps) {
+export function WelcomeBack({ firstName, avatarEmoji, country, daysSinceLastCheckIn, onReady, onSkip }: WelcomeBackProps) {
+  const tagline = taglineFor(country)
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <ThemeHeader />
@@ -39,7 +42,7 @@ export function WelcomeBack({ firstName, avatarEmoji, daysSinceLastCheckIn, onRe
               backgroundClip: "text",
             }}
           >
-            Bhava · भाव
+            Bhava · {tagline.script}
           </span>
           <PronunciationGuide size="sm" />
         </div>
@@ -92,7 +95,7 @@ export function WelcomeBack({ firstName, avatarEmoji, daysSinceLastCheckIn, onRe
         </div>
 
         <p className="text-sm text-muted-foreground/70 text-center italic">
-          भाव · the felt sense of being
+          {tagline.script} · {tagline.gloss}
         </p>
       </div>
     </main>

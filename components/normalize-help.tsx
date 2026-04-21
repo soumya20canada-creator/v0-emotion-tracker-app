@@ -2,13 +2,16 @@
 
 import { AppLogo } from "@/components/app-logo"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
+import { taglineFor } from "@/lib/cultural-taglines"
 import { HeartHandshake } from "lucide-react"
 
 type NormalizeHelpProps = {
+  country?: string | null
   onContinue: () => void
 }
 
-export function NormalizeHelp({ onContinue }: NormalizeHelpProps) {
+export function NormalizeHelp({ country, onContinue }: NormalizeHelpProps) {
+  const tagline = taglineFor(country)
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
@@ -24,7 +27,7 @@ export function NormalizeHelp({ onContinue }: NormalizeHelpProps) {
               backgroundClip: "text",
             }}
           >
-            Bhava · भाव
+            Bhava · {tagline.script}
           </span>
           <PronunciationGuide size="sm" />
         </div>
@@ -82,7 +85,7 @@ export function NormalizeHelp({ onContinue }: NormalizeHelpProps) {
         </button>
 
         <p className="text-sm text-muted-foreground/70 text-center italic mt-auto">
-          भाव · the felt sense of being
+          {tagline.script} · {tagline.gloss}
         </p>
       </div>
     </main>

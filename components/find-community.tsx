@@ -5,6 +5,7 @@ import { AppLogo } from "@/components/app-logo"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { LocationPicker } from "@/components/location-picker"
 import { getRegionById, type CommunityResource, type CommunityTag } from "@/lib/crisis-resources"
+import { taglineFor } from "@/lib/cultural-taglines"
 import { ArrowLeft, ExternalLink, Stethoscope } from "lucide-react"
 
 type FindCommunityProps = {
@@ -104,7 +105,7 @@ export function FindCommunity({ region, country, identity, onClose, onSwitchToTh
               backgroundClip: "text",
             }}
           >
-            Bhava · भाव
+            Bhava · {taglineFor(country).script}
           </span>
           <PronunciationGuide size="sm" />
         </div>

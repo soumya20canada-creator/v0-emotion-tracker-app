@@ -549,6 +549,7 @@ export default function BhavaApp() {
       <WelcomeBack
         firstName={profile.first_name ?? profile.display_name ?? profile.username ?? "friend"}
         avatarEmoji={profile.avatar_emoji}
+        country={profile.country}
         daysSinceLastCheckIn={days}
         onReady={() => { setShowWelcomeBack(false); setShowOnboarding(true) }}
         onSkip={() => { setShowWelcomeBack(false) }}
@@ -560,6 +561,7 @@ export default function BhavaApp() {
   if (showNormalizeHelp) {
     return (
       <NormalizeHelp
+        country={profile.country}
         onContinue={() => { setShowNormalizeHelp(false); setShowOnboarding(true) }}
       />
     )
@@ -617,6 +619,7 @@ export default function BhavaApp() {
   if (showCheckout) {
     return (
       <SessionCheckout
+        country={profile.country}
         onDone={handleCheckoutDone}
         onNeedMore={handleCheckoutNeedMore}
         onSavePositive={handleSavePositive}
