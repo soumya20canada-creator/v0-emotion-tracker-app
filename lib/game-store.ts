@@ -151,12 +151,45 @@ export function processCheckIn(
     journalNote,
   }
 
+  // Session merge: if the last check-in is clearly the same in-progress session
+  // (same date + emotion + intensity + subEmotion, logged within the last 15
+  // minutes), update it in place instead of appending a new row. Stops the
+  // weekly breakdown from double-counting when a user confirms intensity and
+  // then completes actions — both paths call processCheckIn.
+  const last = state.checkIns[state.checkIns.length - 1]
+  const SESSION_WINDOW_MS = 15 * 60 * 1000
+  let mergedCheckIns: CheckIn[]
+  let actionDelta = completedActions.length
+  if (
+    last &&
+    last.date === today &&
+    last.emotionId === emotionId &&
+    last.intensity === intensity &&
+    last.subEmotion === subEmotion &&
+    last.timestamp &&
+    Date.now() - new Date(last.timestamp).getTime() < SESSION_WINDOW_MS
+  ) {
+    const mergedActions = Array.from(new Set([...last.actionsCompleted, ...newCheckIn.actionsCompleted]))
+    actionDelta = mergedActions.length - last.actionsCompleted.length
+    const merged: CheckIn = {
+      ...last,
+      timestamp: now,
+      actionsCompleted: mergedActions,
+      usedCrisisMode: last.usedCrisisMode || usedCrisisMode,
+      contextTags: Array.from(new Set([...last.contextTags, ...contextTags])),
+      journalNote: journalNote || last.journalNote,
+    }
+    mergedCheckIns = [...state.checkIns.slice(0, -1), merged]
+  } else {
+    mergedCheckIns = [...state.checkIns, newCheckIn]
+  }
+
   const newState: GameState = {
     lastCheckInDate: now,
-    checkIns: [...state.checkIns, newCheckIn],
+    checkIns: mergedCheckIns,
     moments: state.moments,
     uniqueEmotions: newUniqueEmotions,
-    totalActionsCompleted: state.totalActionsCompleted + completedActions.length,
+    totalActionsCompleted: state.totalActionsCompleted + actionDelta,
     usedCrisisMode: state.usedCrisisMode || usedCrisisMode,
     selectedRegion: state.selectedRegion,
   }

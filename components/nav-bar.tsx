@@ -39,7 +39,7 @@ export function NavBar({
     <nav className="fixed bottom-0 left-0 right-0 z-50" aria-label="Main navigation">
       <div className="max-w-lg mx-auto">
         {/* Avatar row */}
-        <div className="flex items-center justify-end px-4 py-2 bg-background/60 backdrop-blur-md">
+        <div className="flex items-center justify-start px-4 py-2 bg-background/60 backdrop-blur-md">
           <div className="relative">
             <button
               onClick={() => setShowMenu((s) => !s)}
@@ -53,7 +53,7 @@ export function NavBar({
             </button>
             {showMenu && (
               <div
-                className="absolute bottom-12 right-0 w-52 bg-card border border-border rounded-2xl shadow-xl p-2 flex flex-col gap-1"
+                className="absolute bottom-12 left-0 w-52 bg-card border border-border rounded-2xl shadow-xl p-2 flex flex-col gap-1"
                 role="menu"
                 aria-label="Profile menu"
               >

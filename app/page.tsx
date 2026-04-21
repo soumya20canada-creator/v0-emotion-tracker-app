@@ -362,8 +362,25 @@ export default function BhavaApp() {
     setCompletedActionIds([])
     const option = INTENSITY_OPTIONS.find((o) => o.level === intensity)
     setShowCrisis(option?.isCrisis || false)
+
+    // Auto-save the check-in as soon as the user confirms intensity. Previously
+    // the check-in only persisted if the user also completed an action or hit
+    // "just log it" — so an emotion the user named but then navigated away from
+    // never made it into the weekly breakdown. processCheckIn's session-merge
+    // rule means any subsequent action-complete calls update this entry rather
+    // than creating duplicates.
+    if (gameState && profile) {
+      const subLabel = subEmotions.length > 0 ? subEmotions.join(", ") : selectedEmotion.label
+      const newState = processCheckIn(
+        gameState, selectedEmotion.id, subLabel, intensity,
+        [], // no actions yet
+        option?.isCrisis || false, contextTags, journalNote, profile.id,
+      )
+      setGameState(newState)
+    }
+
     setScreen("actions")
-  }, [selectedEmotion, intensity, lastOnboardingSession, contextTags])
+  }, [selectedEmotion, intensity, lastOnboardingSession, contextTags, gameState, profile, subEmotions, journalNote])
 
   const showNextMoment = useCallback(() => {
     if (momentQueueRef.current.length > 0) {
@@ -1077,6 +1094,16 @@ export default function BhavaApp() {
               </div>
             </div>
 
+            {actionsHint && (
+              <p className="text-sm text-muted-foreground italic leading-relaxed px-1">
+                {actionsHint}
+              </p>
+            )}
+
+            {/* Grounding tools (micro-actions) lead — "Try one" heading lives inside ActionCards. */}
+            <ActionCards actions={actions} emotion={selectedEmotion} onComplete={handleActionComplete} completedIds={completedActionIds} onJustLog={completedActionIds.length === 0 ? handleJustLog : undefined} />
+
+            {/* Crisis toolkit (grounding games) sits after the gentler action cards. */}
             <button
               onClick={() => setShowCrisis(!showCrisis)}
               style={{ minHeight: 52, borderColor: selectedEmotion.color, background: showCrisis ? selectedEmotion.color : "transparent", color: showCrisis ? "#FFFFFF" : selectedEmotion.color }}
@@ -1089,6 +1116,7 @@ export default function BhavaApp() {
               <CrisisGames emotion={selectedEmotion} onClose={() => setShowCrisis(false)} onComplete={handleCrisisComplete} defaultGame={intensity >= 5 ? "breathing" : undefined} />
             )}
 
+            {/* Crisis helplines at the very bottom — seeing "suicide" at the top is triggering. */}
             {gameState.selectedRegion ? (
               (() => {
                 const regionData = getRegionById(gameState.selectedRegion)
@@ -1104,13 +1132,6 @@ export default function BhavaApp() {
                 <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
               </div>
             ) : null}
-
-            {actionsHint && (
-              <p className="text-sm text-muted-foreground italic leading-relaxed px-1">
-                {actionsHint}
-              </p>
-            )}
-            <ActionCards actions={actions} emotion={selectedEmotion} onComplete={handleActionComplete} completedIds={completedActionIds} onJustLog={completedActionIds.length === 0 ? handleJustLog : undefined} />
 
             {completedActionIds.length > 0 && (
               <div className="flex flex-col gap-3">
