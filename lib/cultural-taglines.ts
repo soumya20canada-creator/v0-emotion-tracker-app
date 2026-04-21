@@ -45,11 +45,13 @@ const MAP: Record<string, Tagline> = {
 }
 
 export function taglineFor(country: string | null | undefined, regionLabel?: string | null): Tagline {
-  // Prefer the cultural origin (country) when it maps; otherwise fall back to the
-  // user's picked region label (e.g. "Nigeria" → ìmọ̀lára) so the script follows
-  // wherever the user identifies. Default only if neither resolves.
-  if (country && MAP[country]) return MAP[country]
+  // The script tracks where the user IS right now (regionLabel) first, so a
+  // traveller in Mexico sees `sentir` even if their cultural country is India.
+  // This matches what the user experienced during onboarding (where country
+  // is often blank and region alone drives the script) — no silent flip after
+  // onboarding saves country. Falls back to cultural country, then default.
   if (regionLabel && MAP[regionLabel]) return MAP[regionLabel]
+  if (country && MAP[country]) return MAP[country]
   return DEFAULT_TAGLINE
 }
 
@@ -102,7 +104,7 @@ export function homeTimeLineFor(country: string | null | undefined): string | nu
   if (!entry) return null
   try {
     const time = new Intl.DateTimeFormat("en-US", { timeZone: entry.tz, hour: "numeric", minute: "2-digit", hour12: true }).format(new Date())
-    return `It's ${time} in ${entry.city} right now.`
+    return `Back home, it's ${time} in ${entry.city}.`
   } catch {
     return null
   }
