@@ -245,6 +245,13 @@ export const MOMENTS: Moment[] = [
   { id: "first-check", name: "Your first moment", description: "You showed up and named what you were feeling. That takes courage.", icon: "Sparkles", unlocked: false },
   { id: "named-ten", name: "Ten feelings named", description: "You've sat with ten moments now — each one a small act of care for yourself.", icon: "Heart", unlocked: false },
   { id: "month-showing-up", name: "A month of showing up", description: "Thirty days of checking in. Quiet, steady, yours.", icon: "Moon", unlocked: false },
+  { id: "five-actions", name: "Five ways through", description: "Five actions tried. You didn't just feel it — you moved through it.", icon: "Zap", unlocked: false },
+  { id: "reached-for-help", name: "Reached for help", description: "You used the crisis toolkit. Asking for support is one of the bravest things you can do.", icon: "LifeBuoy", unlocked: false },
+  { id: "three-emotions", name: "Three kinds of feeling", description: "You've named three different emotions. That's a wide emotional vocabulary.", icon: "Layers", unlocked: false },
+  { id: "week-streak", name: "A week, held", description: "Seven days in a row. You kept showing up even when it was hard.", icon: "Flame", unlocked: false },
+  { id: "written-it-out", name: "Written it out", description: "You journaled three times. Putting it into words is how you start to carry it differently.", icon: "PenLine", unlocked: false },
+  { id: "named-the-journey", name: "Named the journey", description: "You logged immigration or homesickness as part of what you're carrying. That context matters.", icon: "Compass", unlocked: false },
+  { id: "full-range", name: "The full range", description: "You've named all six emotions. That's the whole human experience, held here.", icon: "Infinity", unlocked: false },
 ]
 
 // Backward-compat alias for any lingering imports

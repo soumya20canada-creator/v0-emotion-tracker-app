@@ -64,6 +64,7 @@ import type { ThemeId } from "@/lib/themes"
 import type { OnboardingSession, PathChoice, ToolSuggestionId } from "@/lib/onboarding-data"
 import { countryToRegionId, situationToContextTags, bodyToEmotion, durationToIntensity, bodyFeelingPhrase } from "@/lib/onboarding-data"
 import { upcomingCulturalDay } from "@/lib/cultural-calendar"
+import { taglineFor } from "@/lib/cultural-taglines"
 import { monthKey, previousMonthStart } from "@/lib/monthly-report"
 import { ArrowLeft, X, Lock, Info, Eye, EyeOff, Wind, BookOpenText, Feather, Headphones, ArrowRight, ChevronRight } from "lucide-react"
 
@@ -604,6 +605,7 @@ export default function BhavaApp() {
         firstName={greetingName}
         country={profile.country}
         session={lastOnboardingSession}
+        identity={profile.identity_selections}
         onPickTool={handlePickTool}
         onOpenWheel={handleOpenWheel}
         onSkip={() => { setShowAcknowledgment(false); setScreen("home") }}
@@ -758,7 +760,7 @@ export default function BhavaApp() {
                   backgroundClip: "text",
                 }}
               >
-                Bhava · भाव
+                Bhava · {taglineFor(profile.country).script}
               </span>
               <PronunciationGuide size="sm" />
             </div>
@@ -806,7 +808,7 @@ export default function BhavaApp() {
               <p className="text-base text-muted-foreground italic">
                 Welcome back, {greetingName} {profile.avatar_emoji}
               </p>
-              <p className="text-sm text-muted-foreground/50 tracking-widest">भाव · the felt sense of being</p>
+              <p className="text-sm text-muted-foreground/50 tracking-widest">{taglineFor(profile.country).script} · {taglineFor(profile.country).gloss}</p>
             </div>
 
             {/* Where are you right now? — per-session ask */}

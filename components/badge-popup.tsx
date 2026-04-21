@@ -1,11 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Star, Sparkles, Heart, Moon } from "lucide-react"
+import { Star, Sparkles, Heart, Moon, Zap, LifeBuoy, Layers, Flame, PenLine, Compass, Infinity } from "lucide-react"
 import type { Moment } from "@/lib/emotions-data"
 
 const BADGE_ICON_MAP: Record<string, React.ElementType> = {
-  Star, Sparkles, Heart, Moon,
+  Star, Sparkles, Heart, Moon, Zap, LifeBuoy, Layers, Flame, PenLine, Compass, Infinity,
 }
 
 type BadgePopupProps = {

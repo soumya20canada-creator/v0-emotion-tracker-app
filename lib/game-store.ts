@@ -162,6 +162,13 @@ export function processCheckIn(
   }
 
   // Soft moment unlocks — gentle markers, not achievements
+  const allDays = new Set(newState.checkIns.map((c) => c.date))
+  const currentStreak = longestStreak(newState.checkIns)
+  const journaledCount = newState.checkIns.filter((c) => c.journalNote && c.journalNote.trim().length > 0).length
+  const immigrationCount = newState.checkIns.filter((c) =>
+    c.contextTags.some((t) => t === "immigration" || t === "homesick" || t === "cultural-pressure" || t === "language")
+  ).length
+
   newState.moments = newState.moments.map((m) => {
     if (m.unlocked) return m
     switch (m.id) {
@@ -169,10 +176,22 @@ export function processCheckIn(
         return { ...m, unlocked: newState.checkIns.length >= 1 }
       case "named-ten":
         return { ...m, unlocked: newState.checkIns.length >= 10 }
-      case "month-showing-up": {
-        const days = new Set(newState.checkIns.map((c) => c.date))
-        return { ...m, unlocked: days.size >= 30 }
-      }
+      case "month-showing-up":
+        return { ...m, unlocked: allDays.size >= 30 }
+      case "five-actions":
+        return { ...m, unlocked: newState.totalActionsCompleted >= 5 }
+      case "reached-for-help":
+        return { ...m, unlocked: newState.usedCrisisMode }
+      case "three-emotions":
+        return { ...m, unlocked: newState.uniqueEmotions.length >= 3 }
+      case "week-streak":
+        return { ...m, unlocked: currentStreak >= 7 }
+      case "written-it-out":
+        return { ...m, unlocked: journaledCount >= 3 }
+      case "named-the-journey":
+        return { ...m, unlocked: immigrationCount >= 1 }
+      case "full-range":
+        return { ...m, unlocked: newState.uniqueEmotions.length >= 6 }
       default:
         return m
     }

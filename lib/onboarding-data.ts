@@ -391,7 +391,7 @@ function joinList(items: string[]): string {
   return items.slice(0, -1).join(", ") + ", and " + items[items.length - 1]
 }
 
-export function humanReflection(session: OnboardingSession | null, country?: string | null): string {
+export function humanReflection(session: OnboardingSession | null, country?: string | null, identity?: string[]): string {
   if (!session) {
     return pick([
       "Thank you for showing up.",
@@ -541,6 +541,8 @@ export function humanReflection(session: OnboardingSession | null, country?: str
 
   // Closing warmth — varied, responsive to context
   const closers: string[] = []
+  const id = new Set(identity ?? [])
+
   if (support.has("therapist")) {
     closers.push(
       "You asked for a therapist — let's find one who fits.",
@@ -552,6 +554,43 @@ export function humanReflection(session: OnboardingSession | null, country?: str
       "You're not looking to be alone in this — let's find your people.",
       "Community first. Here's where to start.",
       "Let's see who's near you.",
+    )
+  } else if (id.has("immigrant") && duration === "months") {
+    closers.push(
+      "Months of adjusting. That's not weakness — that's how long it actually takes.",
+      "It doesn't get easier overnight. But naming it is how it starts to shift.",
+      "A few months in and still finding your footing — that's normal, even when it doesn't feel like it.",
+    )
+  } else if (id.has("immigrant") && going.has("adjusting")) {
+    closers.push(
+      "Missing home is a real grief. You're allowed to mourn what you left behind.",
+      "Being far from what's familiar is its own kind of loss.",
+      "Rebuilding in a new place takes longer than anyone tells you it will.",
+    )
+  } else if (id.has("lgbtq") && going.has("adjusting")) {
+    closers.push(
+      "You're navigating two layers of identity at once. That takes tremendous courage.",
+      "Finding your footing in a new country while also holding your identity — that's a lot. You're doing it.",
+    )
+  } else if (id.has("lgbtq")) {
+    closers.push(
+      "You're holding more than most people see. That's worth acknowledging.",
+      "You're navigating something layered. You don't have to explain it to anyone here.",
+    )
+  } else if (id.has("first-gen")) {
+    closers.push(
+      "Being the first to navigate this is lonely in a specific way. You're not making it up.",
+      "First-generation is a path without a map. What you're feeling makes sense.",
+    )
+  } else if (id.has("cultural-identity")) {
+    closers.push(
+      "Holding two cultures at once is rarely talked about. But the weight of it is real.",
+      "You're somewhere between two worlds. That's not a contradiction — it's just where you are.",
+    )
+  } else if (id.has("mental-health-condition") && (duration === "months" || duration === "comes-and-goes")) {
+    closers.push(
+      "You know this feeling from before. Coming back here anyway is the work.",
+      "You've been doing this longer than most. That matters, even when it's hard.",
     )
   } else if (interpretations.length >= 2 || told.length >= 2) {
     closers.push(

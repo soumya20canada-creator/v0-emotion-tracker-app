@@ -1,10 +1,10 @@
 "use client"
 
 import { type GameState } from "@/lib/game-store"
-import { Sparkles, Heart, Moon, Star } from "lucide-react"
+import { Sparkles, Heart, Moon, Star, Zap, LifeBuoy, Layers, Flame, PenLine, Compass, Infinity } from "lucide-react"
 
 const MOMENT_ICON_MAP: Record<string, React.ElementType> = {
-  Sparkles, Heart, Moon, Star,
+  Sparkles, Heart, Moon, Star, Zap, LifeBuoy, Layers, Flame, PenLine, Compass, Infinity,
 }
 
 type BadgesPageProps = {

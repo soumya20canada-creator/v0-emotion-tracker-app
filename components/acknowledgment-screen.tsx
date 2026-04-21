@@ -18,6 +18,7 @@ type AcknowledgmentScreenProps = {
   firstName: string
   country: string | null
   session: OnboardingSession | null
+  identity?: string[] | null
   onPickTool: (tool: ToolSuggestionId) => void
   onOpenWheel: () => void
   onSkip: () => void
@@ -37,11 +38,12 @@ export function AcknowledgmentScreen({
   firstName,
   country,
   session,
+  identity,
   onPickTool,
   onOpenWheel,
   onSkip,
 }: AcknowledgmentScreenProps) {
-  const reflection = useMemo(() => humanReflection(session, country), [session, country])
+  const reflection = useMemo(() => humanReflection(session, country, identity ?? undefined), [session, country, identity])
   const tools = suggestTools(session)
   const tagline = taglineFor(country)
   const contextTags = new Set(situationToContextTags(session))
@@ -62,7 +64,7 @@ export function AcknowledgmentScreen({
               backgroundClip: "text",
             }}
           >
-            Bhava · भाव
+            Bhava · {tagline.script}
           </span>
           <PronunciationGuide size="sm" />
         </div>
