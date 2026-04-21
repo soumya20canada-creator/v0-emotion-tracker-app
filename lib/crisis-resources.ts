@@ -34,6 +34,47 @@ export type CommunityResource = {
   note?: string
 }
 
+export type LegalAidResource = {
+  name: string
+  description: string
+  url: string
+  note?: string
+}
+
+export const LEGAL_AID: Record<string, LegalAidResource[]> = {
+  us: [
+    { name: "Immigrant Legal Resource Center (ILRC)", description: "National nonprofit providing free immigration legal information, red-card materials, and directory of free/low-cost legal help.", url: "https://www.ilrc.org", note: "Free" },
+    { name: "CLINIC (Catholic Legal Immigration Network)", description: "Directory of over 400 affiliate free/low-cost immigration legal services across the US.", url: "https://cliniclegal.org/find-help", note: "Free / sliding scale" },
+    { name: "Informed Immigrant", description: "Plain-language guides on your rights, DACA, asylum, work permits — by community, in multiple languages.", url: "https://www.informedimmigrant.com", note: "Free" },
+  ],
+  uk: [
+    { name: "Citizens Advice — Immigration", description: "Free confidential advice on visas, status, settled status, family reunification.", url: "https://www.citizensadvice.org.uk/immigration/", note: "Free" },
+    { name: "JCWI (Joint Council for the Welfare of Immigrants)", description: "Legal help for complex immigration cases; campaigns on migrant rights.", url: "https://www.jcwi.org.uk", note: "Free / donation" },
+    { name: "Right to Remain", description: "Toolkit for people navigating the UK asylum and immigration system — written with lived experience.", url: "https://righttoremain.org.uk", note: "Free" },
+  ],
+  canada: [
+    { name: "CLEO (Community Legal Education Ontario)", description: "Plain-language legal information on immigration, refugee claims, and family sponsorship.", url: "https://www.cleo.on.ca/en/publications/topic/immigration-refugee-law", note: "Free" },
+    { name: "Settlement.Org", description: "Free guide for newcomers to Ontario — legal, work, health, schools. Government-funded.", url: "https://settlement.org", note: "Free" },
+    { name: "Canadian Council for Refugees", description: "National advocacy + referral network for refugees and vulnerable migrants.", url: "https://ccrweb.ca", note: "Free" },
+  ],
+  australia: [
+    { name: "RACS (Refugee Advice & Casework Service)", description: "Free legal help for people seeking asylum and refugees in NSW.", url: "https://www.racs.org.au", note: "Free" },
+    { name: "Legal Aid NSW — Immigration", description: "Free legal advice on visas, cancellations, detention, deportation for people who can't afford a lawyer.", url: "https://www.legalaid.nsw.gov.au/my-problem-is-about/my-immigration-status", note: "Free (income-tested)" },
+    { name: "RACS National Referral (other states)", description: "Links to free immigration legal help in VIC, QLD, SA, WA.", url: "https://www.racs.org.au/legal-help-for-asylum-seekers-and-refugees", note: "Free" },
+  ],
+  india: [
+    { name: "UNHCR India", description: "Support for refugees and asylum seekers in India — legal guidance, protection, registration.", url: "https://www.unhcr.org/in/", note: "Free" },
+  ],
+  germany: [
+    { name: "Pro Asyl", description: "Legal counseling and advocacy for refugees and migrants in Germany.", url: "https://www.proasyl.de/en/", note: "Free" },
+  ],
+}
+
+export function legalAidFor(regionId: string | null | undefined): LegalAidResource[] {
+  if (!regionId) return []
+  return LEGAL_AID[regionId] ?? []
+}
+
 export type RegionResources = {
   id: string
   label: string
