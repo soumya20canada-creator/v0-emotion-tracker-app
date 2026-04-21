@@ -614,14 +614,72 @@ export default function BhavaApp() {
     )
   }
 
+  // Emergency exit: keep the crisis chip reachable from *any* screen, including
+  // onboarding. Support view renders here (before onboarding) so tapping the chip
+  // on an onboarding step opens crisis resources without getting stuck.
+  if (showSupportView) {
+    const regionData = gameState?.selectedRegion ? getRegionById(gameState.selectedRegion) : null
+    return (
+      <main className="min-h-dvh bg-background pb-16">
+        <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+          <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => { setShowSupportView(false); setScreen("home") }}
+                style={{ minWidth: 44, minHeight: 44 }}
+                className="rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label="Go back"
+              >
+                <ArrowLeft size={20} className="text-foreground" />
+              </button>
+              <AppLogo size={32} />
+            </div>
+            <LocationPicker selectedRegion={gameState?.selectedRegion ?? null} onSelect={handleRegionSelect} />
+          </div>
+        </header>
+        <div className="max-w-lg mx-auto px-5 py-8 flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-extrabold text-foreground text-balance leading-tight">
+              You're not alone in this.
+            </h1>
+            <p className="text-base text-muted-foreground leading-relaxed">
+              Real people, in your region, trained to listen. Free and confidential.
+            </p>
+          </div>
+          {regionData ? (
+            <CrisisResources region={regionData} accentColor="#3B82F6" />
+          ) : (
+            <div className="flex flex-col gap-3 p-5 rounded-2xl bg-card border-2 border-accent/30">
+              <p className="text-base font-bold text-foreground">Where are you right now?</p>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Pick a region so we can show you the right helplines.
+              </p>
+              <LocationPicker selectedRegion={gameState?.selectedRegion ?? null} onSelect={handleRegionSelect} />
+            </div>
+          )}
+          <button
+            onClick={() => { setShowSupportView(false); setScreen("home") }}
+            style={{ minHeight: 52, background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
+            className="w-full rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Take me back
+          </button>
+        </div>
+      </main>
+    )
+  }
+
   // Onboarding
   if (showOnboarding) {
     return (
-      <OnboardingFlow
-        isNewUser={isFirstTimeUser}
-        onComplete={handleOnboardingComplete}
-        onSkip={handleOnboardingSkip}
-      />
+      <>
+        <OnboardingFlow
+          isNewUser={isFirstTimeUser}
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+        <CrisisChip onOpen={() => setShowSupportView(true)} />
+      </>
     )
   }
 
@@ -650,15 +708,18 @@ export default function BhavaApp() {
   // Post-onboarding reflection hub: reflection + tool suggestions + wheel doorway
   if (showAcknowledgment) {
     return (
-      <AcknowledgmentScreen
-        firstName={greetingName}
-        country={profile.country}
-        session={lastOnboardingSession}
-        identity={profile.identity_selections}
-        onPickTool={handlePickTool}
-        onOpenWheel={handleOpenWheel}
-        onSkip={() => { setShowAcknowledgment(false); setScreen("home") }}
-      />
+      <>
+        <AcknowledgmentScreen
+          firstName={greetingName}
+          country={profile.country}
+          session={lastOnboardingSession}
+          identity={profile.identity_selections}
+          onPickTool={handlePickTool}
+          onOpenWheel={handleOpenWheel}
+          onSkip={() => { setShowAcknowledgment(false); setScreen("home") }}
+        />
+        <CrisisChip onOpen={() => { setShowAcknowledgment(false); setShowSupportView(true) }} />
+      </>
     )
   }
 
@@ -724,58 +785,6 @@ export default function BhavaApp() {
         }}
         onSwitchToTherapist={() => { setShowFindCommunity(false); setShowFindTherapist(true) }}
       />
-    )
-  }
-
-  if (showSupportView) {
-    const regionData = gameState.selectedRegion ? getRegionById(gameState.selectedRegion) : null
-    return (
-      <main className="min-h-dvh bg-background pb-16">
-        <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
-          <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => { setShowSupportView(false); setScreen("home") }}
-                style={{ minWidth: 44, minHeight: 44 }}
-                className="rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                aria-label="Go back"
-              >
-                <ArrowLeft size={20} className="text-foreground" />
-              </button>
-              <AppLogo size={32} />
-            </div>
-            <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
-          </div>
-        </header>
-        <div className="max-w-lg mx-auto px-5 py-8 flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-extrabold text-foreground text-balance leading-tight">
-              You're not alone in this.
-            </h1>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              Real people, in your region, trained to listen. Free and confidential.
-            </p>
-          </div>
-          {regionData ? (
-            <CrisisResources region={regionData} accentColor="#3B82F6" />
-          ) : (
-            <div className="flex flex-col gap-3 p-5 rounded-2xl bg-card border-2 border-accent/30">
-              <p className="text-base font-bold text-foreground">Where are you right now?</p>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                Pick a region so we can show you the right helplines.
-              </p>
-              <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
-            </div>
-          )}
-          <button
-            onClick={() => { setShowSupportView(false); setScreen("home") }}
-            style={{ minHeight: 52, background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
-            className="w-full rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            Take me to my space
-          </button>
-        </div>
-      </main>
     )
   }
 

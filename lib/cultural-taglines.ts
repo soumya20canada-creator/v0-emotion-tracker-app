@@ -44,9 +44,13 @@ const MAP: Record<string, Tagline> = {
   "South Africa": { script: "imvakalelo", gloss: "Zulu: how you feel" },
 }
 
-export function taglineFor(country: string | null | undefined): Tagline {
-  if (!country) return DEFAULT_TAGLINE
-  return MAP[country] ?? DEFAULT_TAGLINE
+export function taglineFor(country: string | null | undefined, regionLabel?: string | null): Tagline {
+  // Prefer the cultural origin (country) when it maps; otherwise fall back to the
+  // user's picked region label (e.g. "Nigeria" → ìmọ̀lára) so the script follows
+  // wherever the user identifies. Default only if neither resolves.
+  if (country && MAP[country]) return MAP[country]
+  if (regionLabel && MAP[regionLabel]) return MAP[regionLabel]
+  return DEFAULT_TAGLINE
 }
 
 // Default IANA timezone + capital label per country — for "what time is it at home" moments.
