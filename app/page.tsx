@@ -811,7 +811,7 @@ export default function BhavaApp() {
   }
 
   return (
-    <main className="min-h-dvh bg-background pb-32">
+    <main className={`min-h-dvh bg-background ${screen === "home" ? "pb-8" : "pb-32"}`}>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
         <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3">
@@ -1254,15 +1254,19 @@ export default function BhavaApp() {
       {/* Global crisis chip — always reachable on main app screens */}
       <CrisisChip onOpen={() => setShowSupportView(true)} />
 
-      {/* Bottom nav */}
-      <NavBar
-        activeScreen={screen === "progress" ? "progress" : screen === "badges" ? "badges" : screen === "patterns" ? "patterns" : "home"}
-        onNavigate={handleNavigate}
-        displayName={greetingName}
-        avatarEmoji={profile.avatar_emoji}
-        onShowThemes={() => setShowThemePicker(true)}
-        onShowSettings={() => setShowSettings(true)}
-      />
+      {/* Bottom nav — hidden on home so the landing screen feels calm.
+          Tapping "Open the emotion wheel" moves to screen="wheel" and
+          reveals the nav so Journey / Patterns / My Space become reachable. */}
+      {screen !== "home" && (
+        <NavBar
+          activeScreen={screen === "progress" ? "progress" : screen === "badges" ? "badges" : screen === "patterns" ? "patterns" : "home"}
+          onNavigate={handleNavigate}
+          displayName={greetingName}
+          avatarEmoji={profile.avatar_emoji}
+          onShowThemes={() => setShowThemePicker(true)}
+          onShowSettings={() => setShowSettings(true)}
+        />
+      )}
     </main>
   )
 }
