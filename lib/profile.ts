@@ -18,6 +18,8 @@ export type Profile = {
   pronouns: string | null
   language: string
   onboarding_completed: boolean
+  favorite_therapist_ids?: string[]
+  favorite_community_ids?: string[]
   created_at: string
 }
 

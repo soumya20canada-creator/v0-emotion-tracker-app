@@ -6,12 +6,14 @@ import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { LocationPicker } from "@/components/location-picker"
 import { getRegionById, type CommunityResource, type CommunityTag } from "@/lib/crisis-resources"
 import { taglineFor } from "@/lib/cultural-taglines"
-import { ArrowLeft, ExternalLink, Stethoscope } from "lucide-react"
+import { ArrowLeft, ExternalLink, Stethoscope, Heart } from "lucide-react"
 
 type FindCommunityProps = {
   region: string | null
   country?: string | null
   identity?: string[] | null
+  favoriteIds?: string[]
+  onToggleFavorite?: (id: string) => void
   onClose: () => void
   onSwitchToTherapist: () => void
   onPickRegion: (regionId: string) => void
@@ -75,11 +77,19 @@ function tagBadge(tag: CommunityTag): string {
   return map[tag]
 }
 
-export function FindCommunity({ region, country, identity, onClose, onSwitchToTherapist, onPickRegion }: FindCommunityProps) {
+export function FindCommunity({ region, country, identity, favoriteIds, onToggleFavorite, onClose, onSwitchToTherapist, onPickRegion }: FindCommunityProps) {
   const regionData = region ? getRegionById(region) : null
+  const favSet = useMemo(() => new Set(favoriteIds ?? []), [favoriteIds])
   const sections = useMemo(
-    () => regionData ? buildSections(regionData.community, country, regionData.label, identity ?? null) : [],
-    [regionData, country, identity],
+    () => {
+      if (!regionData) return []
+      const base = buildSections(regionData.community, country, regionData.label, identity ?? null)
+      const savedItems = regionData.community.filter((r) => favSet.has(r.name))
+      if (savedItems.length === 0) return base
+      const saved: Section = { title: "Your saved spaces", subtitle: "Tap the heart again to unsave.", items: savedItems }
+      return [saved, ...base]
+    },
+    [regionData, country, identity, favSet],
   )
 
   return (
@@ -142,36 +152,50 @@ export function FindCommunity({ region, country, identity, onClose, onSwitchToTh
               {section.subtitle && <p className="text-sm text-muted-foreground leading-relaxed">{section.subtitle}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              {section.items.map((r) => (
-                <a
-                  key={r.name}
-                  href={r.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ minHeight: 72 }}
-                  className="w-full flex items-start gap-3 p-4 rounded-2xl bg-card border border-border hover:bg-muted cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  <div className="flex-1 min-w-0 flex flex-col gap-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-base font-bold text-foreground">{r.name}</p>
-                      {r.note && (
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
-                          {r.note}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{r.description}</p>
-                    <div className="flex flex-wrap gap-1.5 mt-0.5">
-                      {r.tags.map((t) => (
-                        <span key={t} className="text-xs font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
-                          {tagBadge(t)}
-                        </span>
-                      ))}
-                    </div>
+              {section.items.map((r) => {
+                const isFav = favSet.has(r.name)
+                return (
+                  <div key={r.name} className="relative">
+                    <a
+                      href={r.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ minHeight: 72 }}
+                      className="w-full flex items-start gap-3 p-4 pr-12 rounded-2xl bg-card border border-border hover:bg-muted cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    >
+                      <div className="flex-1 min-w-0 flex flex-col gap-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-base font-bold text-foreground">{r.name}</p>
+                          {r.note && (
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+                              {r.note}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{r.description}</p>
+                        <div className="flex flex-wrap gap-1.5 mt-0.5">
+                          {r.tags.map((t) => (
+                            <span key={t} className="text-xs font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
+                              {tagBadge(t)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <ExternalLink size={16} className="text-muted-foreground shrink-0 mt-1" aria-hidden="true" />
+                    </a>
+                    {onToggleFavorite && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(r.name) }}
+                        aria-label={isFav ? "Unsave" : "Save"}
+                        aria-pressed={isFav}
+                        className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center bg-background/70 backdrop-blur-sm border border-border hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        <Heart size={16} className={isFav ? "text-destructive fill-destructive" : "text-muted-foreground"} aria-hidden="true" />
+                      </button>
+                    )}
                   </div>
-                  <ExternalLink size={16} className="text-muted-foreground shrink-0 mt-1" aria-hidden="true" />
-                </a>
-              ))}
+                )
+              })}
             </div>
           </section>
         ))}

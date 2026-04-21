@@ -17,6 +17,11 @@ export type MicroAction = {
   points: number
   culturalNote?: string
   researchBasis?: string
+  // Context tags this action speaks to. Actions with matching tags are boosted
+  // (not required) when a session carries the same tags — e.g. a "voice-note a
+  // friend in your home country" action surfaces first when the user named
+  // homesickness or loneliness in onboarding.
+  contextTags?: string[]
 }
 
 export type Moment = {
@@ -145,9 +150,15 @@ export const MICRO_ACTIONS: Record<string, { low: MicroAction[]; medium: MicroAc
       { id: "s2", text: "Text someone you trust: 'Hey, thinking of you'", category: "social", timeMinutes: 2, points: 15 },
       { id: "s3", text: "Step outside for fresh air, even just for 2 minutes", category: "body", timeMinutes: 2, points: 10, researchBasis: "Nature exposure reduces rumination (Bratman et al., 2015)" },
       { id: "s4", text: "Watch a short funny video that always makes you smile", category: "fun", timeMinutes: 3, points: 5 },
+      { id: "s_vn", text: "Voice-note a friend in your home country — 60 seconds is plenty", category: "social", timeMinutes: 2, points: 15, contextTags: ["loneliness", "homesick"] },
+      { id: "s_fam", text: "Message your aunty, uncle, or cousin. Not about anything. Just a voice note hello.", category: "social", timeMinutes: 2, points: 15, contextTags: ["homesick", "loneliness"] },
+      { id: "s_news", text: "Look up one piece of good news from home today", category: "mindful", timeMinutes: 3, points: 10, contextTags: ["immigration", "homesick"] },
     ],
     medium: [
       { id: "s5", text: "Write down what you're feeling without judging it", category: "mindful", timeMinutes: 5, points: 20, researchBasis: "Expressive writing reduces emotional distress (Pennebaker, 1997)" },
+      { id: "s_cafe", text: "Sit in a café with your laptop. Being around people counts — you don't have to speak.", category: "social", timeMinutes: 30, points: 20, contextTags: ["loneliness"] },
+      { id: "s_dish", text: "Cook one dish from home. Even if it's instant noodles your mom used to make.", category: "creative", timeMinutes: 20, points: 25, contextTags: ["homesick", "cultural-pressure"] },
+      { id: "s_lang", text: "Journal in the language your grief speaks", category: "creative", timeMinutes: 10, points: 25, contextTags: ["language-barrier", "homesick"] },
       { id: "s6", text: "Go for a 10-minute walk and notice 5 colors around you", category: "body", timeMinutes: 10, points: 25, researchBasis: "Grounding techniques from DBT - using senses to anchor to present" },
       { id: "s7", text: "Cook a comfort food from your childhood or culture", category: "creative", timeMinutes: 20, points: 30, culturalNote: "Comfort food varies by culture - any food that feels like home counts" },
       { id: "s8", text: "Call someone who gets you - family, friend, or mentor", category: "social", timeMinutes: 10, points: 25 },
@@ -158,6 +169,7 @@ export const MICRO_ACTIONS: Record<string, { low: MicroAction[]; medium: MicroAc
       { id: "s11", text: "Name 5 things you can see, 4 you can touch, 3 you can hear", category: "mindful", timeMinutes: 3, points: 15, researchBasis: "5-4-3-2-1 grounding technique from anxiety management research" },
       { id: "s12", text: "Draw or scribble your feelings - no rules, just let it out", category: "creative", timeMinutes: 5, points: 25 },
       { id: "s13", text: "Splash cold water on your face 3 times", category: "body", timeMinutes: 1, points: 15, researchBasis: "Mammalian dive reflex - cold water activates parasympathetic nervous system" },
+      { id: "s_survived", text: "Name one thing you've survived here that your younger self wouldn't believe", category: "mindful", timeMinutes: 3, points: 25, contextTags: ["immigration"] },
     ],
   },
   anger: {
@@ -172,6 +184,7 @@ export const MICRO_ACTIONS: Record<string, { low: MicroAction[]; medium: MicroAc
       { id: "a6", text: "Rip up old paper or magazines into tiny pieces", category: "fun", timeMinutes: 5, points: 15 },
       { id: "a7", text: "Write a rap, poem, or rant about what's making you mad", category: "creative", timeMinutes: 10, points: 25, culturalNote: "Many cultures use storytelling and music to process strong emotions" },
       { id: "a8", text: "Talk to someone you trust about what happened", category: "social", timeMinutes: 10, points: 25 },
+      { id: "a_afraid", text: "Write one sentence you've been afraid to say out loud — just for you", category: "creative", timeMinutes: 5, points: 25, contextTags: ["cultural-pressure", "family"] },
     ],
     high: [
       { id: "a9", text: "Do 20 push-ups or 30 jumping jacks RIGHT NOW", category: "body", timeMinutes: 3, points: 25, researchBasis: "Intense exercise rapidly reduces anger arousal (Thayer, 2001)" },
@@ -187,6 +200,8 @@ export const MICRO_ACTIONS: Record<string, { low: MicroAction[]; medium: MicroAc
       { id: "f2", text: "List 3 times you handled something scary and survived", category: "mindful", timeMinutes: 3, points: 15, researchBasis: "Self-efficacy building (Bandura, 1977)" },
       { id: "f3", text: "Ground yourself: press your feet firmly into the floor", category: "body", timeMinutes: 1, points: 5, researchBasis: "Somatic grounding reduces anxiety activation" },
       { id: "f4", text: "Text a friend: 'What's the silliest thing that happened to you today?'", category: "social", timeMinutes: 2, points: 10 },
+      { id: "f_green", text: "Walk to a window and look at something green for 60 seconds", category: "body", timeMinutes: 1, points: 10, contextTags: ["money", "loneliness"] },
+      { id: "f_free", text: "Find one local free thing this week — library, park, free museum day", category: "fun", timeMinutes: 5, points: 15, contextTags: ["money", "loneliness"] },
     ],
     medium: [
       { id: "f5", text: "Do a body scan: slowly notice each part of your body from toes to head", category: "mindful", timeMinutes: 5, points: 20, researchBasis: "Body scan meditation reduces anxiety (Kabat-Zinn, 1990)" },
@@ -291,6 +306,7 @@ export type ScoringContext = {
   body_feelings: string[]
   whats_been_going_on: string[]
   duration: string
+  context_tags?: string[]
 }
 
 export function scoreActionsForSession(
@@ -304,6 +320,7 @@ export function scoreActionsForSession(
 
   const body = new Set(ctx.body_feelings)
   const going = new Set(ctx.whats_been_going_on)
+  const ctxTags = new Set(ctx.context_tags ?? [])
 
   const preferredCategories = new Set<string>()
   if (body.has("chest-tightness")) { preferredCategories.add("mindful"); preferredCategories.add("body") }
@@ -323,6 +340,7 @@ export function scoreActionsForSession(
     if (preferResearch && a.researchBasis && /CBT|EMDR|ACT|DBT/i.test(a.researchBasis)) score += 2
     if (preferLonger && a.timeMinutes >= 10) score += 1
     if (preferShorter && a.timeMinutes <= 5) score += 1
+    if (ctxTags.size > 0 && a.contextTags && a.contextTags.some((t) => ctxTags.has(t))) score += 4
     score += Math.random() * 0.5
     return { a, score }
   })

@@ -25,6 +25,7 @@ import { OnboardingFlow } from "@/components/onboarding-flow"
 import { AccountSettings } from "@/components/account-settings"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { AcknowledgmentScreen } from "@/components/acknowledgment-screen"
+import { LegalAid } from "@/components/legal-aid"
 import { WelcomeBack } from "@/components/welcome-back"
 import { NormalizeHelp } from "@/components/normalize-help"
 import { ThemeHeader } from "@/components/theme-header"
@@ -88,6 +89,7 @@ export default function BhavaApp() {
   const [showSupportView, setShowSupportView] = useState(false)
   const [showFindTherapist, setShowFindTherapist] = useState(false)
   const [showFindCommunity, setShowFindCommunity] = useState(false)
+  const [showLegalAid, setShowLegalAid] = useState(false)
   const [actionsHint, setActionsHint] = useState<string | null>(null)
 
   // App settings
@@ -298,6 +300,22 @@ export default function BhavaApp() {
     setProfile((prev) => prev ? { ...prev, ...profileUpdates } : prev)
   }, [profile])
 
+  const toggleFavoriteTherapist = useCallback((id: string) => {
+    if (!profile) return
+    const cur = profile.favorite_therapist_ids ?? []
+    const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]
+    setProfile((prev) => prev ? { ...prev, favorite_therapist_ids: next } : prev)
+    updateProfile(profile.id, { favorite_therapist_ids: next }).catch(() => {})
+  }, [profile])
+
+  const toggleFavoriteCommunity = useCallback((id: string) => {
+    if (!profile) return
+    const cur = profile.favorite_community_ids ?? []
+    const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]
+    setProfile((prev) => prev ? { ...prev, favorite_community_ids: next } : prev)
+    updateProfile(profile.id, { favorite_community_ids: next }).catch(() => {})
+  }, [profile])
+
   const handleOnboardingSkip = useCallback(() => {
     setShowOnboarding(false)
     // Save empty session
@@ -332,13 +350,20 @@ export default function BhavaApp() {
 
   const handleIntensityConfirm = useCallback(() => {
     if (!selectedEmotion) return
-    const a = getActionsForEmotion(selectedEmotion.id, intensity)
-    setActions(a)
+    const sessionCtxTags = situationToContextTags(lastOnboardingSession)
+    const mergedCtxTags = Array.from(new Set([...(contextTags ?? []), ...sessionCtxTags]))
+    const a = scoreActionsForSession(selectedEmotion.id, intensity, {
+      body_feelings: lastOnboardingSession?.body_feelings ?? [],
+      whats_been_going_on: lastOnboardingSession?.whats_been_going_on ?? [],
+      duration: lastOnboardingSession?.duration ?? "",
+      context_tags: mergedCtxTags,
+    })
+    setActions(a.length > 0 ? a : getActionsForEmotion(selectedEmotion.id, intensity))
     setCompletedActionIds([])
     const option = INTENSITY_OPTIONS.find((o) => o.level === intensity)
     setShowCrisis(option?.isCrisis || false)
     setScreen("actions")
-  }, [selectedEmotion, intensity])
+  }, [selectedEmotion, intensity, lastOnboardingSession, contextTags])
 
   const showNextMoment = useCallback(() => {
     if (momentQueueRef.current.length > 0) {
@@ -633,12 +658,25 @@ export default function BhavaApp() {
   if (activeTool === "grounding-note") return <GroundingNotes onClose={handleToolClose} />
   if (activeTool === "meditate") return <Meditate onClose={handleToolClose} />
 
+  if (showLegalAid) {
+    return (
+      <LegalAid
+        region={gameState.selectedRegion}
+        country={profile.country}
+        onClose={() => setShowLegalAid(false)}
+      />
+    )
+  }
+
   if (showFindTherapist) {
     return (
       <FindTherapist
         region={gameState.selectedRegion}
         country={profile.country}
         identity={profile.identity_selections}
+        favoriteIds={profile.favorite_therapist_ids}
+        onToggleFavorite={toggleFavoriteTherapist}
+        onOpenLegalAid={() => setShowLegalAid(true)}
         onPickRegion={handleRegionSelect}
         onClose={() => {
           setShowFindTherapist(false)
@@ -655,6 +693,8 @@ export default function BhavaApp() {
         region={gameState.selectedRegion}
         country={profile.country}
         identity={profile.identity_selections}
+        favoriteIds={profile.favorite_community_ids}
+        onToggleFavorite={toggleFavoriteCommunity}
         onPickRegion={handleRegionSelect}
         onClose={() => {
           setShowFindCommunity(false)
