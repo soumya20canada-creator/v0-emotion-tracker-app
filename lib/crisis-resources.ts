@@ -52,21 +52,39 @@ export const LEGAL_AID: Record<string, LegalAidResource[]> = {
     { name: "JCWI (Joint Council for the Welfare of Immigrants)", description: "Legal help for complex immigration cases; campaigns on migrant rights.", url: "https://www.jcwi.org.uk", note: "Free / donation" },
     { name: "Right to Remain", description: "Toolkit for people navigating the UK asylum and immigration system — written with lived experience.", url: "https://righttoremain.org.uk", note: "Free" },
   ],
-  canada: [
+  ca: [
     { name: "CLEO (Community Legal Education Ontario)", description: "Plain-language legal information on immigration, refugee claims, and family sponsorship.", url: "https://www.cleo.on.ca/en/publications/topic/immigration-refugee-law", note: "Free" },
     { name: "Settlement.Org", description: "Free guide for newcomers to Ontario — legal, work, health, schools. Government-funded.", url: "https://settlement.org", note: "Free" },
     { name: "Canadian Council for Refugees", description: "National advocacy + referral network for refugees and vulnerable migrants.", url: "https://ccrweb.ca", note: "Free" },
   ],
-  australia: [
+  au: [
     { name: "RACS (Refugee Advice & Casework Service)", description: "Free legal help for people seeking asylum and refugees in NSW.", url: "https://www.racs.org.au", note: "Free" },
     { name: "Legal Aid NSW — Immigration", description: "Free legal advice on visas, cancellations, detention, deportation for people who can't afford a lawyer.", url: "https://www.legalaid.nsw.gov.au/my-problem-is-about/my-immigration-status", note: "Free (income-tested)" },
     { name: "RACS National Referral (other states)", description: "Links to free immigration legal help in VIC, QLD, SA, WA.", url: "https://www.racs.org.au/legal-help-for-asylum-seekers-and-refugees", note: "Free" },
   ],
-  india: [
+  in: [
     { name: "UNHCR India", description: "Support for refugees and asylum seekers in India — legal guidance, protection, registration.", url: "https://www.unhcr.org/in/", note: "Free" },
   ],
-  germany: [
+  de: [
     { name: "Pro Asyl", description: "Legal counseling and advocacy for refugees and migrants in Germany.", url: "https://www.proasyl.de/en/", note: "Free" },
+    { name: "Handbook Germany — Legal advice", description: "Plain-language directory of free migration counseling centers across Germany. Multilingual.", url: "https://handbookgermany.de/en/legal-advice", note: "Free" },
+    { name: "Bundesamt für Migration und Flüchtlinge (BAMF)", description: "Official federal migration office — asylum, residence, integration information.", url: "https://www.bamf.de/EN/Startseite/startseite_node.html", note: "Government" },
+  ],
+  ph: [
+    { name: "Commission on Filipinos Overseas (CFO)", description: "Government agency supporting Filipinos abroad — legal, predeparture, reintegration.", url: "https://cfo.gov.ph", note: "Government" },
+    { name: "Blas F. Ople Policy Center", description: "Nonprofit legal aid for distressed OFWs and returning migrant workers.", url: "https://www.blasoplecenter.org", note: "Free" },
+  ],
+  mx: [
+    { name: "Sin Fronteras IAP", description: "NGO providing free legal representation to migrants, refugees, and asylum seekers in Mexico.", url: "https://sinfronteras.org.mx", note: "Free" },
+    { name: "COMAR (Comisión Mexicana de Ayuda a Refugiados)", description: "Mexican government agency for refugee recognition and protection.", url: "https://www.gob.mx/comar", note: "Government" },
+  ],
+  ng: [
+    { name: "Legal Aid Council of Nigeria", description: "Federal agency providing free legal aid to indigent Nigerians including migration-related matters.", url: "https://legalaidcouncil.gov.ng", note: "Free" },
+    { name: "NIDCOM (Nigerians in Diaspora Commission)", description: "Government body supporting Nigerians abroad and returnees — referrals and advocacy.", url: "https://nidcom.gov.ng", note: "Government" },
+  ],
+  global: [
+    { name: "UNHCR Help", description: "UN refugee agency — find legal help, asylum info, and services in your country.", url: "https://help.unhcr.org", note: "Free" },
+    { name: "International Organization for Migration (IOM)", description: "Country-by-country migrant assistance directory — legal, return, and protection services.", url: "https://www.iom.int/countries", note: "Free" },
   ],
 }
 
