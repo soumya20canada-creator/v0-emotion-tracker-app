@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowLeft, Plus, Trash2, Download, Lock, Pencil, Search } from "lucide-react"
+import { ArrowLeft, Plus, Trash2, Download, Lock, Pencil, Search, AlertTriangle, Printer } from "lucide-react"
 import {
   type JournalEntry,
   addEntry,
@@ -104,13 +104,40 @@ export function Journal({ userId, onClose }: JournalProps) {
       </header>
 
       <div className="max-w-lg mx-auto px-5 py-6 flex flex-col gap-5">
-        <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-secondary border border-border">
-          <Lock size={14} className="text-muted-foreground mt-0.5 shrink-0" aria-hidden="true" />
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            <span className="font-semibold text-foreground">Private. </span>
-            Stored only on this device. We never see it, never upload it, never analyze it.
-            If you log out or clear your browser, it's gone. Export anytime.
-          </p>
+        <div className="flex flex-col gap-3 p-4 rounded-2xl bg-secondary border border-border">
+          <div className="flex items-start gap-2.5">
+            <Lock size={14} className="text-muted-foreground mt-0.5 shrink-0" aria-hidden="true" />
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              <span className="font-semibold text-foreground">Private. </span>
+              Stored only on this device. We never see it, never upload it, never analyze it.
+            </p>
+          </div>
+          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+            <AlertTriangle size={14} className="text-amber-500 mt-0.5 shrink-0" aria-hidden="true" />
+            <p className="text-sm text-foreground leading-relaxed">
+              <span className="font-semibold">Heads up: </span>
+              If you log out, clear your browser, or switch devices, these entries are <strong>gone forever</strong>.
+              If they matter to you, <strong>export</strong> or <strong>print</strong> them to keep a copy you own.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={handleExport}
+              style={{ minHeight: 44 }}
+              className="flex-1 flex items-center justify-center gap-2 px-3 rounded-xl text-sm font-semibold bg-card border border-border text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <Download size={14} aria-hidden="true" />
+              Export as .txt
+            </button>
+            <button
+              onClick={() => { if (typeof window !== "undefined") window.print() }}
+              style={{ minHeight: 44 }}
+              className="flex-1 flex items-center justify-center gap-2 px-3 rounded-xl text-sm font-semibold bg-card border border-border text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <Printer size={14} aria-hidden="true" />
+              Print / Save PDF
+            </button>
+          </div>
         </div>
 
         <button
