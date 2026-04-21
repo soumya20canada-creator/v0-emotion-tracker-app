@@ -27,6 +27,7 @@ import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { AcknowledgmentScreen } from "@/components/acknowledgment-screen"
 import { LegalAid } from "@/components/legal-aid"
 import { FamilyScripts } from "@/components/family-scripts"
+import { SupportView } from "@/components/support-view"
 import { WelcomeBack } from "@/components/welcome-back"
 import { NormalizeHelp } from "@/components/normalize-help"
 import { ThemeHeader } from "@/components/theme-header"
@@ -640,61 +641,20 @@ export default function BhavaApp() {
   }
 
   // Emergency exit: keep the crisis chip reachable from *any* screen, including
-  // onboarding. Support view renders here (before onboarding) so tapping the chip
-  // on an onboarding step opens crisis resources without getting stuck.
-  if (showSupportView) {
-    const regionData = gameState?.selectedRegion ? getRegionById(gameState.selectedRegion) : null
+  // onboarding. During onboarding we render SupportView as an overlay (below)
+  // so OnboardingFlow stays mounted and the user's in-progress answers survive.
+  if (showSupportView && !showOnboarding) {
     return (
-      <main className="min-h-dvh bg-background pb-16">
-        <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
-          <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  setShowSupportView(false)
-                  if (toolOrigin === "ack") { setToolOrigin(null); setShowAcknowledgment(true); return }
-                  setScreen("home")
-                }}
-                style={{ minWidth: 44, minHeight: 44 }}
-                className="rounded-xl flex items-center justify-center hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                aria-label="Go back"
-              >
-                <ArrowLeft size={20} className="text-foreground" />
-              </button>
-              <AppLogo size={32} />
-            </div>
-            <LocationPicker selectedRegion={gameState?.selectedRegion ?? null} onSelect={handleRegionSelect} />
-          </div>
-        </header>
-        <div className="max-w-lg mx-auto px-5 py-8 flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-extrabold text-foreground text-balance leading-tight">
-              You're not alone in this.
-            </h1>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              Real people, in your region, trained to listen. Free and confidential.
-            </p>
-          </div>
-          {regionData ? (
-            <CrisisResources region={regionData} accentColor="#3B82F6" />
-          ) : (
-            <div className="flex flex-col gap-3 p-5 rounded-2xl bg-card border-2 border-accent/30">
-              <p className="text-base font-bold text-foreground">Where are you right now?</p>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                Pick a region so we can show you the right helplines.
-              </p>
-              <LocationPicker selectedRegion={gameState?.selectedRegion ?? null} onSelect={handleRegionSelect} />
-            </div>
-          )}
-          <button
-            onClick={() => { setShowSupportView(false); setScreen("home") }}
-            style={{ minHeight: 52, background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
-            className="w-full rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            Take me back
-          </button>
-        </div>
-      </main>
+      <SupportView
+        mode="page"
+        selectedRegion={gameState?.selectedRegion ?? null}
+        onRegionSelect={handleRegionSelect}
+        onBack={() => {
+          setShowSupportView(false)
+          if (toolOrigin === "ack") { setToolOrigin(null); setShowAcknowledgment(true); return }
+          setScreen("home")
+        }}
+      />
     )
   }
 
@@ -708,6 +668,14 @@ export default function BhavaApp() {
           onSkip={handleOnboardingSkip}
         />
         <CrisisChip onOpen={() => setShowSupportView(true)} />
+        {showSupportView && (
+          <SupportView
+            mode="overlay"
+            selectedRegion={gameState?.selectedRegion ?? null}
+            onRegionSelect={handleRegionSelect}
+            onBack={() => setShowSupportView(false)}
+          />
+        )}
       </>
     )
   }
