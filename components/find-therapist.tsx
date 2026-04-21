@@ -130,8 +130,7 @@ export function FindTherapist({ region, country, identity, favoriteIds, onToggle
           </h1>
           {regionData ? (
             <p className="text-lg text-foreground leading-relaxed">
-              Here are real options in <strong>{regionData.label}</strong>
-              {country && country !== regionData.label ? <> — with notes for people from {country} too</> : null}.
+              Here are real options in <strong>{regionData.label}</strong>.
             </p>
           ) : (
             <p className="text-lg text-foreground leading-relaxed">

@@ -128,8 +128,7 @@ export function FindCommunity({ region, country, identity, favoriteIds, onToggle
           </h1>
           {regionData ? (
             <p className="text-lg text-foreground leading-relaxed">
-              Here's where to find people in <strong>{regionData.label}</strong>
-              {country && country !== regionData.label ? <> — with spaces for folks from {country} too</> : null}.
+              Here's where to find people in <strong>{regionData.label}</strong>.
             </p>
           ) : (
             <p className="text-lg text-foreground leading-relaxed">
