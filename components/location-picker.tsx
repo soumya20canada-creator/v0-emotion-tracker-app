@@ -40,7 +40,7 @@ export function LocationPicker({ selectedRegion, onSelect }: LocationPickerProps
       </button>
 
       {open && (
-        <div className="absolute top-full right-0 mt-2 w-64 max-h-80 overflow-y-auto rounded-2xl bg-card border border-border shadow-lg z-50">
+        <div className="absolute top-full right-0 mt-2 w-64 max-w-[calc(100vw-2rem)] max-h-80 overflow-y-auto rounded-2xl bg-card border border-border shadow-lg z-50">
           <div className="p-3">
             <p className="text-xs font-semibold text-muted-foreground mb-3 px-1">
               Where are you right now?

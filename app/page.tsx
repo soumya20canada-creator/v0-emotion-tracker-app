@@ -15,7 +15,6 @@ import { CrisisResources } from "@/components/crisis-resources"
 import { ContextTagPicker } from "@/components/context-tag-picker"
 import { AuthGate } from "@/components/auth-gate"
 import { ThemePicker } from "@/components/theme-picker"
-import { MusicPlayer } from "@/components/music-player"
 import { OnboardingTooltips } from "@/components/onboarding-tooltips"
 import { HowItWorks } from "@/components/how-it-works"
 import { EmotionDescribe } from "@/components/emotion-describe"
@@ -478,8 +477,7 @@ export default function BhavaApp() {
       return
     }
     if (id === "music") {
-      // Floating MusicPlayer is always mounted — closing acknowledgment surfaces it.
-      setActionsHint("Tap the music note at the bottom to pick something soft.")
+      // Music feature removed — fall through silently.
       return
     }
     setActiveTool(id)
@@ -815,8 +813,8 @@ export default function BhavaApp() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
         <ThemeHeader onThemeChange={(id) => setCurrentTheme(id)} />
-        <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3">
-          <div className="flex items-center gap-3">
+        <div className="max-w-lg mx-auto flex items-center justify-between px-4 sm:px-5 py-3 gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             {screen !== "home" && screen !== "progress" && screen !== "badges" && screen !== "patterns" && (
               <button
                 onClick={() => {
@@ -846,9 +844,9 @@ export default function BhavaApp() {
               </button>
             )}
             <AppLogo size={32} />
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 min-w-0">
               <span
-                className="text-2xl tracking-wide"
+                className="text-xl sm:text-2xl tracking-wide truncate"
                 style={{
                   fontFamily: "var(--font-cormorant), 'Cormorant Garamond', serif",
                   background: "linear-gradient(135deg, #C9A84C 0%, #F5D77E 50%, #C9A84C 100%)",
@@ -862,7 +860,7 @@ export default function BhavaApp() {
               <PronunciationGuide size="sm" />
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
           </div>
         </div>
@@ -1201,9 +1199,6 @@ export default function BhavaApp() {
           <PatternsPage gameState={gameState} />
         )}
       </div>
-
-      {/* Ambient music */}
-      <MusicPlayer emotionId={selectedEmotion?.id ?? null} accentColor={selectedEmotion?.color} />
 
       {/* Soft moment popup */}
       {momentPopup && <BadgePopup badge={momentPopup} onDone={() => { setMomentPopup(null); showNextMoment() }} />}

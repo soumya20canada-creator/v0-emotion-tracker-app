@@ -53,7 +53,7 @@ export function NavBar({
             </button>
             {showMenu && (
               <div
-                className="absolute bottom-12 left-0 w-52 bg-card border border-border rounded-2xl shadow-xl p-2 flex flex-col gap-1"
+                className="absolute bottom-12 left-0 w-52 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-2xl shadow-xl p-2 flex flex-col gap-1"
                 role="menu"
                 aria-label="Profile menu"
               >

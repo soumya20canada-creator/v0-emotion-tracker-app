@@ -42,23 +42,23 @@ export function ThemeHeader({ onThemeChange }: ThemeHeaderProps) {
 
   return (
     <>
-      <div className="flex items-center justify-end gap-2 px-4 py-2">
+      <div className="flex items-center justify-end gap-1.5 px-3 py-1.5">
         <button
           onClick={quickToggle}
-          style={{ minWidth: 40, minHeight: 40 }}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-muted hover:bg-border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          style={{ minWidth: 36, minHeight: 36 }}
+          className="w-9 h-9 rounded-full flex items-center justify-center bg-muted hover:bg-border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         >
-          {isDark ? <Sun size={16} className="text-foreground" /> : <Moon size={16} className="text-foreground" />}
+          {isDark ? <Sun size={15} className="text-foreground" /> : <Moon size={15} className="text-foreground" />}
         </button>
         <button
           onClick={() => setShowSheet(true)}
-          style={{ minHeight: 40 }}
-          className="flex items-center gap-1.5 px-3 h-10 rounded-full bg-muted hover:bg-border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          style={{ minHeight: 36 }}
+          className="flex items-center gap-1.5 px-2.5 h-9 rounded-full bg-muted hover:bg-border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label="Pick a color theme"
         >
-          <Palette size={14} className="text-foreground" aria-hidden="true" />
-          <span className="text-xs font-semibold text-foreground">Theme</span>
+          <Palette size={13} className="text-foreground" aria-hidden="true" />
+          <span className="text-[11px] font-semibold text-foreground">Theme</span>
         </button>
       </div>
 
@@ -112,7 +112,7 @@ function ThemeGrid({ currentTheme, onSelect }: { currentTheme: ThemeId; onSelect
       </div>
       <div>
         <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-3">🌙 Dark</p>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
           {darkThemes.map((t) => (
             <ThemeCard key={t.id} theme={t} isActive={currentTheme === t.id} onSelect={() => onSelect(t.id)} />
           ))}

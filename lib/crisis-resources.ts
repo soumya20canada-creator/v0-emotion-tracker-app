@@ -82,6 +82,12 @@ export const LEGAL_AID: Record<string, LegalAidResource[]> = {
     { name: "Legal Aid Council of Nigeria", description: "Federal agency providing free legal aid to indigent Nigerians including migration-related matters.", url: "https://legalaidcouncil.gov.ng", note: "Free" },
     { name: "NIDCOM (Nigerians in Diaspora Commission)", description: "Government body supporting Nigerians abroad and returnees — referrals and advocacy.", url: "https://nidcom.gov.ng", note: "Government" },
   ],
+  nz: [
+    { name: "Community Law Centres", description: "Nationwide network offering free legal help including immigration — drop-in clinics in most regions.", url: "https://communitylaw.org.nz", note: "Free" },
+    { name: "Citizens Advice Bureau NZ", description: "Free confidential advice on visas, rights, and referrals across Aotearoa.", url: "https://www.cab.org.nz", note: "Free" },
+    { name: "Immigration New Zealand", description: "Official government site for visa info, settlement support, and licensed immigration advisers.", url: "https://www.immigration.govt.nz", note: "Government" },
+    { name: "New Zealand Red Cross — Migration", description: "Support for former refugees, families, and trafficking survivors.", url: "https://www.redcross.org.nz/what-we-do/in-new-zealand/migration/", note: "Free" },
+  ],
   global: [
     { name: "UNHCR Help", description: "UN refugee agency — find legal help, asylum info, and services in your country.", url: "https://help.unhcr.org", note: "Free" },
     { name: "International Organization for Migration (IOM)", description: "Country-by-country migrant assistance directory — legal, return, and protection services.", url: "https://www.iom.int/countries", note: "Free" },
@@ -556,6 +562,68 @@ export const REGIONS: RegionResources[] = [
     community: [
       { name: "MANI Peer Groups", description: "Youth-led peer support groups and online community.", url: "https://www.mentallyaware.org/community", tags: ["youth", "online"] },
       { name: "She Writes Woman Safe Place", description: "Community space and weekly circles for women.", url: "https://shewriteswoman.org", tags: ["women"] },
+    ],
+  },
+  {
+    id: "nz",
+    label: "New Zealand",
+    flag: "NZ",
+    helplines: [
+      {
+        name: "1737 — Need to Talk?",
+        number: "1737",
+        description: "Free call or text — trained counsellors, any time.",
+        hours: "24/7",
+        languages: ["English"],
+        sms: "Text 1737",
+      },
+      {
+        name: "Lifeline Aotearoa",
+        number: "0800 543 354",
+        description: "Confidential support and suicide prevention.",
+        hours: "24/7",
+        sms: "Text HELP to 4357",
+      },
+      {
+        name: "Youthline",
+        number: "0800 376 633",
+        description: "Support for young people up to 25.",
+        hours: "24/7",
+        sms: "Text 234",
+      },
+      {
+        name: "OUTLine NZ (LGBTQIA+)",
+        number: "0800 688 5463",
+        description: "Rainbow community peer support.",
+        hours: "6pm–9pm daily",
+      },
+      {
+        name: "Asian Family Services",
+        number: "0800 862 342",
+        description: "Free counselling in Mandarin, Cantonese, Korean, Vietnamese, Thai, Japanese, Hindi, English.",
+        hours: "Mon–Fri, 9am–8pm",
+        languages: ["Mandarin", "Cantonese", "Korean", "Vietnamese", "Thai", "Japanese", "Hindi", "English"],
+      },
+    ],
+    supportGroups: [
+      { name: "Mental Health Foundation NZ", description: "Nationwide information, resources, and community linkage.", url: "mentalhealth.org.nz", type: "community" },
+      { name: "Shakti NZ", description: "Support for migrant and refugee women and families.", url: "shaktiinternational.org", type: "cultural" },
+      { name: "InsideOUT", description: "Rainbow youth community across Aotearoa.", url: "insideout.org.nz", type: "youth" },
+    ],
+    therapists: [
+      { name: "Asian Family Services", description: "Free multilingual counselling for Asian communities in NZ.", url: "https://www.asianfamilyservices.nz", tags: ["free", "cultural", "multilingual"], note: "Free · multilingual" },
+      { name: "NZAC Find a Counsellor", description: "Official directory of NZ Association of Counsellors members.", url: "https://www.nzac.org.nz/find-a-counsellor/", tags: ["directory"], note: "Directory · fees vary" },
+      { name: "NZ Psychological Society", description: "Find a registered psychologist — filter by region and specialty.", url: "https://www.psychology.org.nz/public/find-psychologist", tags: ["directory"], note: "Directory · some subsidised" },
+      { name: "Just a Thought", description: "Free online CBT courses funded by the NZ Ministry of Health.", url: "https://www.justathought.co.nz", tags: ["free", "online"], note: "Free · government-funded" },
+      { name: "Piki (Te Whatu Ora)", description: "Free therapy for 18–25 year-olds in Greater Wellington.", url: "https://piki.org.nz", tags: ["free", "student"], note: "Free · ages 18–25" },
+      { name: "RASNZ (Refugees as Survivors)", description: "Specialist trauma counselling for former refugees.", url: "https://rasnz.co.nz", tags: ["cultural", "multilingual", "free"], note: "Free · for former refugees" },
+    ],
+    community: [
+      { name: "Red Cross Pathways to Settlement", description: "Settlement support, community linkage, and volunteer buddies for newcomers.", url: "https://www.redcross.org.nz/what-we-do/in-new-zealand/migration/", tags: ["newcomer"] },
+      { name: "Shakti Community Council", description: "Community and advocacy for migrant women and families.", url: "https://shaktiinternational.org", tags: ["women", "diaspora"] },
+      { name: "Auckland Regional Migrant Services (ARMS)", description: "Community programs and events for migrants and former refugees.", url: "https://arms-mrc.org.nz", tags: ["newcomer", "local-meetup"] },
+      { name: "Meetup New Zealand", description: "Local wellbeing and social meetups in Auckland, Wellington, Christchurch.", url: "https://www.meetup.com/find/?location=nz&keywords=wellbeing", tags: ["local-meetup"] },
+      { name: "RainbowYOUTH", description: "Rainbow community groups and peer support.", url: "https://ry.org.nz", tags: ["lgbtq", "youth"] },
     ],
   },
   {

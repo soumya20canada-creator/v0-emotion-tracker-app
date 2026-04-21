@@ -391,15 +391,7 @@ export function suggestTools(session: OnboardingSession | null): ToolSuggestion[
     add("crisis-resources", "Three body alarms going off at once. Real humans, right now, one tap away.", duration === "just-today" ? 21 : 16)
   }
 
-  // Heaviness / numbness / off → music can reach past words.
-  if (body.has("heaviness") || body.has("numbness") || going.has("off")) {
-    add("music", pick([
-      "Something in your ear while the rest figures itself out.",
-      "When words are too much, a song can carry you.",
-    ]), 9)
-  }
-
-  // Long / recurring → let them see the pattern instead of writing another entry.
+// Long / recurring → let them see the pattern instead of writing another entry.
   if (duration === "months" || duration === "comes-and-goes") {
     add("patterns", "You've been here before. Let's see when it tends to land.", 10)
   }
@@ -765,6 +757,7 @@ export function countryToRegionId(country: string | null | undefined): string {
     "Philippines": "ph",
     "Mexico": "mx",
     "Nigeria": "ng",
+    "New Zealand": "nz",
   }
   return map[country] ?? "global"
 }
