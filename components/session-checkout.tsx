@@ -5,7 +5,7 @@ import { AppLogo } from "@/components/app-logo"
 import { taglineFor } from "@/lib/cultural-taglines"
 
 export type CheckoutFeel = "lighter" | "same" | "need-more" | "okay"
-export type PositiveEmotionId = "calm" | "grateful" | "relieved" | "hopeful" | "proud" | "loved"
+export type PositiveEmotionId = "calm" | "grateful" | "relieved" | "hopeful" | "proud" | "loved" | "seen" | "less-ashamed" | "brave"
 
 type SessionCheckoutProps = {
   country?: string | null
@@ -16,6 +16,9 @@ type SessionCheckoutProps = {
 }
 
 const POSITIVE_CHIPS: { id: PositiveEmotionId; label: string }[] = [
+  { id: "seen", label: "seen" },
+  { id: "less-ashamed", label: "less ashamed" },
+  { id: "brave", label: "brave for showing up" },
   { id: "calm", label: "calm" },
   { id: "grateful", label: "grateful" },
   { id: "relieved", label: "relieved" },

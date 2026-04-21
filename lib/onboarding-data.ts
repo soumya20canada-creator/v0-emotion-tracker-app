@@ -47,6 +47,9 @@ export const SITUATION_OPTIONS = [
 export const GOING_ON_OPTIONS = [
   { id: "adjusting", label: "I am still adjusting to life in a new country" },
   { id: "lonely", label: "I have been feeling lonely or disconnected" },
+  { id: "visa-stress", label: "Visa, status, or paperwork is weighing on me" },
+  { id: "money-stress", label: "Money or costs are stressing me out" },
+  { id: "family-stigma", label: "I cannot tell my family how bad it has gotten" },
   { id: "process", label: "Something happened and I need to process it" },
   { id: "off", label: "I have been feeling off and cannot explain why" },
   { id: "not-sure", label: "I am not sure — I just needed somewhere to go" },
@@ -149,6 +152,12 @@ export function situationToContextTags(session: OnboardingSession | null): strin
     suggested.add("language")
   }
   if (going.has("lonely")) suggested.add("loneliness")
+  if (going.has("visa-stress")) suggested.add("immigration")
+  if (going.has("money-stress")) suggested.add("money")
+  if (going.has("family-stigma")) {
+    suggested.add("family-stigma")
+    suggested.add("cultural-pressure")
+  }
   if (sit.has("international-student")) {
     suggested.add("school")
     suggested.add("exams")
@@ -165,6 +174,9 @@ export function reflectOnboarding(session: OnboardingSession | null, country?: s
   const going = session.whats_been_going_on
   if (going.includes("adjusting")) parts.push("adjusting to life in a new place")
   if (going.includes("lonely")) parts.push("feeling lonely")
+  if (going.includes("visa-stress")) parts.push("carrying visa or paperwork weight")
+  if (going.includes("money-stress")) parts.push("holding real money stress")
+  if (going.includes("family-stigma")) parts.push("keeping it from the people back home")
   if (going.includes("process")) parts.push("processing something")
   if (going.includes("off")) parts.push("feeling off")
   const body = session.body_feelings.find((b) => b !== "nothing")

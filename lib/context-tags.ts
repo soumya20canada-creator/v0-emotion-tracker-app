@@ -24,6 +24,7 @@ export const CONTEXT_TAGS: ContextTag[] = [
   { id: "immigration", label: "Immigration stress", icon: "Globe", description: "Visa, status, belonging", mood: "negative" },
   { id: "homesick", label: "Homesick", icon: "MapPin", description: "Missing home, food, language", mood: "negative" },
   { id: "cultural-pressure", label: "Cultural pressure", icon: "Users", description: "Expectations, identity, fitting in", mood: "negative" },
+  { id: "family-stigma", label: "Can't tell my family", icon: "Lock", description: "Hiding how bad it's gotten from people back home", mood: "negative" },
   { id: "loneliness", label: "Loneliness", icon: "CloudRain", description: "No one nearby, isolation", mood: "negative" },
   { id: "language", label: "Language barrier", icon: "MessageCircle", description: "Not understood, accent, fluency", mood: "negative" },
 

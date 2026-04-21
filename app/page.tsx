@@ -26,6 +26,7 @@ import { AccountSettings } from "@/components/account-settings"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { AcknowledgmentScreen } from "@/components/acknowledgment-screen"
 import { LegalAid } from "@/components/legal-aid"
+import { FamilyScripts } from "@/components/family-scripts"
 import { WelcomeBack } from "@/components/welcome-back"
 import { NormalizeHelp } from "@/components/normalize-help"
 import { ThemeHeader } from "@/components/theme-header"
@@ -67,7 +68,7 @@ import { countryToRegionId, situationToContextTags, bodyToEmotion, durationToInt
 import { upcomingCulturalDay } from "@/lib/cultural-calendar"
 import { taglineFor } from "@/lib/cultural-taglines"
 import { monthKey, previousMonthStart } from "@/lib/monthly-report"
-import { ArrowLeft, X, Lock, Info, Eye, EyeOff, Wind, BookOpenText, Feather, Headphones, ArrowRight, ChevronRight } from "lucide-react"
+import { ArrowLeft, X, Lock, Info, Eye, EyeOff, Wind, BookOpenText, Feather, Headphones, ArrowRight, ChevronRight, LifeBuoy, Stethoscope, UsersRound, Scale, MessageCircleHeart } from "lucide-react"
 
 type Screen = "home" | "wheel" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
 
@@ -90,6 +91,7 @@ export default function BhavaApp() {
   const [showFindTherapist, setShowFindTherapist] = useState(false)
   const [showFindCommunity, setShowFindCommunity] = useState(false)
   const [showLegalAid, setShowLegalAid] = useState(false)
+  const [showFamilyScripts, setShowFamilyScripts] = useState(false)
   const [actionsHint, setActionsHint] = useState<string | null>(null)
 
   // App settings
@@ -107,9 +109,6 @@ export default function BhavaApp() {
   // hub, "home" = main home. Tools don't auto-trigger Checkout on close;
   // Checkout only fires after completing a real guided session (wheel path).
   const [toolOrigin, setToolOrigin] = useState<"ack" | "home" | null>(null)
-
-  // Per-session location ask — refresh each time the app opens
-  const locationSessionClearedRef = useRef(false)
 
   const [screen, setScreen] = useState<Screen>("home")
   const [selectedEmotion, setSelectedEmotion] = useState<EmotionCategory | null>(null)
@@ -204,21 +203,9 @@ export default function BhavaApp() {
     return () => { cancelled = true }
   }, [profile])
 
-  // Per-session location ask — clear selectedRegion once per browser session
-  // so the user is always asked "where are you right now?"
-  useEffect(() => {
-    if (!profile || !gameState || locationSessionClearedRef.current) return
-    locationSessionClearedRef.current = true
-    try {
-      const key = `bhava-region-session-set:${profile.id}`
-      const alreadySet = typeof window !== "undefined" ? sessionStorage.getItem(key) : null
-      if (!alreadySet && gameState.selectedRegion) {
-        setGameState({ ...gameState, selectedRegion: null })
-      }
-    } catch {
-      // noop
-    }
-  }, [profile, gameState])
+  // Region persists across sessions — a student using the app every night
+  // shouldn't be asked "where are you right now?" on every open. If they
+  // travel, they can change it via the LocationPicker in the header.
 
   // Auto-open monthly report once per month (only for returning, onboarded users)
   useEffect(() => {
@@ -366,7 +353,10 @@ export default function BhavaApp() {
     setActions(a.length > 0 ? a : getActionsForEmotion(selectedEmotion.id, intensity))
     setCompletedActionIds([])
     const option = INTENSITY_OPTIONS.find((o) => o.level === intensity)
-    setShowCrisis(option?.isCrisis || false)
+    // Surface the grounding toolkit at intensity 3+, not only at the 4/5
+    // "crisis" levels. A strong-but-not-overwhelming feeling still benefits
+    // from the breathing / butterfly taps / cold-water tools.
+    setShowCrisis(option?.isCrisis || intensity >= 3)
 
     // Auto-save the check-in as soon as the user confirms intensity. Previously
     // the check-in only persisted if the user also completed an action or hit
@@ -802,6 +792,17 @@ export default function BhavaApp() {
     )
   }
 
+  if (showFamilyScripts) {
+    return (
+      <FamilyScripts
+        onClose={() => {
+          setShowFamilyScripts(false)
+          if (toolOrigin === "ack") { setToolOrigin(null); setShowAcknowledgment(true) }
+        }}
+      />
+    )
+  }
+
   if (showFindTherapist) {
     return (
       <FindTherapist
@@ -961,6 +962,22 @@ export default function BhavaApp() {
                 <HomeToolTile icon={BookOpenText} title="Write it down" subtitle="A private page, just for you" onClick={() => openTool("journal", false)} />
                 <HomeToolTile icon={Feather} title="A small note for today" subtitle="Short · rotates daily" onClick={() => openTool("grounding-note", false)} />
                 <HomeToolTile icon={Headphones} title="Sit quietly" subtitle="A silent timer · 3 to 15 minutes" onClick={() => openTool("meditate", false)} />
+              </div>
+            </section>
+
+            {/* Persistent support — not buried in onboarding. A new immigrant
+                who realizes tomorrow they need a therapist or visa-stress help
+                shouldn't have to re-do onboarding to find these. */}
+            <section className="flex flex-col gap-3">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1">
+                When you need real support
+              </p>
+              <div className="flex flex-col gap-2">
+                <HomeToolTile icon={Stethoscope} title="Find a therapist" subtitle="Free + culturally-matched options for where you are" onClick={() => setShowFindTherapist(true)} />
+                <HomeToolTile icon={UsersRound} title="Find community" subtitle="People near you, not platitudes" onClick={() => setShowFindCommunity(true)} />
+                <HomeToolTile icon={Scale} title="Legal aid" subtitle="Free help with visas, status, paperwork" onClick={() => setShowLegalAid(true)} />
+                <HomeToolTile icon={LifeBuoy} title="Crisis helplines" subtitle="Real people, trained to listen · free + confidential" onClick={() => setShowSupportView(true)} />
+                <HomeToolTile icon={MessageCircleHeart} title="Tell your family" subtitle="Scripts for saying it out loud to people back home" onClick={() => setShowFamilyScripts(true)} />
               </div>
             </section>
 
