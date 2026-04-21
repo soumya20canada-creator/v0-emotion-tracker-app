@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { AppLogo } from "@/components/app-logo"
+import { ThemeHeader } from "@/components/theme-header"
 import { taglineFor } from "@/lib/cultural-taglines"
 
 export type CheckoutFeel = "lighter" | "same" | "need-more" | "okay"
@@ -34,6 +35,7 @@ export function SessionCheckout({ country, regionLabel, onDone, onNeedMore, onSa
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center px-5 py-3 gap-3">
           <AppLogo size={32} />
           <span

@@ -814,6 +814,7 @@ export default function BhavaApp() {
     <main className={`min-h-dvh bg-background ${screen === "home" ? "pb-8" : "pb-32"}`}>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader onThemeChange={(id) => setCurrentTheme(id)} />
         <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-3">
             {screen !== "home" && screen !== "progress" && screen !== "badges" && screen !== "patterns" && (

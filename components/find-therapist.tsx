@@ -7,6 +7,7 @@ import { LocationPicker } from "@/components/location-picker"
 import { getRegionById, type TherapistResource, type TherapistTag } from "@/lib/crisis-resources"
 import { taglineFor } from "@/lib/cultural-taglines"
 import { ArrowLeft, ExternalLink, AlertCircle, ShieldCheck, Heart, Scale } from "lucide-react"
+import { ThemeHeader } from "@/components/theme-header"
 
 type FindTherapistProps = {
   region: string | null
@@ -97,6 +98,7 @@ export function FindTherapist({ region, country, identity, favoriteIds, onToggle
   return (
     <main className="min-h-dvh bg-background">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center px-5 py-3 gap-3">
           <button
             onClick={onClose}

@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react"
 import { LocationPicker } from "@/components/location-picker"
 import { CrisisResources } from "@/components/crisis-resources"
 import { getRegionById } from "@/lib/crisis-resources"
+import { ThemeHeader } from "@/components/theme-header"
 
 type SupportViewProps = {
   selectedRegion: string | null
@@ -27,6 +28,7 @@ export function SupportView({ selectedRegion, onRegionSelect, onBack, mode = "pa
   return (
     <main className={shell}>
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
           <div className="flex items-center gap-3">
             <button

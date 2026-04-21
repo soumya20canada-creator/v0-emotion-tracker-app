@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { ArrowLeft, Shuffle, List } from "lucide-react"
+import { ThemeHeader } from "@/components/theme-header"
 import { GROUNDING_NOTES, getNoteOfTheDay, type GroundingNote } from "@/lib/grounding-notes"
 
 type GroundingNotesProps = {
@@ -45,6 +46,7 @@ export function GroundingNotes({ onClose }: GroundingNotesProps) {
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
           <button
             onClick={onClose}

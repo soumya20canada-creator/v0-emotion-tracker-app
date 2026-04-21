@@ -13,6 +13,7 @@ import {
 import type { OnboardingSession } from "@/lib/onboarding-data"
 import { taglineFor, homeTimeLineFor } from "@/lib/cultural-taglines"
 import { Wind, BookOpenText, Feather, Headphones, HeartHandshake, ChevronRight, ArrowRight, Stethoscope, Users, Scale, LifeBuoy, Music, TrendingUp, Lock } from "lucide-react"
+import { ThemeHeader } from "@/components/theme-header"
 
 type AcknowledgmentScreenProps = {
   firstName: string
@@ -77,6 +78,7 @@ export function AcknowledgmentScreen({
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center px-5 py-3 gap-3">
           <AppLogo size={32} />
           <span

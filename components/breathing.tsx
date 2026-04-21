@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ArrowLeft, Play, Pause } from "lucide-react"
+import { ThemeHeader } from "@/components/theme-header"
 
 type BreathingProps = {
   onClose: () => void
@@ -119,6 +120,7 @@ export function Breathing({ onClose }: BreathingProps) {
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
           <button
             onClick={onClose}

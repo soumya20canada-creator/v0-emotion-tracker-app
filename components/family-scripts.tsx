@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { AppLogo } from "@/components/app-logo"
 import { ArrowLeft, MessageCircleHeart, Copy, Check } from "lucide-react"
+import { ThemeHeader } from "@/components/theme-header"
 
 // Scripts are phrased for the common diaspora shape — kids telling parents back
 // home something they've been hiding. The three columns are three entry points
@@ -79,6 +80,7 @@ export function FamilyScripts({ onClose }: FamilyScriptsProps) {
   return (
     <main className="min-h-dvh bg-background">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center px-5 py-3 gap-3">
           <button
             onClick={onClose}

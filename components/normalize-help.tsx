@@ -4,6 +4,7 @@ import { AppLogo } from "@/components/app-logo"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
 import { taglineFor } from "@/lib/cultural-taglines"
 import { HeartHandshake } from "lucide-react"
+import { ThemeHeader } from "@/components/theme-header"
 
 type NormalizeHelpProps = {
   country?: string | null
@@ -16,6 +17,7 @@ export function NormalizeHelp({ country, regionLabel, onContinue }: NormalizeHel
   return (
     <main className="min-h-dvh bg-background flex flex-col">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center px-5 py-3 gap-3">
           <AppLogo size={32} />
           <span

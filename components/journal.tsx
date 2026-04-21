@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ArrowLeft, Plus, Trash2, Download, Lock, Pencil, Search, AlertTriangle, Printer } from "lucide-react"
+import { ThemeHeader } from "@/components/theme-header"
 import {
   type JournalEntry,
   addEntry,
@@ -80,6 +81,7 @@ export function Journal({ userId, onClose }: JournalProps) {
   return (
     <main className="min-h-dvh bg-background pb-20">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
           <button
             onClick={onClose}

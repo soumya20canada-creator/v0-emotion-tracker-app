@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ArrowLeft, Printer, Share2, Check } from "lucide-react"
+import { ThemeHeader } from "@/components/theme-header"
 import type { MonthlyReport } from "@/lib/monthly-report"
 
 type MonthlyReportProps = {
@@ -75,6 +76,7 @@ export function MonthlyReportView({ report, onClose }: MonthlyReportProps) {
       `}</style>
 
       <header className="monthly-report-print-hide sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
+        <ThemeHeader />
         <div className="max-w-lg mx-auto flex items-center justify-between px-5 py-3 gap-3">
           <button
             onClick={onClose}
