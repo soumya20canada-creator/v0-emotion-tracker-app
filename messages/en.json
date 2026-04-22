@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "feel": "Feel",
+    "journey": "Journey",
+    "patterns": "Patterns",
+    "space": "My Space"
+  },
+  "home": {
+    "greeting": "How are you feeling?",
+    "subtitle": "Name what you feel, find what helps.",
+    "openWheel": "Want to name a feeling? Open the emotion wheel"
+  },
+  "emotions": {
+    "joy": "Joy",
+    "sadness": "Sadness",
+    "anger": "Anger",
+    "fear": "Fear",
+    "surprise": "Surprise",
+    "calm": "Calm"
+  },
+  "intensity": {
+    "title": "How strong is it?",
+    "l1": "Gentle",
+    "l2": "Present",
+    "l3": "Loud",
+    "l4": "Heavy",
+    "l5": "Flooding"
+  },
+  "common": {
+    "continue": "Continue",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "done": "Done"
+  },
+  "language": {
+    "picker": "Language",
+    "chooseLanguage": "Choose a language",
+    "current": "Current language",
+    "note": "The app remembers your choice on this device."
+  },
+  "profile": {
+    "signOut": "Sign out",
+    "theme": "Theme",
+    "accountSettings": "Account Settings",
+    "hi": "Hi, {name}"
+  },
+  "crisis": {
+    "needHelpNow": "Need help now?"
+  }
+}

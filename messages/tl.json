@@ -1,0 +1,55 @@
+{
+  "__note": "Seed translation — needs native-speaker review.",
+  "nav": {
+    "feel": "Damhin",
+    "journey": "Paglalakbay",
+    "patterns": "Mga Pattern",
+    "space": "Aking Espasyo"
+  },
+  "home": {
+    "greeting": "Kumusta ang pakiramdam mo?",
+    "subtitle": "Pangalanan ang nararamdaman, hanapin ang nakakatulong.",
+    "openWheel": "Gustong pangalanan ang isang nararamdaman? Buksan ang emotion wheel"
+  },
+  "emotions": {
+    "joy": "Saya",
+    "sadness": "Lungkot",
+    "anger": "Galit",
+    "fear": "Takot",
+    "surprise": "Gulat",
+    "calm": "Kalmado"
+  },
+  "intensity": {
+    "title": "Gaano kalakas?",
+    "l1": "Bahagya",
+    "l2": "Naroon",
+    "l3": "Malakas",
+    "l4": "Mabigat",
+    "l5": "Umaapaw"
+  },
+  "common": {
+    "continue": "Magpatuloy",
+    "back": "Balik",
+    "next": "Susunod",
+    "skip": "Laktawan",
+    "close": "Isara",
+    "save": "I-save",
+    "cancel": "Kanselahin",
+    "done": "Tapos na"
+  },
+  "language": {
+    "picker": "Wika",
+    "chooseLanguage": "Pumili ng wika",
+    "current": "Kasalukuyang wika",
+    "note": "Naaalala ng app ang iyong pinili sa device na ito."
+  },
+  "profile": {
+    "signOut": "Mag-sign out",
+    "theme": "Tema",
+    "accountSettings": "Mga Setting ng Account",
+    "hi": "Kumusta, {name}"
+  },
+  "crisis": {
+    "needHelpNow": "Kailangan ng tulong ngayon?"
+  }
+}

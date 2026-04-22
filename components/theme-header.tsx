@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Moon, Sun, Palette, X, Check } from "lucide-react"
 import { THEMES, applyTheme, type ThemeId } from "@/lib/themes"
+import { LanguagePicker } from "@/components/language-picker"
 
 const STORAGE_KEY = "bhava-theme"
 const LIGHT_DEFAULT: ThemeId = "default"
@@ -43,6 +44,7 @@ export function ThemeHeader({ onThemeChange }: ThemeHeaderProps) {
   return (
     <>
       <div className="flex items-center justify-end gap-1.5 px-3 py-1.5">
+        <LanguagePicker />
         <button
           onClick={quickToggle}
           style={{ minWidth: 36, minHeight: 36 }}

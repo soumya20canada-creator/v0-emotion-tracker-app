@@ -1,0 +1,55 @@
+{
+  "__note": "Seed translation — needs native-speaker review.",
+  "nav": {
+    "feel": "Sentir",
+    "journey": "Camino",
+    "patterns": "Patrones",
+    "space": "Mi Espacio"
+  },
+  "home": {
+    "greeting": "¿Cómo te sientes?",
+    "subtitle": "Nombra lo que sientes, encuentra lo que ayuda.",
+    "openWheel": "¿Quieres nombrar un sentimiento? Abre la rueda de emociones"
+  },
+  "emotions": {
+    "joy": "Alegría",
+    "sadness": "Tristeza",
+    "anger": "Enojo",
+    "fear": "Miedo",
+    "surprise": "Sorpresa",
+    "calm": "Calma"
+  },
+  "intensity": {
+    "title": "¿Qué tan fuerte es?",
+    "l1": "Suave",
+    "l2": "Presente",
+    "l3": "Fuerte",
+    "l4": "Pesado",
+    "l5": "Desbordante"
+  },
+  "common": {
+    "continue": "Continuar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "skip": "Omitir",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "done": "Listo"
+  },
+  "language": {
+    "picker": "Idioma",
+    "chooseLanguage": "Elige un idioma",
+    "current": "Idioma actual",
+    "note": "La app recuerda tu elección en este dispositivo."
+  },
+  "profile": {
+    "signOut": "Cerrar sesión",
+    "theme": "Tema",
+    "accountSettings": "Configuración de cuenta",
+    "hi": "Hola, {name}"
+  },
+  "crisis": {
+    "needHelpNow": "¿Necesitas ayuda ahora?"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "__note": "Seed translation — needs native-speaker review.",
+  "nav": {
+    "feel": "محسوس کریں",
+    "journey": "سفر",
+    "patterns": "رجحانات",
+    "space": "میری جگہ"
+  },
+  "home": {
+    "greeting": "آپ کیسا محسوس کر رہے ہیں؟",
+    "subtitle": "جو محسوس ہو رہا ہے اسے نام دیں، اور جو مدد کرے وہ پائیں۔",
+    "openWheel": "کسی احساس کو نام دینا ہے؟ جذبات کا پہیہ کھولیں"
+  },
+  "emotions": {
+    "joy": "خوشی",
+    "sadness": "اداسی",
+    "anger": "غصہ",
+    "fear": "خوف",
+    "surprise": "حیرت",
+    "calm": "سکون"
+  },
+  "intensity": {
+    "title": "کتنا تیز ہے؟",
+    "l1": "ہلکا",
+    "l2": "موجود",
+    "l3": "تیز",
+    "l4": "بھاری",
+    "l5": "بہت زیادہ"
+  },
+  "common": {
+    "continue": "جاری رکھیں",
+    "back": "واپس",
+    "next": "آگے",
+    "skip": "چھوڑیں",
+    "close": "بند کریں",
+    "save": "محفوظ کریں",
+    "cancel": "منسوخ",
+    "done": "ہو گیا"
+  },
+  "language": {
+    "picker": "زبان",
+    "chooseLanguage": "زبان منتخب کریں",
+    "current": "موجودہ زبان",
+    "note": "ایپ آپ کا انتخاب اس ڈیوائس پر یاد رکھتی ہے۔"
+  },
+  "profile": {
+    "signOut": "سائن آؤٹ",
+    "theme": "تھیم",
+    "accountSettings": "اکاؤنٹ سیٹنگز",
+    "hi": "سلام، {name}"
+  },
+  "crisis": {
+    "needHelpNow": "ابھی مدد چاہیے؟"
+  }
+}

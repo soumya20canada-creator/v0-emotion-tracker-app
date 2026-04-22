@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Home, BarChart3, LogOut, Brain, Sparkles, Settings, Palette } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { signOut } from "@/lib/auth"
 
 type NavBarProps = {
@@ -22,12 +23,14 @@ export function NavBar({
   onShowSettings,
 }: NavBarProps) {
   const [showMenu, setShowMenu] = useState(false)
+  const tNav = useTranslations("nav")
+  const tProfile = useTranslations("profile")
 
   const items = [
-    { id: "home",     label: "Feel",     icon: Home },
-    { id: "progress", label: "Journey",  icon: BarChart3 },
-    { id: "patterns", label: "Patterns", icon: Brain },
-    { id: "badges",   label: "My Space", icon: Sparkles },
+    { id: "home",     label: tNav("feel"),    icon: Home },
+    { id: "progress", label: tNav("journey"), icon: BarChart3 },
+    { id: "patterns", label: tNav("patterns"), icon: Brain },
+    { id: "badges",   label: tNav("space"),   icon: Sparkles },
   ]
 
   async function handleSignOut() {
@@ -59,7 +62,7 @@ export function NavBar({
               >
                 {displayName && (
                   <div className="px-3 py-2 text-sm text-muted-foreground font-medium border-b border-border mb-1">
-                    Hi, {displayName}
+                    {tProfile("hi", { name: displayName })}
                   </div>
                 )}
                 {onShowThemes && (
@@ -70,7 +73,7 @@ export function NavBar({
                     className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors cursor-pointer text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <Palette size={15} aria-hidden="true" />
-                    Theme
+                    {tProfile("theme")}
                   </button>
                 )}
                 <button
@@ -80,7 +83,7 @@ export function NavBar({
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors cursor-pointer text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <Settings size={15} aria-hidden="true" />
-                  Account Settings
+                  {tProfile("accountSettings")}
                 </button>
                 <button
                   onClick={handleSignOut}
@@ -89,7 +92,7 @@ export function NavBar({
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-destructive/10 transition-colors cursor-pointer text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
                 >
                   <LogOut size={15} aria-hidden="true" />
-                  Sign out
+                  {tProfile("signOut")}
                 </button>
               </div>
             )}

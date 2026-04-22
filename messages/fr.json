@@ -1,0 +1,55 @@
+{
+  "__note": "Seed translation — needs native-speaker review.",
+  "nav": {
+    "feel": "Ressentir",
+    "journey": "Parcours",
+    "patterns": "Tendances",
+    "space": "Mon espace"
+  },
+  "home": {
+    "greeting": "Comment te sens-tu ?",
+    "subtitle": "Nomme ce que tu ressens, trouve ce qui aide.",
+    "openWheel": "Envie de nommer un sentiment ? Ouvre la roue des émotions"
+  },
+  "emotions": {
+    "joy": "Joie",
+    "sadness": "Tristesse",
+    "anger": "Colère",
+    "fear": "Peur",
+    "surprise": "Surprise",
+    "calm": "Calme"
+  },
+  "intensity": {
+    "title": "À quel point ?",
+    "l1": "Léger",
+    "l2": "Présent",
+    "l3": "Fort",
+    "l4": "Lourd",
+    "l5": "Submergé·e"
+  },
+  "common": {
+    "continue": "Continuer",
+    "back": "Retour",
+    "next": "Suivant",
+    "skip": "Passer",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "done": "Terminé"
+  },
+  "language": {
+    "picker": "Langue",
+    "chooseLanguage": "Choisir une langue",
+    "current": "Langue actuelle",
+    "note": "L'application garde ton choix sur cet appareil."
+  },
+  "profile": {
+    "signOut": "Se déconnecter",
+    "theme": "Thème",
+    "accountSettings": "Paramètres du compte",
+    "hi": "Salut, {name}"
+  },
+  "crisis": {
+    "needHelpNow": "Besoin d'aide maintenant ?"
+  }
+}

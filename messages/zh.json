@@ -1,0 +1,55 @@
+{
+  "__note": "Seed translation — needs native-speaker review.",
+  "nav": {
+    "feel": "感受",
+    "journey": "旅程",
+    "patterns": "规律",
+    "space": "我的空间"
+  },
+  "home": {
+    "greeting": "你现在感觉怎么样？",
+    "subtitle": "说出你的感受，找到对你有帮助的方式。",
+    "openWheel": "想给一种感觉命名？打开情绪轮"
+  },
+  "emotions": {
+    "joy": "喜悦",
+    "sadness": "悲伤",
+    "anger": "愤怒",
+    "fear": "恐惧",
+    "surprise": "惊讶",
+    "calm": "平静"
+  },
+  "intensity": {
+    "title": "它有多强烈？",
+    "l1": "轻微",
+    "l2": "明显",
+    "l3": "强烈",
+    "l4": "沉重",
+    "l5": "淹没"
+  },
+  "common": {
+    "continue": "继续",
+    "back": "返回",
+    "next": "下一步",
+    "skip": "跳过",
+    "close": "关闭",
+    "save": "保存",
+    "cancel": "取消",
+    "done": "完成"
+  },
+  "language": {
+    "picker": "语言",
+    "chooseLanguage": "选择语言",
+    "current": "当前语言",
+    "note": "应用会在此设备上记住你的选择。"
+  },
+  "profile": {
+    "signOut": "退出登录",
+    "theme": "主题",
+    "accountSettings": "账户设置",
+    "hi": "你好，{name}"
+  },
+  "crisis": {
+    "needHelpNow": "现在需要帮助吗？"
+  }
+}

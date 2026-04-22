@@ -1,0 +1,55 @@
+{
+  "__note": "Seed translation — needs native-speaker review.",
+  "nav": {
+    "feel": "اشعر",
+    "journey": "الرحلة",
+    "patterns": "الأنماط",
+    "space": "مساحتي"
+  },
+  "home": {
+    "greeting": "كيف تشعر؟",
+    "subtitle": "سمِّ ما تشعر به، وابحث عمّا يساعدك.",
+    "openWheel": "تريد تسمية شعور؟ افتح عجلة المشاعر"
+  },
+  "emotions": {
+    "joy": "فرح",
+    "sadness": "حزن",
+    "anger": "غضب",
+    "fear": "خوف",
+    "surprise": "دهشة",
+    "calm": "هدوء"
+  },
+  "intensity": {
+    "title": "ما مدى قوّته؟",
+    "l1": "خفيف",
+    "l2": "حاضر",
+    "l3": "قوي",
+    "l4": "ثقيل",
+    "l5": "غامر"
+  },
+  "common": {
+    "continue": "متابعة",
+    "back": "رجوع",
+    "next": "التالي",
+    "skip": "تخطّي",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "done": "تمّ"
+  },
+  "language": {
+    "picker": "اللغة",
+    "chooseLanguage": "اختر لغة",
+    "current": "اللغة الحالية",
+    "note": "يتذكّر التطبيق اختيارك على هذا الجهاز."
+  },
+  "profile": {
+    "signOut": "تسجيل الخروج",
+    "theme": "السمة",
+    "accountSettings": "إعدادات الحساب",
+    "hi": "مرحبًا، {name}"
+  },
+  "crisis": {
+    "needHelpNow": "تحتاج مساعدة الآن؟"
+  }
+}

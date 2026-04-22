@@ -1,0 +1,55 @@
+{
+  "__note": "Seed translation — needs native-speaker review.",
+  "nav": {
+    "feel": "ਮਹਿਸੂਸ",
+    "journey": "ਸਫ਼ਰ",
+    "patterns": "ਰੁਝਾਨ",
+    "space": "ਮੇਰੀ ਥਾਂ"
+  },
+  "home": {
+    "greeting": "ਤੁਸੀਂ ਕਿਵੇਂ ਮਹਿਸੂਸ ਕਰ ਰਹੇ ਹੋ?",
+    "subtitle": "ਜੋ ਮਹਿਸੂਸ ਹੋ ਰਿਹਾ ਹੈ ਉਸਨੂੰ ਨਾਮ ਦਿਓ, ਤੇ ਜੋ ਮਦਦ ਕਰੇ ਓਹ ਲੱਭੋ।",
+    "openWheel": "ਕਿਸੇ ਅਹਿਸਾਸ ਨੂੰ ਨਾਮ ਦੇਣਾ ਹੈ? ਭਾਵਨਾ ਦਾ ਚੱਕਰ ਖੋਲ੍ਹੋ"
+  },
+  "emotions": {
+    "joy": "ਖੁਸ਼ੀ",
+    "sadness": "ਉਦਾਸੀ",
+    "anger": "ਗੁੱਸਾ",
+    "fear": "ਡਰ",
+    "surprise": "ਹੈਰਾਨੀ",
+    "calm": "ਸ਼ਾਂਤੀ"
+  },
+  "intensity": {
+    "title": "ਕਿੰਨਾ ਤੇਜ਼ ਹੈ?",
+    "l1": "ਹਲਕਾ",
+    "l2": "ਮੌਜੂਦ",
+    "l3": "ਤੇਜ਼",
+    "l4": "ਭਾਰਾ",
+    "l5": "ਬਹੁਤ ਜ਼ਿਆਦਾ"
+  },
+  "common": {
+    "continue": "ਜਾਰੀ ਰੱਖੋ",
+    "back": "ਵਾਪਸ",
+    "next": "ਅੱਗੇ",
+    "skip": "ਛੱਡੋ",
+    "close": "ਬੰਦ ਕਰੋ",
+    "save": "ਸੰਭਾਲੋ",
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "done": "ਹੋ ਗਿਆ"
+  },
+  "language": {
+    "picker": "ਭਾਸ਼ਾ",
+    "chooseLanguage": "ਭਾਸ਼ਾ ਚੁਣੋ",
+    "current": "ਮੌਜੂਦਾ ਭਾਸ਼ਾ",
+    "note": "ਐਪ ਤੁਹਾਡੀ ਪਸੰਦ ਇਸ ਡਿਵਾਈਸ 'ਤੇ ਯਾਦ ਰੱਖਦਾ ਹੈ।"
+  },
+  "profile": {
+    "signOut": "ਸਾਈਨ ਆਉਟ",
+    "theme": "ਥੀਮ",
+    "accountSettings": "ਖਾਤਾ ਸੈਟਿੰਗਜ਼",
+    "hi": "ਹੈਲੋ, {name}"
+  },
+  "crisis": {
+    "needHelpNow": "ਹੁਣੇ ਮਦਦ ਚਾਹੀਦੀ ਹੈ?"
+  }
+}

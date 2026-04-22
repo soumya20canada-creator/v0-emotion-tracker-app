@@ -1,0 +1,55 @@
+{
+  "__note": "Seed translation — needs native-speaker review.",
+  "nav": {
+    "feel": "महसूस",
+    "journey": "सफ़र",
+    "patterns": "पैटर्न",
+    "space": "मेरी जगह"
+  },
+  "home": {
+    "greeting": "आप कैसा महसूस कर रहे हैं?",
+    "subtitle": "जो महसूस हो रहा है उसे नाम दें, और जो मदद करे वो पाएँ।",
+    "openWheel": "किसी एहसास को नाम देना है? भावना का चक्र खोलें"
+  },
+  "emotions": {
+    "joy": "खुशी",
+    "sadness": "उदासी",
+    "anger": "गुस्सा",
+    "fear": "डर",
+    "surprise": "आश्चर्य",
+    "calm": "शांति"
+  },
+  "intensity": {
+    "title": "कितना तेज़ है?",
+    "l1": "हल्का",
+    "l2": "मौजूद",
+    "l3": "तेज़",
+    "l4": "भारी",
+    "l5": "बहुत ज़्यादा"
+  },
+  "common": {
+    "continue": "जारी रखें",
+    "back": "वापस",
+    "next": "आगे",
+    "skip": "छोड़ें",
+    "close": "बंद करें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "done": "हो गया"
+  },
+  "language": {
+    "picker": "भाषा",
+    "chooseLanguage": "भाषा चुनें",
+    "current": "वर्तमान भाषा",
+    "note": "ऐप आपकी पसंद इस डिवाइस पर याद रखता है।"
+  },
+  "profile": {
+    "signOut": "साइन आउट",
+    "theme": "थीम",
+    "accountSettings": "खाता सेटिंग्स",
+    "hi": "नमस्ते, {name}"
+  },
+  "crisis": {
+    "needHelpNow": "अभी मदद चाहिए?"
+  }
+}
