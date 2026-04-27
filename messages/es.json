@@ -51,5 +51,136 @@
   },
   "crisis": {
     "needHelpNow": "¿Necesitas ayuda ahora?"
+  },
+  "onboarding": {
+    "back": "Atrás",
+    "backAria": "Volver al paso anterior",
+    "skip": "Omitir por ahora",
+    "stepOf": "Paso {current} de {total}",
+    "enter": "Entrar a Bhava",
+    "intro": {
+      "title": "Un espacio amable para sentirte visto.",
+      "description": "Bhava te ayuda a notar lo que sientes y a probar pequeñas cosas que pueden ayudar. Unas preguntas suaves primero — omite lo que quieras, tómate tu tiempo."
+    },
+    "country": {
+      "title": "¿Dónde vives ahora mismo?",
+      "description": "Esto nos ayuda a mostrarte los recursos locales y las opciones de apoyo adecuadas.",
+      "selectLabel": "Elige tu país",
+      "placeholder": "Elegir un país..."
+    },
+    "identity": {
+      "title": "Yo soy...",
+      "description": "Selecciona todo lo que sientas cierto, o omite si prefieres.",
+      "legend": "Tu origen e identidad",
+      "options": {
+        "immigrant": "Inmigrante o recién llegada/o",
+        "firstGen": "Primera generación de inmigrante en mi familia",
+        "cultural": "Navegando identidad cultural o religiosa",
+        "lgbtq": "Parte de la comunidad LGBTQ+",
+        "mentalHealth": "Viviendo con una condición de salud mental",
+        "preferNot": "Prefiero no decirlo"
+      }
+    },
+    "gender": {
+      "title": "¿Cómo te identificas?",
+      "description": "Esto nos ayuda a usar el lenguaje correcto contigo. Selecciona todo lo que aplique, u omite.",
+      "customLabel": "Tu término (opcional)",
+      "customPlaceholder": "Cómo te identificas...",
+      "options": {
+        "man": "Hombre",
+        "woman": "Mujer",
+        "nonBinary": "No binarie",
+        "transgender": "Transgénero",
+        "genderFluid": "Género fluido",
+        "different": "Uso otro término",
+        "preferNot": "Prefiero no decirlo"
+      }
+    },
+    "pronouns": {
+      "title": "¿Cuáles son tus pronombres?",
+      "optional": "(opcional)",
+      "customLabel": "Tus pronombres",
+      "customPlaceholder": "ej. elle, xe/xem...",
+      "options": {
+        "sheHer": "Ella",
+        "heHim": "Él",
+        "theyThem": "Elle",
+        "custom": "Uso otros pronombres"
+      }
+    },
+    "location": {
+      "title": "¿Dónde estás ahora mismo?",
+      "description": "Puede que estés viajando o en un lugar nuevo. Esto nos ayuda a mostrarte el apoyo local correcto.",
+      "legend": "Tu situación actual"
+    },
+    "situation": {
+      "title": "¿Cuál es tu situación actual?",
+      "description": "Selecciona todo lo que sea cierto ahora mismo.",
+      "options": {
+        "employed": "Estoy trabajando",
+        "student": "Soy estudiante internacional",
+        "unemployed": "Estoy entre trabajos o sin empleo",
+        "caregiver": "Soy cuidadora/cuidador",
+        "complicated": "Es complicado ahora mismo",
+        "preferNot": "Prefiero no decirlo"
+      }
+    },
+    "goingOn": {
+      "title": "¿Qué te ha estado pasando últimamente?",
+      "description": "Selecciona todo lo que sientas cierto.",
+      "options": {
+        "adjusting": "Todavía me estoy adaptando a la vida en un país nuevo",
+        "lonely": "Me he sentido sola/solo o desconectada/o",
+        "visa": "La visa, el estatus o los papeles me pesan",
+        "money": "El dinero o los costos me estresan",
+        "familyStigma": "No puedo decirle a mi familia lo mal que está",
+        "process": "Algo pasó y necesito procesarlo",
+        "off": "Me he sentido rara/raro y no puedo explicar por qué",
+        "notSure": "No estoy segura/seguro — solo necesitaba un lugar"
+      }
+    },
+    "body": {
+      "title": "Tómate un momento y conéctate contigo misma/o.",
+      "description": "¿Qué sientes en tu cuerpo? Selecciona todo lo que aplique.",
+      "legend": "Cómo te sientes",
+      "options": {
+        "chestTightness": "Una opresión en el pecho o la garganta",
+        "heaviness": "Pesadez, como si algo estuviera sobre mí",
+        "restlessness": "Inquietud — no puedo quedarme quieta/o",
+        "stomachKnot": "Un nudo en el estómago",
+        "numbness": "Entumecimiento o vacío por dentro",
+        "dizziness": "Mareos",
+        "inThoughts": "Está más en mis pensamientos que en mi cuerpo",
+        "nothing": "No noto nada ahora mismo"
+      }
+    },
+    "duration": {
+      "title": "¿Cuánto tiempo llevas así?",
+      "options": {
+        "justToday": "Solo hoy",
+        "fewDays": "Unos días",
+        "fewWeeks": "Unas semanas",
+        "months": "Unos meses o más",
+        "comesAndGoes": "Va y viene"
+      }
+    },
+    "emergency": {
+      "description": "Si tienes una emergencia médica, puedes contactar los servicios de emergencia directamente.",
+      "button": "Emergencia: {display}",
+      "aria": "Llamar a servicios de emergencia: {display}"
+    },
+    "support": {
+      "title": "Cada persona necesita algo distinto.",
+      "description": "¿Qué te parece más útil ahora mismo? Selecciona todo lo que te resuene.",
+      "legend": "Qué tipo de apoyo necesitas",
+      "options": {
+        "figureOut": "Ayúdame a entender lo que siento",
+        "doSomething": "Dame algo que pueda hacer ahora para sentirme mejor",
+        "community": "Conéctame con gente o comunidades cerca de mí",
+        "therapist": "Ayúdame a encontrar una/un terapeuta",
+        "express": "Solo dame un espacio para expresarme",
+        "notSure": "Aún no estoy segura/seguro"
+      }
+    }
   }
 }

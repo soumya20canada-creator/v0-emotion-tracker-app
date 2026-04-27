@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { useTranslations } from "next-intl"
 import {
   IDENTITY_OPTIONS,
   GENDER_OPTIONS,
@@ -31,6 +32,7 @@ type OnboardingFlowProps = {
 type Screen = 1 | 2 | 3 | 4
 
 export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlowProps) {
+  const t = useTranslations("onboarding")
   const startScreen: Screen = isNewUser ? 1 : 2
   const totalScreens = isNewUser ? 4 : 3
   const [screen, setScreen] = useState<Screen>(startScreen)
@@ -117,14 +119,14 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                 onClick={() => { scrollTop(); setScreen((s) => (s - 1) as Screen) }}
                 style={{ minWidth: 44, minHeight: 44 }}
                 className="flex items-center gap-1 -ml-2 px-2 rounded-xl text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                aria-label="Go back to previous step"
+                aria-label={t("backAria")}
               >
                 <ArrowLeft size={16} aria-hidden="true" />
-                Back
+                {t("back")}
               </button>
             ) : <span />}
             <span className="text-sm font-semibold text-foreground">
-              Step {currentStep} of {totalScreens}
+              {t("stepOf", { current: currentStep, total: totalScreens })}
             </span>
             <button
               type="button"
@@ -132,7 +134,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
               style={{ minHeight: 44, padding: "0 8px" }}
             >
-              Skip for now
+              {t("skip")}
             </button>
           </div>
           <div
@@ -141,7 +143,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             aria-valuenow={currentStep}
             aria-valuemin={1}
             aria-valuemax={totalScreens}
-            aria-label={`Step ${currentStep} of ${totalScreens}`}
+            aria-label={t("stepOf", { current: currentStep, total: totalScreens })}
           >
             <div
               className="h-full rounded-full bg-primary transition-all duration-500"
@@ -156,28 +158,28 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
         {/* ── Screen 1: Country, Identity, Gender ── */}
         {screen === 1 && (
           <fieldset className="flex flex-col gap-8 border-none p-0 m-0">
-            <legend className="sr-only">Your background and identity</legend>
+            <legend className="sr-only">{t("identity.legend")}</legend>
 
             {/* Intro */}
             <section aria-labelledby="intro-heading" className="p-5 rounded-2xl border border-border bg-secondary/40">
               <h2 id="intro-heading" className="text-lg font-bold text-foreground mb-2">
-                A gentle space to feel seen.
+                {t("intro.title")}
               </h2>
               <p className="text-base text-muted-foreground leading-relaxed">
-                Bhava helps you notice what you're feeling and try small things that might help. A few soft questions first — skip anything, take your time.
+                {t("intro.description")}
               </p>
             </section>
 
             {/* Country */}
             <section aria-labelledby="country-heading">
               <h2 id="country-heading" className="text-2xl font-bold text-foreground mb-1">
-                Where are you living right now?
+                {t("country.title")}
               </h2>
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
-                This helps us show you the right local resources and support options.
+                {t("country.description")}
               </p>
               <label htmlFor="country-select" className="text-sm font-semibold text-foreground block mb-2">
-                Select your country
+                {t("country.selectLabel")}
               </label>
               <select
                 id="country-select"
@@ -186,7 +188,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                 style={{ minHeight: 44 }}
                 className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-base transition"
               >
-                <option value="">Choose a country...</option>
+                <option value="">{t("country.placeholder")}</option>
                 {COUNTRIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -196,16 +198,16 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             {/* Identity */}
             <section aria-labelledby="identity-heading">
               <h2 id="identity-heading" className="text-2xl font-bold text-foreground mb-1">
-                I am...
+                {t("identity.title")}
               </h2>
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
-                Select as many as feel true, or skip if you prefer.
+                {t("identity.description")}
               </p>
               <div className="flex flex-col gap-2" role="group" aria-labelledby="identity-heading">
                 {IDENTITY_OPTIONS.map((opt) => (
                   <MultiSelectButton
                     key={opt.id}
-                    label={opt.label}
+                    label={t(opt.labelKey)}
                     selected={identity.includes(opt.id)}
                     onToggle={() => setIdentity(toggle(identity, opt.id))}
                   />
@@ -216,16 +218,16 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             {/* Gender */}
             <section aria-labelledby="gender-heading">
               <h2 id="gender-heading" className="text-2xl font-bold text-foreground mb-1">
-                How do you identify?
+                {t("gender.title")}
               </h2>
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
-                This helps us use the right language with you. Select all that apply, or skip.
+                {t("gender.description")}
               </p>
               <div className="flex flex-col gap-2" role="group" aria-labelledby="gender-heading">
                 {GENDER_OPTIONS.map((opt) => (
                   <MultiSelectButton
                     key={opt.id}
-                    label={opt.label}
+                    label={t(opt.labelKey)}
                     selected={gender.includes(opt.id)}
                     onToggle={() => setGender(toggle(gender, opt.id))}
                   />
@@ -234,14 +236,14 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               {gender.includes("different-term") && (
                 <div className="mt-3">
                   <label htmlFor="custom-gender" className="text-sm font-semibold text-foreground block mb-1.5">
-                    Your term (optional)
+                    {t("gender.customLabel")}
                   </label>
                   <input
                     id="custom-gender"
                     type="text"
                     value={customGender}
                     onChange={(e) => setCustomGender(e.target.value)}
-                    placeholder="How you identify..."
+                    placeholder={t("gender.customPlaceholder")}
                     style={{ minHeight: 44 }}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary text-base transition"
                   />
@@ -252,14 +254,14 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             {/* Pronouns */}
             <section aria-labelledby="pronouns-heading">
               <h2 id="pronouns-heading" className="text-2xl font-bold text-foreground mb-1">
-                What are your pronouns?
-                <span className="text-sm font-normal text-muted-foreground ml-2">(optional)</span>
+                {t("pronouns.title")}
+                <span className="text-sm font-normal text-muted-foreground ml-2">{t("pronouns.optional")}</span>
               </h2>
               <div className="flex flex-col gap-2 mt-4" role="group" aria-labelledby="pronouns-heading">
                 {PRONOUN_OPTIONS.map((opt) => (
                   <SingleSelectButton
                     key={opt.id}
-                    label={opt.label}
+                    label={t(opt.labelKey)}
                     selected={pronouns === opt.id}
                     onSelect={() => setPronouns(pronouns === opt.id ? "" : opt.id)}
                   />
@@ -268,14 +270,14 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               {pronouns === "custom" && (
                 <div className="mt-3">
                   <label htmlFor="custom-pronouns" className="text-sm font-semibold text-foreground block mb-1.5">
-                    Your pronouns
+                    {t("pronouns.customLabel")}
                   </label>
                   <input
                     id="custom-pronouns"
                     type="text"
                     value={customPronouns}
                     onChange={(e) => setCustomPronouns(e.target.value)}
-                    placeholder="e.g. xe/xem, ze/zir..."
+                    placeholder={t("pronouns.customPlaceholder")}
                     style={{ minHeight: 44 }}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary text-base transition"
                   />
@@ -290,30 +292,30 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
         {/* ── Screen 2: Situation + What's been going on ── */}
         {screen === 2 && (
           <fieldset className="flex flex-col gap-8 border-none p-0 m-0">
-            <legend className="sr-only">Your current situation</legend>
+            <legend className="sr-only">{t("location.legend")}</legend>
 
             <section aria-labelledby="where-now-heading">
               <h2 id="where-now-heading" className="text-2xl font-bold text-foreground mb-1">
-                Where are you right now?
+                {t("location.title")}
               </h2>
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
-                You might be travelling or somewhere new. This helps us show the right local support.
+                {t("location.description")}
               </p>
               <LocationPicker selectedRegion={currentRegion} onSelect={setCurrentRegion} />
             </section>
 
             <section aria-labelledby="situation-heading">
               <h2 id="situation-heading" className="text-2xl font-bold text-foreground mb-1">
-                What is your current situation?
+                {t("situation.title")}
               </h2>
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
-                Select all that feel true right now.
+                {t("situation.description")}
               </p>
               <div className="flex flex-col gap-2" role="group" aria-labelledby="situation-heading">
                 {SITUATION_OPTIONS.map((opt) => (
                   <MultiSelectButton
                     key={opt.id}
-                    label={opt.label}
+                    label={t(opt.labelKey)}
                     selected={situation.includes(opt.id)}
                     onToggle={() => setSituation(toggle(situation, opt.id))}
                   />
@@ -323,16 +325,16 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
 
             <section aria-labelledby="going-on-heading">
               <h2 id="going-on-heading" className="text-2xl font-bold text-foreground mb-1">
-                What has been going on for you lately?
+                {t("goingOn.title")}
               </h2>
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
-                Select all that feel true.
+                {t("goingOn.description")}
               </p>
               <div className="flex flex-col gap-2" role="group" aria-labelledby="going-on-heading">
                 {GOING_ON_OPTIONS.map((opt) => (
                   <MultiSelectButton
                     key={opt.id}
-                    label={opt.label}
+                    label={t(opt.labelKey)}
                     selected={goingOn.includes(opt.id)}
                     onToggle={() => setGoingOn(toggle(goingOn, opt.id))}
                   />
@@ -347,20 +349,20 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
         {/* ── Screen 3: Body feelings + Duration ── */}
         {screen === 3 && (
           <fieldset className="flex flex-col gap-8 border-none p-0 m-0">
-            <legend className="sr-only">How you are feeling</legend>
+            <legend className="sr-only">{t("body.legend")}</legend>
 
             <section aria-labelledby="body-heading">
               <h2 id="body-heading" className="text-2xl font-bold text-foreground mb-1">
-                Take a moment and check in with yourself.
+                {t("body.title")}
               </h2>
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
-                What are you feeling in your body? Select all that apply.
+                {t("body.description")}
               </p>
               <div className="flex flex-col gap-2" role="group" aria-labelledby="body-heading">
                 {BODY_FEELING_OPTIONS.map((opt) => (
                   <MultiSelectButton
                     key={opt.id}
-                    label={opt.label}
+                    label={t(opt.labelKey)}
                     selected={bodyFeelings.includes(opt.id)}
                     onToggle={() => setBodyFeelings(toggle(bodyFeelings, opt.id))}
                   />
@@ -370,13 +372,13 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
 
             <section aria-labelledby="duration-heading">
               <h2 id="duration-heading" className="text-2xl font-bold text-foreground mb-1">
-                How long has this been going on?
+                {t("duration.title")}
               </h2>
               <div className="flex flex-col gap-2 mt-4" role="group" aria-labelledby="duration-heading">
                 {DURATION_OPTIONS.map((opt) => (
                   <SingleSelectButton
                     key={opt.id}
-                    label={opt.label}
+                    label={t(opt.labelKey)}
                     selected={duration === opt.id}
                     onSelect={() => setDuration(duration === opt.id ? "" : opt.id)}
                   />
@@ -398,20 +400,20 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
         {/* ── Screen 4: Support preferences ── */}
         {screen === 4 && (
           <fieldset className="flex flex-col gap-8 border-none p-0 m-0">
-            <legend className="sr-only">What kind of support you need</legend>
+            <legend className="sr-only">{t("support.legend")}</legend>
 
             <section aria-labelledby="support-heading">
               <h2 id="support-heading" className="text-2xl font-bold text-foreground mb-1">
-                Everyone needs something different.
+                {t("support.title")}
               </h2>
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
-                What sounds most helpful to you right now? Select all that feel right.
+                {t("support.description")}
               </p>
               <div className="flex flex-col gap-2" role="group" aria-labelledby="support-heading">
                 {SUPPORT_OPTIONS.map((opt) => (
                   <MultiSelectButton
                     key={opt.id}
-                    label={opt.label}
+                    label={t(opt.labelKey)}
                     selected={support.includes(opt.id)}
                     onToggle={() => setSupport(toggle(support, opt.id))}
                   />
@@ -425,7 +427,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               style={{ background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00", minHeight: 52 }}
               className="w-full rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              Enter Bhava
+              {t("enter")}
             </button>
           </fieldset>
         )}
@@ -515,6 +517,7 @@ function SingleSelectButton({
 }
 
 function ContinueButton({ onClick }: { onClick: () => void }) {
+  const tCommon = useTranslations("common")
   return (
     <button
       type="button"
@@ -522,12 +525,13 @@ function ContinueButton({ onClick }: { onClick: () => void }) {
       style={{ minHeight: 52, background: "linear-gradient(135deg, #C9A84C, #F5D77E, #C9A84C)", color: "#3B1F00" }}
       className="w-full rounded-2xl text-lg font-bold transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      Continue
+      {tCommon("continue")}
     </button>
   )
 }
 
 function EmergencyNote({ country }: { country: string }) {
+  const t = useTranslations("onboarding.emergency")
   const number = getEmergencyNumber(country) || "112"
   const display = country ? `${number} (${country})` : number
 
@@ -539,19 +543,18 @@ function EmergencyNote({ country }: { country: string }) {
     <div
       className="p-4 rounded-xl border border-border bg-muted/40 flex flex-col gap-2"
       role="note"
-      aria-label="Emergency services note"
     >
       <p className="text-sm text-muted-foreground leading-relaxed">
-        If you are experiencing a medical emergency, you can contact emergency services directly.
+        {t("description")}
       </p>
       <button
         type="button"
         onClick={handleCall}
         style={{ minHeight: 44 }}
         className="self-start px-4 py-2 rounded-lg text-sm font-semibold bg-background border border-border text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
-        aria-label={`Call emergency services: ${display}`}
+        aria-label={t("aria", { display })}
       >
-        Emergency: {display}
+        {t("button", { display })}
       </button>
     </div>
   )

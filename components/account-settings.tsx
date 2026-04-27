@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { ArrowLeft, Eye, EyeOff, ChevronDown, ChevronUp, Trash2 } from "lucide-react"
 import { updateProfile, getOnboardingSessions, deleteAccount, type Profile } from "@/lib/profile"
 import { updatePassword } from "@/lib/auth"
@@ -34,6 +35,7 @@ function getPasswordStrength(pw: string): PasswordStrength {
 }
 
 export function AccountSettings({ profile, onClose, onProfileUpdate, onAccountDeleted }: AccountSettingsProps) {
+  const tOnb = useTranslations("onboarding")
   const [activeSection, setActiveSection] = useState<string | null>(null)
   const [sessions, setSessions] = useState<OnboardingSession[]>([])
   const [sessionsLoaded, setSessionsLoaded] = useState(false)
@@ -335,7 +337,7 @@ export function AccountSettings({ profile, onClose, onProfileUpdate, onAccountDe
                 {IDENTITY_OPTIONS.map((opt) => (
                   <ToggleRow
                     key={opt.id}
-                    label={opt.label}
+                    label={tOnb(opt.labelKey)}
                     checked={identity.includes(opt.id)}
                     onToggle={() => setIdentity(toggle(identity, opt.id))}
                   />
@@ -348,7 +350,7 @@ export function AccountSettings({ profile, onClose, onProfileUpdate, onAccountDe
                 {GENDER_OPTIONS.map((opt) => (
                   <ToggleRow
                     key={opt.id}
-                    label={opt.label}
+                    label={tOnb(opt.labelKey)}
                     checked={gender.includes(opt.id)}
                     onToggle={() => setGender(toggle(gender, opt.id))}
                   />
@@ -368,7 +370,7 @@ export function AccountSettings({ profile, onClose, onProfileUpdate, onAccountDe
               >
                 <option value="">Prefer not to say</option>
                 {PRONOUN_OPTIONS.map((p) => (
-                  <option key={p.id} value={p.id}>{p.label}</option>
+                  <option key={p.id} value={p.id}>{tOnb(p.labelKey)}</option>
                 ))}
               </select>
             </div>

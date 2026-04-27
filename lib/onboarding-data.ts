@@ -10,77 +10,77 @@ export type OnboardingSession = {
 }
 
 export const IDENTITY_OPTIONS = [
-  { id: "immigrant", label: "An immigrant or newcomer" },
-  { id: "first-gen", label: "A first-generation immigrant in my family" },
-  { id: "cultural-identity", label: "Navigating cultural or religious identity" },
-  { id: "lgbtq", label: "Part of the LGBTQ+ community" },
-  { id: "mental-health-condition", label: "Living with a mental health condition" },
-  { id: "prefer-not-to-say", label: "I'd rather not say" },
+  { id: "immigrant", labelKey: "identity.options.immigrant" },
+  { id: "first-gen", labelKey: "identity.options.firstGen" },
+  { id: "cultural-identity", labelKey: "identity.options.cultural" },
+  { id: "lgbtq", labelKey: "identity.options.lgbtq" },
+  { id: "mental-health-condition", labelKey: "identity.options.mentalHealth" },
+  { id: "prefer-not-to-say", labelKey: "identity.options.preferNot" },
 ]
 
 export const GENDER_OPTIONS = [
-  { id: "man", label: "Man" },
-  { id: "woman", label: "Woman" },
-  { id: "non-binary", label: "Non-binary" },
-  { id: "transgender", label: "Transgender" },
-  { id: "gender-fluid", label: "Gender fluid" },
-  { id: "different-term", label: "I use a different term" },
-  { id: "prefer-not-to-say", label: "I'd rather not say" },
+  { id: "man", labelKey: "gender.options.man" },
+  { id: "woman", labelKey: "gender.options.woman" },
+  { id: "non-binary", labelKey: "gender.options.nonBinary" },
+  { id: "transgender", labelKey: "gender.options.transgender" },
+  { id: "gender-fluid", labelKey: "gender.options.genderFluid" },
+  { id: "different-term", labelKey: "gender.options.different" },
+  { id: "prefer-not-to-say", labelKey: "gender.options.preferNot" },
 ]
 
 export const PRONOUN_OPTIONS = [
-  { id: "she-her", label: "She / her" },
-  { id: "he-him", label: "He / him" },
-  { id: "they-them", label: "They / them" },
-  { id: "custom", label: "I use different pronouns" },
+  { id: "she-her", labelKey: "pronouns.options.sheHer" },
+  { id: "he-him", labelKey: "pronouns.options.heHim" },
+  { id: "they-them", labelKey: "pronouns.options.theyThem" },
+  { id: "custom", labelKey: "pronouns.options.custom" },
 ]
 
 export const SITUATION_OPTIONS = [
-  { id: "employed", label: "I am employed or working" },
-  { id: "international-student", label: "I am an international student" },
-  { id: "unemployed", label: "I am between jobs or unemployed" },
-  { id: "caregiver", label: "I am a caregiver" },
-  { id: "complicated", label: "It is complicated right now" },
-  { id: "prefer-not-to-say", label: "I'd rather not say" },
+  { id: "employed", labelKey: "situation.options.employed" },
+  { id: "international-student", labelKey: "situation.options.student" },
+  { id: "unemployed", labelKey: "situation.options.unemployed" },
+  { id: "caregiver", labelKey: "situation.options.caregiver" },
+  { id: "complicated", labelKey: "situation.options.complicated" },
+  { id: "prefer-not-to-say", labelKey: "situation.options.preferNot" },
 ]
 
 export const GOING_ON_OPTIONS = [
-  { id: "adjusting", label: "I am still adjusting to life in a new country" },
-  { id: "lonely", label: "I have been feeling lonely or disconnected" },
-  { id: "visa-stress", label: "Visa, status, or paperwork is weighing on me" },
-  { id: "money-stress", label: "Money or costs are stressing me out" },
-  { id: "family-stigma", label: "I cannot tell my family how bad it has gotten" },
-  { id: "process", label: "Something happened and I need to process it" },
-  { id: "off", label: "I have been feeling off and cannot explain why" },
-  { id: "not-sure", label: "I am not sure — I just needed somewhere to go" },
+  { id: "adjusting", labelKey: "goingOn.options.adjusting" },
+  { id: "lonely", labelKey: "goingOn.options.lonely" },
+  { id: "visa-stress", labelKey: "goingOn.options.visa" },
+  { id: "money-stress", labelKey: "goingOn.options.money" },
+  { id: "family-stigma", labelKey: "goingOn.options.familyStigma" },
+  { id: "process", labelKey: "goingOn.options.process" },
+  { id: "off", labelKey: "goingOn.options.off" },
+  { id: "not-sure", labelKey: "goingOn.options.notSure" },
 ]
 
 export const BODY_FEELING_OPTIONS = [
-  { id: "chest-tightness", label: "A tightness in my chest or throat" },
-  { id: "heaviness", label: "A heaviness, like something is sitting on me" },
-  { id: "restlessness", label: "Restlessness — I cannot seem to settle" },
-  { id: "stomach-knot", label: "A knot in my stomach" },
-  { id: "numbness", label: "A numbness or emptiness inside" },
-  { id: "dizziness", label: "Dizziness" },
-  { id: "in-thoughts", label: "It is more in my thoughts than my body" },
-  { id: "nothing", label: "I do not notice anything right now" },
+  { id: "chest-tightness", labelKey: "body.options.chestTightness" },
+  { id: "heaviness", labelKey: "body.options.heaviness" },
+  { id: "restlessness", labelKey: "body.options.restlessness" },
+  { id: "stomach-knot", labelKey: "body.options.stomachKnot" },
+  { id: "numbness", labelKey: "body.options.numbness" },
+  { id: "dizziness", labelKey: "body.options.dizziness" },
+  { id: "in-thoughts", labelKey: "body.options.inThoughts" },
+  { id: "nothing", labelKey: "body.options.nothing" },
 ]
 
 export const DURATION_OPTIONS = [
-  { id: "just-today", label: "Just today" },
-  { id: "few-days", label: "A few days" },
-  { id: "few-weeks", label: "A few weeks" },
-  { id: "months", label: "A few months or longer" },
-  { id: "comes-and-goes", label: "It comes and goes" },
+  { id: "just-today", labelKey: "duration.options.justToday" },
+  { id: "few-days", labelKey: "duration.options.fewDays" },
+  { id: "few-weeks", labelKey: "duration.options.fewWeeks" },
+  { id: "months", labelKey: "duration.options.months" },
+  { id: "comes-and-goes", labelKey: "duration.options.comesAndGoes" },
 ]
 
 export const SUPPORT_OPTIONS = [
-  { id: "figure-out-feelings", label: "Help me figure out what I am feeling" },
-  { id: "do-something", label: "Give me something I can do right now to feel better" },
-  { id: "community", label: "Connect me with people or communities near me" },
-  { id: "therapist", label: "Help me find a therapist or counsellor" },
-  { id: "express", label: "Just give me a space to express myself" },
-  { id: "not-sure", label: "I am not sure yet" },
+  { id: "figure-out-feelings", labelKey: "support.options.figureOut" },
+  { id: "do-something", labelKey: "support.options.doSomething" },
+  { id: "community", labelKey: "support.options.community" },
+  { id: "therapist", labelKey: "support.options.therapist" },
+  { id: "express", labelKey: "support.options.express" },
+  { id: "not-sure", labelKey: "support.options.notSure" },
 ]
 
 export type PathChoice = "wheel" | "quick-actions" | "support" | "look-around"

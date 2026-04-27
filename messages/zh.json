@@ -51,5 +51,136 @@
   },
   "crisis": {
     "needHelpNow": "现在需要帮助吗？"
+  },
+  "onboarding": {
+    "back": "返回",
+    "backAria": "返回上一步",
+    "skip": "暂时跳过",
+    "stepOf": "第 {current} 步，共 {total} 步",
+    "enter": "进入 Bhava",
+    "intro": {
+      "title": "一个温柔的空间，让你被看见。",
+      "description": "Bhava 帮助你留意自己的感受，并尝试一些可能有用的小事。先来一些温和的问题——想跳过的就跳过，慢慢来。"
+    },
+    "country": {
+      "title": "你现在住在哪里？",
+      "description": "这有助于我们为你显示合适的本地资源和支持选项。",
+      "selectLabel": "选择你的国家",
+      "placeholder": "选择一个国家..."
+    },
+    "identity": {
+      "title": "我是...",
+      "description": "选择所有符合你的，或者跳过。",
+      "legend": "你的背景与身份",
+      "options": {
+        "immigrant": "移民或新到达者",
+        "firstGen": "我家中的第一代移民",
+        "cultural": "正在探索文化或宗教身份",
+        "lgbtq": "LGBTQ+ 群体的一员",
+        "mentalHealth": "与心理健康状况共处",
+        "preferNot": "我不想透露"
+      }
+    },
+    "gender": {
+      "title": "你如何认同自己？",
+      "description": "这帮助我们使用合适的语言。选择所有适用的，或跳过。",
+      "customLabel": "你的用词（可选）",
+      "customPlaceholder": "你如何认同自己...",
+      "options": {
+        "man": "男性",
+        "woman": "女性",
+        "nonBinary": "非二元",
+        "transgender": "跨性别",
+        "genderFluid": "性别流动",
+        "different": "我使用其他词语",
+        "preferNot": "我不想透露"
+      }
+    },
+    "pronouns": {
+      "title": "你的代词是什么？",
+      "optional": "（可选）",
+      "customLabel": "你的代词",
+      "customPlaceholder": "例如...",
+      "options": {
+        "sheHer": "她",
+        "heHim": "他",
+        "theyThem": "他们/她们",
+        "custom": "我使用其他代词"
+      }
+    },
+    "location": {
+      "title": "你现在在哪里？",
+      "description": "你可能在旅行或在一个新地方。这有助于我们显示合适的本地支持。",
+      "legend": "你目前的情况"
+    },
+    "situation": {
+      "title": "你目前的情况是什么？",
+      "description": "选择所有目前为真的。",
+      "options": {
+        "employed": "我有工作或正在工作",
+        "student": "我是国际学生",
+        "unemployed": "我处于待业或失业状态",
+        "caregiver": "我是照顾者",
+        "complicated": "现在情况很复杂",
+        "preferNot": "我不想透露"
+      }
+    },
+    "goingOn": {
+      "title": "最近你身上发生了什么？",
+      "description": "选择所有符合的。",
+      "options": {
+        "adjusting": "我还在适应在新国家的生活",
+        "lonely": "我感到孤独或与外界脱节",
+        "visa": "签证、身份或文件让我感到沉重",
+        "money": "金钱或开销让我有压力",
+        "familyStigma": "我无法告诉家人事情有多糟",
+        "process": "发生了一些事，我需要消化",
+        "off": "我感觉有些不对劲，但说不清为什么",
+        "notSure": "我不确定——只是需要一个去处"
+      }
+    },
+    "body": {
+      "title": "花一点时间，与自己连接。",
+      "description": "你在身体里感受到什么？选择所有适用的。",
+      "legend": "你的感受",
+      "options": {
+        "chestTightness": "胸口或喉咙发紧",
+        "heaviness": "沉重感，像有什么压在身上",
+        "restlessness": "焦躁——我无法静下来",
+        "stomachKnot": "胃部打结",
+        "numbness": "内心麻木或空虚",
+        "dizziness": "头晕",
+        "inThoughts": "更多在我的脑海中而不是身体里",
+        "nothing": "现在没什么感觉"
+      }
+    },
+    "duration": {
+      "title": "这种情况持续多久了？",
+      "options": {
+        "justToday": "只是今天",
+        "fewDays": "几天",
+        "fewWeeks": "几周",
+        "months": "几个月或更久",
+        "comesAndGoes": "时有时无"
+      }
+    },
+    "emergency": {
+      "description": "如果你正在经历医疗紧急情况，可以直接联系紧急服务。",
+      "button": "紧急服务：{display}",
+      "aria": "拨打紧急服务：{display}"
+    },
+    "support": {
+      "title": "每个人需要的都不同。",
+      "description": "现在什么对你最有帮助？选择所有符合的。",
+      "legend": "你需要哪种支持",
+      "options": {
+        "figureOut": "帮我理解我现在的感受",
+        "doSomething": "给我一些现在能做的事情，让自己感觉好些",
+        "community": "把我和附近的人或社区联系起来",
+        "therapist": "帮我找到一位治疗师或咨询师",
+        "express": "给我一个空间表达自己",
+        "notSure": "我还不确定"
+      }
+    }
   }
 }

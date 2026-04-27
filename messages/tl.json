@@ -51,5 +51,136 @@
   },
   "crisis": {
     "needHelpNow": "Kailangan ng tulong ngayon?"
+  },
+  "onboarding": {
+    "back": "Balik",
+    "backAria": "Bumalik sa nakaraang hakbang",
+    "skip": "Laktawan muna",
+    "stepOf": "Hakbang {current} ng {total}",
+    "enter": "Pumasok sa Bhava",
+    "intro": {
+      "title": "Isang banayad na espasyo upang madama na nakikita ka.",
+      "description": "Tinutulungan ka ng Bhava na mapansin ang iyong nararamdaman at subukan ang maliliit na bagay na maaaring makatulong. Ilang banayad na tanong muna — laktawan ang anumang gusto mo, sariling oras lang."
+    },
+    "country": {
+      "title": "Saan ka nakatira ngayon?",
+      "description": "Tinutulungan kami nito na ipakita ang tamang lokal na resources at mga opsyon ng suporta para sa iyo.",
+      "selectLabel": "Piliin ang iyong bansa",
+      "placeholder": "Pumili ng bansa..."
+    },
+    "identity": {
+      "title": "Ako ay...",
+      "description": "Piliin ang lahat ng totoo, o laktawan kung gusto.",
+      "legend": "Ang iyong pinanggalingan at pagkakakilanlan",
+      "options": {
+        "immigrant": "Imigrante o bagong dating",
+        "firstGen": "Unang henerasyon ng imigrante sa pamilya ko",
+        "cultural": "Tinatahak ang kultural o relihiyosong pagkakakilanlan",
+        "lgbtq": "Bahagi ng LGBTQ+ community",
+        "mentalHealth": "Namumuhay kasama ang isang kondisyon sa kalusugan ng pag-iisip",
+        "preferNot": "Mas gusto kong huwag sabihin"
+      }
+    },
+    "gender": {
+      "title": "Paano mo kinikilala ang iyong sarili?",
+      "description": "Tinutulungan kami nito na gamitin ang tamang wika sa iyo. Piliin ang lahat ng angkop, o laktawan.",
+      "customLabel": "Ang iyong salita (opsyonal)",
+      "customPlaceholder": "Paano mo kinikilala ang iyong sarili...",
+      "options": {
+        "man": "Lalaki",
+        "woman": "Babae",
+        "nonBinary": "Non-binary",
+        "transgender": "Transgender",
+        "genderFluid": "Gender fluid",
+        "different": "Gumagamit ako ng ibang termino",
+        "preferNot": "Mas gusto kong huwag sabihin"
+      }
+    },
+    "pronouns": {
+      "title": "Ano ang iyong panghalip?",
+      "optional": "(opsyonal)",
+      "customLabel": "Ang iyong panghalip",
+      "customPlaceholder": "hal. siya...",
+      "options": {
+        "sheHer": "Siya (babae)",
+        "heHim": "Siya (lalaki)",
+        "theyThem": "Sila",
+        "custom": "Gumagamit ako ng ibang panghalip"
+      }
+    },
+    "location": {
+      "title": "Saan ka ngayon?",
+      "description": "Maaari kang naglalakbay o nasa bagong lugar. Tinutulungan kami nito na ipakita ang tamang lokal na suporta.",
+      "legend": "Ang iyong kasalukuyang sitwasyon"
+    },
+    "situation": {
+      "title": "Ano ang iyong kasalukuyang sitwasyon?",
+      "description": "Piliin ang lahat ng totoo ngayon.",
+      "options": {
+        "employed": "Nagtatrabaho ako o may trabaho",
+        "student": "International student ako",
+        "unemployed": "Nasa pagitan ng trabaho ako o walang trabaho",
+        "caregiver": "Tagapag-alaga ako",
+        "complicated": "Komplikado ngayon",
+        "preferNot": "Mas gusto kong huwag sabihin"
+      }
+    },
+    "goingOn": {
+      "title": "Ano ang nangyayari sa iyo kamakailan?",
+      "description": "Piliin ang lahat ng totoo.",
+      "options": {
+        "adjusting": "Nag-aadjust pa rin ako sa buhay sa bagong bansa",
+        "lonely": "Pakiramdam ko nag-iisa o disconnected",
+        "visa": "Mabigat sa akin ang visa, status, o papeles",
+        "money": "Pera o gastos ang nagbibigay sa akin ng stress",
+        "familyStigma": "Hindi ko masabi sa pamilya ko kung gaano na kasama",
+        "process": "May nangyari at kailangan kong i-process",
+        "off": "May pakiramdam akong hindi tama at hindi ko maipaliwanag",
+        "notSure": "Hindi ako sigurado — kailangan ko lang ng lugar pumunta"
+      }
+    },
+    "body": {
+      "title": "Maglaan ng sandali at kumonekta sa sarili mo.",
+      "description": "Ano ang nararamdaman mo sa iyong katawan? Piliin ang lahat ng angkop.",
+      "legend": "Ano ang nararamdaman mo",
+      "options": {
+        "chestTightness": "Higpit sa dibdib o lalamunan",
+        "heaviness": "Bigat, parang may nakaupo sa akin",
+        "restlessness": "Pagkabalisa — hindi ako mapakali",
+        "stomachKnot": "Buhol sa tiyan",
+        "numbness": "Manhid o kawalan sa loob",
+        "dizziness": "Nahihilo",
+        "inThoughts": "Mas nasa isip ko ito kaysa sa katawan",
+        "nothing": "Wala akong napapansin ngayon"
+      }
+    },
+    "duration": {
+      "title": "Gaano na ito katagal?",
+      "options": {
+        "justToday": "Ngayong araw lang",
+        "fewDays": "Ilang araw",
+        "fewWeeks": "Ilang linggo",
+        "months": "Ilang buwan o higit pa",
+        "comesAndGoes": "Pabalik-balik"
+      }
+    },
+    "emergency": {
+      "description": "Kung nakakaranas ka ng medikal na emergency, maaari kang direktang tumawag sa emergency services.",
+      "button": "Emergency: {display}",
+      "aria": "Tumawag sa emergency services: {display}"
+    },
+    "support": {
+      "title": "Iba-iba ang kailangan ng bawat isa.",
+      "description": "Ano ang sa tingin mo ang pinakamakakatulong sa iyo ngayon? Piliin ang lahat ng totoo.",
+      "legend": "Anong klaseng suporta ang kailangan mo",
+      "options": {
+        "figureOut": "Tulungan akong maintindihan ang nararamdaman ko",
+        "doSomething": "Bigyan mo ako ng magagawa ngayon para mas gumaan",
+        "community": "Ikonekta mo ako sa mga tao o komunidad na malapit sa akin",
+        "therapist": "Tulungan akong makahanap ng therapist o counselor",
+        "express": "Bigyan mo lang ako ng espasyo para magpahayag",
+        "notSure": "Hindi pa ako sigurado"
+      }
+    }
   }
 }

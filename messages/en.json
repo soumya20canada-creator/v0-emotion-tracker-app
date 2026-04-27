@@ -50,5 +50,136 @@
   },
   "crisis": {
     "needHelpNow": "Need help now?"
+  },
+  "onboarding": {
+    "back": "Back",
+    "backAria": "Go back to previous step",
+    "skip": "Skip for now",
+    "stepOf": "Step {current} of {total}",
+    "enter": "Enter Bhava",
+    "intro": {
+      "title": "A gentle space to feel seen.",
+      "description": "Bhava helps you notice what you're feeling and try small things that might help. A few soft questions first — skip anything, take your time."
+    },
+    "country": {
+      "title": "Where are you living right now?",
+      "description": "This helps us show you the right local resources and support options.",
+      "selectLabel": "Select your country",
+      "placeholder": "Choose a country..."
+    },
+    "identity": {
+      "title": "I am...",
+      "description": "Select as many as feel true, or skip if you prefer.",
+      "legend": "Your background and identity",
+      "options": {
+        "immigrant": "An immigrant or newcomer",
+        "firstGen": "A first-generation immigrant in my family",
+        "cultural": "Navigating cultural or religious identity",
+        "lgbtq": "Part of the LGBTQ+ community",
+        "mentalHealth": "Living with a mental health condition",
+        "preferNot": "I'd rather not say"
+      }
+    },
+    "gender": {
+      "title": "How do you identify?",
+      "description": "This helps us use the right language with you. Select all that apply, or skip.",
+      "customLabel": "Your term (optional)",
+      "customPlaceholder": "How you identify...",
+      "options": {
+        "man": "Man",
+        "woman": "Woman",
+        "nonBinary": "Non-binary",
+        "transgender": "Transgender",
+        "genderFluid": "Gender fluid",
+        "different": "I use a different term",
+        "preferNot": "I'd rather not say"
+      }
+    },
+    "pronouns": {
+      "title": "What are your pronouns?",
+      "optional": "(optional)",
+      "customLabel": "Your pronouns",
+      "customPlaceholder": "e.g. xe/xem, ze/zir...",
+      "options": {
+        "sheHer": "She / her",
+        "heHim": "He / him",
+        "theyThem": "They / them",
+        "custom": "I use different pronouns"
+      }
+    },
+    "location": {
+      "title": "Where are you right now?",
+      "description": "You might be travelling or somewhere new. This helps us show the right local support.",
+      "legend": "Your current situation"
+    },
+    "situation": {
+      "title": "What is your current situation?",
+      "description": "Select all that feel true right now.",
+      "options": {
+        "employed": "I am employed or working",
+        "student": "I am an international student",
+        "unemployed": "I am between jobs or unemployed",
+        "caregiver": "I am a caregiver",
+        "complicated": "It is complicated right now",
+        "preferNot": "I'd rather not say"
+      }
+    },
+    "goingOn": {
+      "title": "What has been going on for you lately?",
+      "description": "Select all that feel true.",
+      "options": {
+        "adjusting": "I am still adjusting to life in a new country",
+        "lonely": "I have been feeling lonely or disconnected",
+        "visa": "Visa, status, or paperwork is weighing on me",
+        "money": "Money or costs are stressing me out",
+        "familyStigma": "I cannot tell my family how bad it has gotten",
+        "process": "Something happened and I need to process it",
+        "off": "I have been feeling off and cannot explain why",
+        "notSure": "I am not sure — I just needed somewhere to go"
+      }
+    },
+    "body": {
+      "title": "Take a moment and check in with yourself.",
+      "description": "What are you feeling in your body? Select all that apply.",
+      "legend": "How you are feeling",
+      "options": {
+        "chestTightness": "A tightness in my chest or throat",
+        "heaviness": "A heaviness, like something is sitting on me",
+        "restlessness": "Restlessness — I cannot seem to settle",
+        "stomachKnot": "A knot in my stomach",
+        "numbness": "A numbness or emptiness inside",
+        "dizziness": "Dizziness",
+        "inThoughts": "It is more in my thoughts than my body",
+        "nothing": "I do not notice anything right now"
+      }
+    },
+    "duration": {
+      "title": "How long has this been going on?",
+      "options": {
+        "justToday": "Just today",
+        "fewDays": "A few days",
+        "fewWeeks": "A few weeks",
+        "months": "A few months or longer",
+        "comesAndGoes": "It comes and goes"
+      }
+    },
+    "emergency": {
+      "description": "If you are experiencing a medical emergency, you can contact emergency services directly.",
+      "button": "Emergency: {display}",
+      "aria": "Call emergency services: {display}"
+    },
+    "support": {
+      "title": "Everyone needs something different.",
+      "description": "What sounds most helpful to you right now? Select all that feel right.",
+      "legend": "What kind of support you need",
+      "options": {
+        "figureOut": "Help me figure out what I am feeling",
+        "doSomething": "Give me something I can do right now to feel better",
+        "community": "Connect me with people or communities near me",
+        "therapist": "Help me find a therapist or counsellor",
+        "express": "Just give me a space to express myself",
+        "notSure": "I am not sure yet"
+      }
+    }
   }
 }
