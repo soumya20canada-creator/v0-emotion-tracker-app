@@ -3,6 +3,7 @@
 import { REGIONS } from "@/lib/crisis-resources"
 import { MapPin, ChevronDown } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
+import { useTranslations } from "next-intl"
 
 type LocationPickerProps = {
   selectedRegion: string | null
@@ -13,6 +14,7 @@ export function LocationPicker({ selectedRegion, onSelect }: LocationPickerProps
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const selected = REGIONS.find((r) => r.id === selectedRegion)
+  const tLoc = useTranslations("onboarding.location")
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -43,7 +45,7 @@ export function LocationPicker({ selectedRegion, onSelect }: LocationPickerProps
         <div className="absolute top-full right-0 mt-2 w-64 max-w-[calc(100vw-2rem)] max-h-80 overflow-y-auto rounded-2xl bg-card border border-border shadow-lg z-50">
           <div className="p-3">
             <p className="text-xs font-semibold text-muted-foreground mb-3 px-1">
-              Where are you right now?
+              {tLoc("title")}
             </p>
             <div className="flex flex-col gap-1">
               {REGIONS.map((region) => {

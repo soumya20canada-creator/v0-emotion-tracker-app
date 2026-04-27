@@ -63,8 +63,8 @@
       "description": "Tinutulungan ka ng Bhava na mapansin ang iyong nararamdaman at subukan ang maliliit na bagay na maaaring makatulong. Ilang banayad na tanong muna — laktawan ang anumang gusto mo, sariling oras lang."
     },
     "country": {
-      "title": "Saan ka nakatira ngayon?",
-      "description": "Tinutulungan kami nito na ipakita ang tamang lokal na resources at mga opsyon ng suporta para sa iyo.",
+      "title": "Saan ka talagang nagmula?",
+      "description": "Ang iyong sariling bansa — tumutulong sa aming iangkop ang resources at wika para sa iyo.",
       "selectLabel": "Piliin ang iyong bansa",
       "placeholder": "Pumili ng bansa..."
     },
@@ -109,8 +109,8 @@
       }
     },
     "location": {
-      "title": "Saan ka ngayon?",
-      "description": "Maaari kang naglalakbay o nasa bagong lugar. Tinutulungan kami nito na ipakita ang tamang lokal na suporta.",
+      "title": "Saan ka kasalukuyang nakatira?",
+      "description": "Ang iyong kasalukuyang rehiyon — para maipakita namin ang tamang crisis helplines kung kakailanganin mo.",
       "legend": "Ang iyong kasalukuyang sitwasyon"
     },
     "situation": {

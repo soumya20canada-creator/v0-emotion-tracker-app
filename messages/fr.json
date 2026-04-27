@@ -63,8 +63,8 @@
       "description": "Bhava t'aide à remarquer ce que tu ressens et à essayer de petites choses qui peuvent aider. Quelques questions douces d'abord — passe ce que tu veux, prends ton temps."
     },
     "country": {
-      "title": "Où vis-tu en ce moment ?",
-      "description": "Cela nous aide à te montrer les bonnes ressources locales et les options de soutien.",
+      "title": "D'où viens-tu à l'origine ?",
+      "description": "Ton pays d'origine — pour adapter les ressources et la langue.",
       "selectLabel": "Choisis ton pays",
       "placeholder": "Choisir un pays..."
     },
@@ -109,8 +109,8 @@
       }
     },
     "location": {
-      "title": "Où es-tu en ce moment ?",
-      "description": "Tu es peut-être en voyage ou dans un endroit nouveau. Cela nous aide à te montrer le bon soutien local.",
+      "title": "Où es-tu situé(e) maintenant ?",
+      "description": "Ta région actuelle — pour t'afficher les bonnes lignes d'aide en cas de besoin.",
       "legend": "Ta situation actuelle"
     },
     "situation": {

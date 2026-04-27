@@ -27,11 +27,11 @@ export function NavBar({
   const tProfile = useTranslations("profile")
 
   const items = [
-    { id: "home",     label: tNav("feel"),    icon: Home },
-    { id: "progress", label: tNav("journey"), icon: BarChart3 },
-    { id: "patterns", label: tNav("patterns"), icon: Brain },
-    { id: "badges",   label: tNav("space"),   icon: Sparkles },
-  ]
+    { id: "home",     label: tNav("feel"),    icon: Home,      tour: undefined },
+    { id: "progress", label: tNav("journey"), icon: BarChart3, tour: "journey" },
+    { id: "patterns", label: tNav("patterns"), icon: Brain,    tour: "patterns" },
+    { id: "badges",   label: tNav("space"),   icon: Sparkles,  tour: "space" },
+  ] as const
 
   async function handleSignOut() {
     await signOut()
@@ -112,6 +112,7 @@ export function NavBar({
                 className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-current={isActive ? "page" : undefined}
                 aria-label={item.label}
+                data-tour={item.tour}
               >
                 <Icon size={22} style={{ color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)" }} aria-hidden="true" />
                 <span className="text-sm font-bold" style={{ color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)" }}>

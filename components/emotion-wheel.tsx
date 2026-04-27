@@ -29,7 +29,7 @@ export function EmotionWheel({ onSelect, selectedId }: EmotionWheelProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   return (
-    <div className="flex flex-col items-center gap-8 w-full">
+    <div className="flex flex-col items-center gap-8 w-full" data-tour="wheel">
       <div className="flex flex-col items-center gap-3">
         <h2 className="text-3xl font-extrabold text-foreground text-center text-balance leading-tight">
           How are you feeling?

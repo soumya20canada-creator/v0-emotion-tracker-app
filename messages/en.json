@@ -62,8 +62,8 @@
       "description": "Bhava helps you notice what you're feeling and try small things that might help. A few soft questions first — skip anything, take your time."
     },
     "country": {
-      "title": "Where are you living right now?",
-      "description": "This helps us show you the right local resources and support options.",
+      "title": "Where are you from originally?",
+      "description": "Your home country — helps us tailor resources and language.",
       "selectLabel": "Select your country",
       "placeholder": "Choose a country..."
     },
@@ -108,8 +108,8 @@
       }
     },
     "location": {
-      "title": "Where are you right now?",
-      "description": "You might be travelling or somewhere new. This helps us show the right local support.",
+      "title": "Where are you located now?",
+      "description": "Your current region — so we can show the right crisis helplines if you ever need them.",
       "legend": "Your current situation"
     },
     "situation": {

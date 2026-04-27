@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import { Moon, Sun, Palette, X, Check } from "lucide-react"
 import { THEMES, applyTheme, type ThemeId } from "@/lib/themes"
 import { LanguagePicker } from "@/components/language-picker"
@@ -16,6 +17,9 @@ type ThemeHeaderProps = {
 export function ThemeHeader({ onThemeChange }: ThemeHeaderProps) {
   const [theme, setTheme] = useState<ThemeId>(LIGHT_DEFAULT)
   const [showSheet, setShowSheet] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     try {
@@ -43,7 +47,7 @@ export function ThemeHeader({ onThemeChange }: ThemeHeaderProps) {
 
   return (
     <>
-      <div className="flex items-center justify-end gap-1.5 px-3 py-1.5">
+      <div className="flex items-center justify-end gap-1.5 px-3 py-1.5" data-tour="controls">
         <LanguagePicker />
         <button
           onClick={quickToggle}
@@ -64,9 +68,9 @@ export function ThemeHeader({ onThemeChange }: ThemeHeaderProps) {
         </button>
       </div>
 
-      {showSheet && (
+      {showSheet && mounted && createPortal(
         <div
-          className="fixed inset-0 z-[100] flex items-end justify-center bg-foreground/30 backdrop-blur-sm"
+          className="fixed inset-0 z-[300] flex items-end justify-center bg-foreground/30 backdrop-blur-sm"
           onClick={() => setShowSheet(false)}
           role="dialog"
           aria-modal="true"
@@ -93,7 +97,8 @@ export function ThemeHeader({ onThemeChange }: ThemeHeaderProps) {
             </div>
             <ThemeGrid currentTheme={theme} onSelect={pick} />
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   )
