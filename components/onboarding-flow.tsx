@@ -82,7 +82,7 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
   // Voice narration — speak the dominant prompt for the current screen.
   const narrationParts: string[] = (() => {
     if (screen === 1) return [t("intro.title"), t("intro.description"), t("country.title"), t("country.description")]
-    if (screen === 2) return [t("location.title"), t("location.description"), t("situation.title"), t("situation.description")]
+    if (screen === 2) return [t("location.title"), t("location.description"), t("situation.title"), t("situation.description"), t("goingOn.title"), t("goingOn.description")]
     if (screen === 3) return [t("body.title"), t("body.description"), t("duration.title")]
     return [t("support.title"), t("support.description")]
   })()
@@ -197,9 +197,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
 
             {/* Country */}
             <section aria-labelledby="country-heading">
-              <h2 id="country-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("country.title")}
-              </h2>
+              <QuestionHeading
+                id="country-heading"
+                text={t("country.title")}
+                onListen={() => forceSpeak(`${t("country.title")} ${t("country.description")}`)}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                 {t("country.description")}
               </p>
@@ -222,9 +225,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
 
             {/* Identity */}
             <section aria-labelledby="identity-heading">
-              <h2 id="identity-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("identity.title")}
-              </h2>
+              <QuestionHeading
+                id="identity-heading"
+                text={t("identity.title")}
+                onListen={() => forceSpeak(`${t("identity.title")} ${t("identity.description")}`)}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                 {t("identity.description")}
               </p>
@@ -244,9 +250,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
 
             {/* Gender */}
             <section aria-labelledby="gender-heading">
-              <h2 id="gender-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("gender.title")}
-              </h2>
+              <QuestionHeading
+                id="gender-heading"
+                text={t("gender.title")}
+                onListen={() => forceSpeak(`${t("gender.title")} ${t("gender.description")}`)}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                 {t("gender.description")}
               </p>
@@ -282,10 +291,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
 
             {/* Pronouns */}
             <section aria-labelledby="pronouns-heading">
-              <h2 id="pronouns-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("pronouns.title")}
-                <span className="text-sm font-normal text-muted-foreground ml-2">{t("pronouns.optional")}</span>
-              </h2>
+              <QuestionHeading
+                id="pronouns-heading"
+                text={`${t("pronouns.title")} ${t("pronouns.optional")}`}
+                onListen={() => forceSpeak(t("pronouns.title"))}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <div className="flex flex-col gap-2 mt-4" role="group" aria-labelledby="pronouns-heading">
                 {PRONOUN_OPTIONS.map((opt) => (
                   <SingleSelectButton
@@ -326,9 +337,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             <legend className="sr-only">{t("location.legend")}</legend>
 
             <section aria-labelledby="where-now-heading">
-              <h2 id="where-now-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("location.title")}
-              </h2>
+              <QuestionHeading
+                id="where-now-heading"
+                text={t("location.title")}
+                onListen={() => forceSpeak(`${t("location.title")} ${t("location.description")}`)}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                 {t("location.description")}
               </p>
@@ -336,9 +350,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             </section>
 
             <section aria-labelledby="situation-heading">
-              <h2 id="situation-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("situation.title")}
-              </h2>
+              <QuestionHeading
+                id="situation-heading"
+                text={t("situation.title")}
+                onListen={() => forceSpeak(`${t("situation.title")} ${t("situation.description")}`)}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                 {t("situation.description")}
               </p>
@@ -357,9 +374,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             </section>
 
             <section aria-labelledby="going-on-heading">
-              <h2 id="going-on-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("goingOn.title")}
-              </h2>
+              <QuestionHeading
+                id="going-on-heading"
+                text={t("goingOn.title")}
+                onListen={() => forceSpeak(`${t("goingOn.title")} ${t("goingOn.description")}`)}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                 {t("goingOn.description")}
               </p>
@@ -387,9 +407,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             <legend className="sr-only">{t("body.legend")}</legend>
 
             <section aria-labelledby="body-heading">
-              <h2 id="body-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("body.title")}
-              </h2>
+              <QuestionHeading
+                id="body-heading"
+                text={t("body.title")}
+                onListen={() => forceSpeak(`${t("body.title")} ${t("body.description")}`)}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                 {t("body.description")}
               </p>
@@ -408,9 +431,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             </section>
 
             <section aria-labelledby="duration-heading">
-              <h2 id="duration-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("duration.title")}
-              </h2>
+              <QuestionHeading
+                id="duration-heading"
+                text={t("duration.title")}
+                onListen={() => forceSpeak(t("duration.title"))}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <div className="flex flex-col gap-2 mt-4" role="group" aria-labelledby="duration-heading">
                 {DURATION_OPTIONS.map((opt) => (
                   <SingleSelectButton
@@ -442,9 +468,12 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
             <legend className="sr-only">{t("support.legend")}</legend>
 
             <section aria-labelledby="support-heading">
-              <h2 id="support-heading" className="text-2xl font-bold text-foreground mb-1">
-                {t("support.title")}
-              </h2>
+              <QuestionHeading
+                id="support-heading"
+                text={t("support.title")}
+                onListen={() => forceSpeak(`${t("support.title")} ${t("support.description")}`)}
+                listenAriaLabel={tVoice("readOption")}
+              />
               <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                 {t("support.description")}
               </p>
@@ -473,6 +502,35 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
           </fieldset>
         )}
       </div>
+    </div>
+  )
+}
+
+function QuestionHeading({
+  id,
+  text,
+  onListen,
+  listenAriaLabel,
+}: {
+  id: string
+  text: string
+  onListen: () => void
+  listenAriaLabel: string
+}) {
+  return (
+    <div className="flex items-start gap-2 mb-1">
+      <h2 id={id} className="text-2xl font-bold text-foreground flex-1">
+        {text}
+      </h2>
+      <button
+        type="button"
+        onClick={onListen}
+        aria-label={listenAriaLabel}
+        style={{ minWidth: 36, minHeight: 36 }}
+        className="shrink-0 mt-1 flex items-center justify-center rounded-full text-primary hover:bg-primary/10 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      >
+        <Volume2 size={18} aria-hidden="true" />
+      </button>
     </div>
   )
 }
