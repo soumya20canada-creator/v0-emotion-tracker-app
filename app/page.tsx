@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
+import { useTranslations } from "next-intl"
 import { EmotionWheel } from "@/components/emotion-wheel"
 import { IntensitySlider } from "@/components/intensity-slider"
 import { SubEmotionPicker } from "@/components/sub-emotion-picker"
@@ -73,6 +74,7 @@ import { ArrowLeft, X, Lock, Info, Eye, EyeOff, Wind, BookOpenText, Feather, Hea
 type Screen = "home" | "wheel" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
 
 export default function BhavaApp() {
+  const tHome = useTranslations("home")
   const [authReady, setAuthReady] = useState(false)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [showThemePicker, setShowThemePicker] = useState(false)
@@ -913,10 +915,10 @@ export default function BhavaApp() {
             {/* Hero headline */}
             <div className="text-center flex flex-col gap-2">
               <h1 className="text-3xl font-extrabold text-foreground leading-tight text-balance">
-                How can I be here for you?
+                {tHome("heroHeading")}
               </h1>
               <p className="text-base text-muted-foreground italic">
-                Welcome back, {greetingName} {profile.avatar_emoji}
+                {tHome("welcomeBack", { name: greetingName })} {profile.avatar_emoji}
               </p>
               <p className="text-sm text-muted-foreground/50 tracking-widest">{headerTagline.script} · {headerTagline.gloss}</p>
             </div>
@@ -925,9 +927,9 @@ export default function BhavaApp() {
             {!gameState.selectedRegion && (
               <div className="flex flex-col gap-3 p-5 rounded-2xl bg-secondary/70 border border-border">
                 <div className="flex flex-col gap-1">
-                  <p className="text-base font-bold text-foreground">Where are you right now?</p>
+                  <p className="text-base font-bold text-foreground">{tHome("locationPromptTitle")}</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Places change, and so can you. Pick where you are today so we can show the right resources.
+                    {tHome("locationPromptDesc")}
                   </p>
                 </div>
                 <LocationPicker selectedRegion={gameState.selectedRegion} onSelect={handleRegionSelect} />
@@ -940,10 +942,10 @@ export default function BhavaApp() {
                 Something to pick up
               </p>
               <div className="flex flex-col gap-2">
-                <HomeToolTile icon={Wind} title="Breathe" subtitle="3 gentle patterns · 1–5 minutes" onClick={() => openTool("breathe", false)} />
-                <HomeToolTile icon={BookOpenText} title="Write it down" subtitle="A private page, just for you" onClick={() => openTool("journal", false)} />
-                <HomeToolTile icon={Feather} title="A small note for today" subtitle="Short · rotates daily" onClick={() => openTool("grounding-note", false)} />
-                <HomeToolTile icon={Headphones} title="Sit quietly" subtitle="A silent timer · 3 to 15 minutes" onClick={() => openTool("meditate", false)} />
+                <HomeToolTile icon={Wind} title={tHome("tools.breathe.title")} subtitle={tHome("tools.breathe.subtitle")} onClick={() => openTool("breathe", false)} />
+                <HomeToolTile icon={BookOpenText} title={tHome("tools.journal.title")} subtitle={tHome("tools.journal.subtitle")} onClick={() => openTool("journal", false)} />
+                <HomeToolTile icon={Feather} title={tHome("tools.note.title")} subtitle={tHome("tools.note.subtitle")} onClick={() => openTool("grounding-note", false)} />
+                <HomeToolTile icon={Headphones} title={tHome("tools.sit.title")} subtitle={tHome("tools.sit.subtitle")} onClick={() => openTool("meditate", false)} />
               </div>
             </section>
 
@@ -955,11 +957,11 @@ export default function BhavaApp() {
                 When you need real support
               </p>
               <div className="flex flex-col gap-2">
-                <HomeToolTile icon={Stethoscope} title="Find a therapist" subtitle="Free + culturally-matched options for where you are" onClick={() => setShowFindTherapist(true)} />
-                <HomeToolTile icon={UsersRound} title="Find community" subtitle="People near you, not platitudes" onClick={() => setShowFindCommunity(true)} />
-                <HomeToolTile icon={Scale} title="Legal aid" subtitle="Free help with visas, status, paperwork" onClick={() => setShowLegalAid(true)} />
-                <HomeToolTile icon={LifeBuoy} title="Crisis helplines" subtitle="Real people, trained to listen · free + confidential" onClick={() => setShowSupportView(true)} />
-                <HomeToolTile icon={MessageCircleHeart} title="Tell your family" subtitle="Scripts for saying it out loud to people back home" onClick={() => setShowFamilyScripts(true)} />
+                <HomeToolTile icon={Stethoscope} title={tHome("tools.therapist.title")} subtitle={tHome("tools.therapist.subtitle")} onClick={() => setShowFindTherapist(true)} />
+                <HomeToolTile icon={UsersRound} title={tHome("tools.community.title")} subtitle={tHome("tools.community.subtitle")} onClick={() => setShowFindCommunity(true)} />
+                <HomeToolTile icon={Scale} title={tHome("tools.legalAid.title")} subtitle={tHome("tools.legalAid.subtitle")} onClick={() => setShowLegalAid(true)} />
+                <HomeToolTile icon={LifeBuoy} title={tHome("tools.crisis.title")} subtitle={tHome("tools.crisis.subtitle")} onClick={() => setShowSupportView(true)} />
+                <HomeToolTile icon={MessageCircleHeart} title={tHome("tools.family.title")} subtitle={tHome("tools.family.subtitle")} onClick={() => setShowFamilyScripts(true)} />
               </div>
             </section>
 
@@ -969,7 +971,7 @@ export default function BhavaApp() {
               style={{ minHeight: 52 }}
               className="w-full flex items-center justify-center gap-1.5 text-sm font-semibold text-foreground/80 hover:text-foreground hover:bg-muted transition-colors cursor-pointer rounded-2xl border border-border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              Want to name a feeling? Open the emotion wheel
+              {tHome("openWheel")}
               <ArrowRight size={14} />
             </button>
 
@@ -980,13 +982,13 @@ export default function BhavaApp() {
               className="mx-auto flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-2"
             >
               <Info size={15} aria-hidden="true" />
-              See how it works
+              {tHome("howItWorks")}
             </button>
 
             {/* Privacy badge */}
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground/50">
               <Lock size={12} aria-hidden="true" />
-              <span>Your data is private and never sold</span>
+              <span>{tHome("privacy")}</span>
             </div>
 
             {/* Science note */}

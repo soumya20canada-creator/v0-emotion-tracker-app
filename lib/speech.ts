@@ -26,17 +26,22 @@ const LOCALE_BCP47: Record<Locale, string> = {
 }
 
 // When the system has no voice for a locale, fall back to a linguistically
-// adjacent one. Last resort: English.
+// adjacent one. NOTE: never fall back across script boundaries — an English
+// voice mangling Arabic/Urdu/Hindi text reads literal punctuation aloud
+// ("slash slash"), which is worse than silence. Same for pa→en.
+// If no native voice exists for these locales, the toggle correctly shows
+// "voice not available for this language on this device."
 const FALLBACK: Record<Locale, Locale[]> = {
   en: [],
   fr: ["en"],
-  hi: ["en"],
-  pa: ["hi", "en"],
-  ur: ["ar", "en"],
-  ar: ["en"],
-  tl: ["en"],
-  zh: ["en"],
-  es: ["en"],
+  hi: [],         // Devanagari — no en fallback
+  pa: ["hi"],     // Gurmukhi → Devanagari is a stretch but linguistically close;
+                  //   if neither exists, mark unavailable
+  ur: ["ar"],     // Both use Arabic script; if neither exists, unavailable
+  ar: [],         // Arabic script — no en fallback
+  tl: ["en"],     // Latin script, English fallback OK
+  zh: [],         // Hanzi — no en fallback
+  es: ["en"],     // Latin script, English fallback OK (degraded but readable)
 }
 
 function hasSpeech(): boolean {

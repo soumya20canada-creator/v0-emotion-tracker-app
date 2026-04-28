@@ -48,7 +48,26 @@
   "home": {
     "greeting": "Kumusta ang pakiramdam mo?",
     "subtitle": "Pangalanan ang nararamdaman, hanapin ang nakakatulong.",
-    "openWheel": "Gustong pangalanan ang isang nararamdaman? Buksan ang emotion wheel"
+    "openWheel": "Gustong pangalanan ang isang nararamdaman? Buksan ang emotion wheel",
+    "heroHeading": "Paano ako makakasama sa iyo ngayon?",
+    "welcomeBack": "Balik na pala, {name}",
+    "locationPromptTitle": "Saan ka ngayon?",
+    "locationPromptDesc": "Nagbabago ang mga lugar, at pati ikaw. Piliin kung nasaan ka ngayon para maipakita namin ang tamang resources.",
+    "pickUpHeading": "May puwedeng simulan",
+    "realSupportHeading": "Kapag kailangan mo ng tunay na suporta",
+    "howItWorks": "Tingnan kung paano ito gumagana",
+    "privacy": "Pribado ang data mo at hindi kailanman ibinebenta",
+    "tools": {
+      "breathe": { "title": "Huminga", "subtitle": "3 banayad na pattern · 1–5 minuto" },
+      "journal": { "title": "Isulat mo", "subtitle": "Pribadong pahina, para lang sa iyo" },
+      "note": { "title": "Maikling tala para ngayon", "subtitle": "Maikli · pinapalitan araw-araw" },
+      "sit": { "title": "Tahimik na umupo", "subtitle": "Tahimik na timer · 3 hanggang 15 minuto" },
+      "therapist": { "title": "Maghanap ng therapist", "subtitle": "Libre at angkop sa kultura para sa iyong lugar" },
+      "community": { "title": "Maghanap ng komunidad", "subtitle": "Mga taong malapit sa iyo, hindi puro salita lang" },
+      "legalAid": { "title": "Tulong-legal", "subtitle": "Libreng tulong sa visa, status, papeles" },
+      "crisis": { "title": "Mga crisis helpline", "subtitle": "Tunay na tao, sanay makinig · libre at kumpidensyal" },
+      "family": { "title": "Sabihin sa pamilya mo", "subtitle": "Mga script para sabihin nang malakas sa mga kapamilya sa bansa" }
+    }
   },
   "emotions": {
     "joy": "Saya",

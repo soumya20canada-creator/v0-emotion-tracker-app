@@ -48,7 +48,26 @@
   "home": {
     "greeting": "你现在感觉怎么样？",
     "subtitle": "说出你的感受，找到对你有帮助的方式。",
-    "openWheel": "想给一种感觉命名？打开情绪轮"
+    "openWheel": "想给一种感觉命名？打开情绪轮",
+    "heroHeading": "我可以怎样陪伴你？",
+    "welcomeBack": "欢迎回来，{name}",
+    "locationPromptTitle": "你现在在哪里？",
+    "locationPromptDesc": "地方会变，你也会变。选择今天你所在的地方，我们好显示合适的资源。",
+    "pickUpHeading": "可以开始的小事",
+    "realSupportHeading": "需要真正的支持时",
+    "howItWorks": "了解它如何运作",
+    "privacy": "你的数据是私密的，永不出售",
+    "tools": {
+      "breathe": { "title": "呼吸", "subtitle": "3 种温和的方式 · 1–5 分钟" },
+      "journal": { "title": "写下来", "subtitle": "一个私密的页面，只属于你" },
+      "note": { "title": "今天的小笔记", "subtitle": "简短 · 每日更换" },
+      "sit": { "title": "静静坐着", "subtitle": "静音计时器 · 3 到 15 分钟" },
+      "therapist": { "title": "寻找心理咨询师", "subtitle": "免费且文化契合你所在地的选择" },
+      "community": { "title": "寻找社区", "subtitle": "你身边真实的人，不是空话" },
+      "legalAid": { "title": "法律援助", "subtitle": "签证、身份、文件的免费帮助" },
+      "crisis": { "title": "危机求助热线", "subtitle": "真人接听，受过倾听训练 · 免费且保密" },
+      "family": { "title": "告诉家人", "subtitle": "对家乡亲人说出口的对白" }
+    }
   },
   "emotions": {
     "joy": "喜悦",

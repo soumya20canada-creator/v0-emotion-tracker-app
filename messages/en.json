@@ -47,7 +47,26 @@
   "home": {
     "greeting": "How are you feeling?",
     "subtitle": "Name what you feel, find what helps.",
-    "openWheel": "Want to name a feeling? Open the emotion wheel"
+    "openWheel": "Want to name a feeling? Open the emotion wheel",
+    "heroHeading": "How can I be here for you?",
+    "welcomeBack": "Welcome back, {name}",
+    "locationPromptTitle": "Where are you right now?",
+    "locationPromptDesc": "Places change, and so can you. Pick where you are today so we can show the right resources.",
+    "pickUpHeading": "Something to pick up",
+    "realSupportHeading": "When you need real support",
+    "howItWorks": "See how it works",
+    "privacy": "Your data is private and never sold",
+    "tools": {
+      "breathe": { "title": "Breathe", "subtitle": "3 gentle patterns · 1–5 minutes" },
+      "journal": { "title": "Write it down", "subtitle": "A private page, just for you" },
+      "note": { "title": "A small note for today", "subtitle": "Short · rotates daily" },
+      "sit": { "title": "Sit quietly", "subtitle": "A silent timer · 3 to 15 minutes" },
+      "therapist": { "title": "Find a therapist", "subtitle": "Free + culturally-matched options for where you are" },
+      "community": { "title": "Find community", "subtitle": "People near you, not platitudes" },
+      "legalAid": { "title": "Legal aid", "subtitle": "Free help with visas, status, paperwork" },
+      "crisis": { "title": "Crisis helplines", "subtitle": "Real people, trained to listen · free + confidential" },
+      "family": { "title": "Tell your family", "subtitle": "Scripts for saying it out loud to people back home" }
+    }
   },
   "emotions": {
     "joy": "Joy",

@@ -48,7 +48,26 @@
   "home": {
     "greeting": "¿Cómo te sientes?",
     "subtitle": "Nombra lo que sientes, encuentra lo que ayuda.",
-    "openWheel": "¿Quieres nombrar un sentimiento? Abre la rueda de emociones"
+    "openWheel": "¿Quieres nombrar un sentimiento? Abre la rueda de emociones",
+    "heroHeading": "¿Cómo puedo estar aquí para ti?",
+    "welcomeBack": "Bienvenido de nuevo, {name}",
+    "locationPromptTitle": "¿Dónde estás ahora?",
+    "locationPromptDesc": "Los lugares cambian, y tú también. Elige dónde estás hoy para mostrarte los recursos adecuados.",
+    "pickUpHeading": "Algo para empezar",
+    "realSupportHeading": "Cuando necesites apoyo real",
+    "howItWorks": "Ver cómo funciona",
+    "privacy": "Tus datos son privados y nunca se venden",
+    "tools": {
+      "breathe": { "title": "Respira", "subtitle": "3 patrones suaves · 1–5 minutos" },
+      "journal": { "title": "Escríbelo", "subtitle": "Una página privada, solo para ti" },
+      "note": { "title": "Una nota corta para hoy", "subtitle": "Breve · cambia cada día" },
+      "sit": { "title": "Siéntate en silencio", "subtitle": "Temporizador silencioso · 3 a 15 minutos" },
+      "therapist": { "title": "Encuentra un terapeuta", "subtitle": "Opciones gratuitas y culturalmente afines a tu lugar" },
+      "community": { "title": "Encuentra comunidad", "subtitle": "Personas cerca de ti, sin frases vacías" },
+      "legalAid": { "title": "Ayuda legal", "subtitle": "Ayuda gratuita con visas, estatus y documentos" },
+      "crisis": { "title": "Líneas de crisis", "subtitle": "Personas reales, entrenadas para escuchar · gratis y confidencial" },
+      "family": { "title": "Habla con tu familia", "subtitle": "Frases para decirlo en voz alta a quienes están en casa" }
+    }
   },
   "emotions": {
     "joy": "Alegría",
