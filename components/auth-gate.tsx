@@ -6,6 +6,7 @@ import { signUpWithPassword, signInWithPassword, resetPassword, signInWithGoogle
 import { getProfile, createProfile } from "@/lib/profile"
 import type { Profile } from "@/lib/profile"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
+import { LanguagePicker } from "@/components/language-picker"
 
 type Step = "signin" | "signup" | "forgot" | "forgot-sent"
 
@@ -145,6 +146,12 @@ export function AuthGate({ onAuthenticated }: AuthGateProps) {
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-primary/8 blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 rounded-full bg-accent/8 blur-3xl" />
+      </div>
+
+      {/* Language picker — visible before sign-up so non-English users know the
+          app supports their language. */}
+      <div className="absolute top-4 right-4 z-10">
+        <LanguagePicker />
       </div>
 
       <div className="relative w-full max-w-sm flex flex-col items-center gap-8">
