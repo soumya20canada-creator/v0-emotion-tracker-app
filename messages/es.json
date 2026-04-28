@@ -6,6 +6,37 @@
     "patterns": "Patrones",
     "space": "Mi Espacio"
   },
+  "tour": {
+    "skip": "Saltar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "done": "Entendido",
+    "step": "{current} de {total}",
+    "wheel": {
+      "title": "Empieza aquí",
+      "body": "Toca un sentimiento para comenzar. No hay respuestas incorrectas."
+    },
+    "journey": {
+      "title": "Tu Camino",
+      "body": "Rachas, insignias y tu estado de ánimo semanal — todo en un lugar."
+    },
+    "patterns": {
+      "title": "Tus Patrones",
+      "body": "Notamos cuándo suelen aparecer tus sentimientos — por día y hora."
+    },
+    "space": {
+      "title": "Mi Espacio",
+      "body": "Tu diario privado y herramientas, guardados solo para ti."
+    },
+    "crisis": {
+      "title": "¿Necesitas ayuda ahora?",
+      "body": "Si las cosas se vuelven difíciles, este botón está a un toque — en cualquier momento."
+    },
+    "controls": {
+      "title": "Hazlo tuyo",
+      "body": "Cambia el idioma, el tema o activa el modo Escuchar aquí."
+    }
+  },
   "home": {
     "greeting": "¿Cómo te sientes?",
     "subtitle": "Nombra lo que sientes, encuentra lo que ayuda.",

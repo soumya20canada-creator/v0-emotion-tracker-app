@@ -12,6 +12,7 @@ type AccountSettingsProps = {
   onClose: () => void
   onProfileUpdate: (updates: Partial<Profile>) => void
   onAccountDeleted: () => void
+  onReplayTour?: () => void
 }
 
 type PasswordStrength = {
@@ -34,7 +35,7 @@ function getPasswordStrength(pw: string): PasswordStrength {
   return { score, label: labels[score] || "", color: colors[score] || "#EF4444", checks }
 }
 
-export function AccountSettings({ profile, onClose, onProfileUpdate, onAccountDeleted }: AccountSettingsProps) {
+export function AccountSettings({ profile, onClose, onProfileUpdate, onAccountDeleted, onReplayTour }: AccountSettingsProps) {
   const tOnb = useTranslations("onboarding")
   const [activeSection, setActiveSection] = useState<string | null>(null)
   const [sessions, setSessions] = useState<OnboardingSession[]>([])
@@ -170,6 +171,19 @@ export function AccountSettings({ profile, onClose, onProfileUpdate, onAccountDe
       </header>
 
       <div className="flex-1 max-w-lg mx-auto w-full px-5 py-8 flex flex-col gap-4">
+
+        {/* Replay intro tour */}
+        {onReplayTour && (
+          <button
+            type="button"
+            onClick={onReplayTour}
+            style={{ minHeight: 56 }}
+            className="w-full flex items-center justify-between px-5 py-4 rounded-2xl border border-border bg-card hover:bg-muted transition-colors text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <span className="text-base font-semibold text-foreground">Show me around again</span>
+            <span className="text-sm text-muted-foreground">→</span>
+          </button>
+        )}
 
         {/* Name */}
         <Section id="name" title="Update your name">

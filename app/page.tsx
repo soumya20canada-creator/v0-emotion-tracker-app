@@ -15,7 +15,7 @@ import { CrisisResources } from "@/components/crisis-resources"
 import { ContextTagPicker } from "@/components/context-tag-picker"
 import { AuthGate } from "@/components/auth-gate"
 import { ThemePicker } from "@/components/theme-picker"
-import { OnboardingTooltips } from "@/components/onboarding-tooltips"
+import { CoachmarkTour, shouldAutoStartTour } from "@/components/coachmark-tour"
 import { HowItWorks } from "@/components/how-it-works"
 import { EmotionDescribe } from "@/components/emotion-describe"
 import { MySpace } from "@/components/my-space"
@@ -124,6 +124,7 @@ export default function BhavaApp() {
   const [isNewUser, setIsNewUser] = useState(false)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
   const [showPasswordReset, setShowPasswordReset] = useState(false)
+  const [showTour, setShowTour] = useState(false)
   const momentQueueRef = useRef<Moment[]>([])
 
   // Auth check on mount
@@ -207,6 +208,17 @@ export default function BhavaApp() {
   // shouldn't be asked "where are you right now?" on every open. If they
   // travel, they can change it via the LocationPicker in the header.
 
+  // Auto-fire the spotlight tour on home screen, once after onboarding completes.
+  useEffect(() => {
+    if (!profile) return
+    if (screen !== "home") return
+    if (showOnboarding || showNormalizeHelp || showWelcomeBack || showAcknowledgment) return
+    if (showTour) return
+    if (!shouldAutoStartTour()) return
+    const t = setTimeout(() => setShowTour(true), 600)
+    return () => clearTimeout(t)
+  }, [profile, screen, showOnboarding, showNormalizeHelp, showWelcomeBack, showAcknowledgment, showTour])
+
   // Auto-open monthly report once per month (only for returning, onboarded users)
   useEffect(() => {
     if (!profile || !gameState) return
@@ -267,6 +279,7 @@ export default function BhavaApp() {
     setLastOnboardingSession(session)
     setShowOnboarding(false)
     setShowAcknowledgment(true)
+    try { localStorage.setItem("bhava-onboarding-done", "true") } catch { /* ignore */ }
 
     if (currentRegion && profile) {
       setGameState((prev) => {
@@ -310,6 +323,7 @@ export default function BhavaApp() {
 
   const handleOnboardingSkip = useCallback(() => {
     setShowOnboarding(false)
+    try { localStorage.setItem("bhava-onboarding-done", "true") } catch { /* ignore */ }
     // Save empty session
     if (profile) saveOnboardingSession(profile.id, {
       current_situation: [],
@@ -686,6 +700,7 @@ export default function BhavaApp() {
         onClose={() => setShowSettings(false)}
         onProfileUpdate={(updates) => setProfile((prev) => prev ? { ...prev, ...updates } : prev)}
         onAccountDeleted={() => { setProfile(null); setShowSettings(false) }}
+        onReplayTour={() => { setShowSettings(false); setShowTour(true) }}
       />
     )
   }
@@ -1244,8 +1259,8 @@ export default function BhavaApp() {
         <PasswordResetModal onDone={() => setShowPasswordReset(false)} />
       )}
 
-      {/* Onboarding tooltips */}
-      <OnboardingTooltips isNewUser={isNewUser} />
+      {/* Spotlight intro tour */}
+      <CoachmarkTour active={showTour} onClose={() => setShowTour(false)} />
 
       {/* Global crisis chip — always reachable on main app screens */}
       <CrisisChip onOpen={() => setShowSupportView(true)} />

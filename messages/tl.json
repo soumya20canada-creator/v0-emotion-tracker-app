@@ -6,6 +6,37 @@
     "patterns": "Mga Pattern",
     "space": "Aking Espasyo"
   },
+  "tour": {
+    "skip": "Laktawan",
+    "back": "Bumalik",
+    "next": "Susunod",
+    "done": "Naintindihan",
+    "step": "{current} ng {total}",
+    "wheel": {
+      "title": "Magsimula dito",
+      "body": "I-tap ang isang damdamin para magsimula. Walang maling sagot."
+    },
+    "journey": {
+      "title": "Iyong Paglalakbay",
+      "body": "Mga streak, badge, at iyong lingguhang mood — lahat sa isang lugar."
+    },
+    "patterns": {
+      "title": "Iyong mga Pattern",
+      "body": "Pinapansin namin kung kailan dumarating ang mga damdamin mo — sa araw at oras."
+    },
+    "space": {
+      "title": "Aking Espasyo",
+      "body": "Iyong pribadong journal at mga tool, para lang sa iyo."
+    },
+    "crisis": {
+      "title": "Kailangan ng tulong ngayon?",
+      "body": "Kapag bumigat, isang tap lang ang button na ito — anumang oras."
+    },
+    "controls": {
+      "title": "Gawing iyo",
+      "body": "Baguhin ang wika, tema, o i-on ang Listen mode dito."
+    }
+  },
   "home": {
     "greeting": "Kumusta ang pakiramdam mo?",
     "subtitle": "Pangalanan ang nararamdaman, hanapin ang nakakatulong.",

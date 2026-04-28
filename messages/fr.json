@@ -6,6 +6,37 @@
     "patterns": "Tendances",
     "space": "Mon espace"
   },
+  "tour": {
+    "skip": "Passer",
+    "back": "Retour",
+    "next": "Suivant",
+    "done": "Compris",
+    "step": "{current} sur {total}",
+    "wheel": {
+      "title": "Commence ici",
+      "body": "Touche un sentiment pour commencer. Il n'y a pas de mauvaise réponse."
+    },
+    "journey": {
+      "title": "Ton parcours",
+      "body": "Séries, badges et ton humeur de la semaine — tout au même endroit."
+    },
+    "patterns": {
+      "title": "Tes tendances",
+      "body": "On remarque quand tes ressentis arrivent — par jour et par heure."
+    },
+    "space": {
+      "title": "Mon espace",
+      "body": "Ton journal privé et tes outils, gardés rien que pour toi."
+    },
+    "crisis": {
+      "title": "Besoin d'aide ?",
+      "body": "Si ça devient lourd, ce bouton est à portée d'un toucher — à tout moment."
+    },
+    "controls": {
+      "title": "Personnalise",
+      "body": "Change la langue, le thème, ou active le mode Écoute ici."
+    }
+  },
   "home": {
     "greeting": "Comment te sens-tu ?",
     "subtitle": "Nomme ce que tu ressens, trouve ce qui aide.",

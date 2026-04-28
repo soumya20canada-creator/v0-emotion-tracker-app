@@ -5,6 +5,37 @@
     "patterns": "Patterns",
     "space": "My Space"
   },
+  "tour": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "done": "Got it",
+    "step": "{current} of {total}",
+    "wheel": {
+      "title": "Start here",
+      "body": "Tap a feeling to begin a check-in. There's no wrong answer."
+    },
+    "journey": {
+      "title": "Your Journey",
+      "body": "Streaks, badges, and your weekly mood — all in one place."
+    },
+    "patterns": {
+      "title": "Your Patterns",
+      "body": "We notice when feelings tend to land — by day and time."
+    },
+    "space": {
+      "title": "My Space",
+      "body": "Your private journal and tools, kept just for you."
+    },
+    "crisis": {
+      "title": "Need help now?",
+      "body": "If things ever get heavy, this button is one tap away — anytime."
+    },
+    "controls": {
+      "title": "Make it yours",
+      "body": "Change the language, switch themes, or use Listen mode here."
+    }
+  },
   "home": {
     "greeting": "How are you feeling?",
     "subtitle": "Name what you feel, find what helps.",
