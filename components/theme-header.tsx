@@ -5,6 +5,7 @@ import { createPortal } from "react-dom"
 import { Moon, Sun, Palette, X, Check } from "lucide-react"
 import { THEMES, applyTheme, type ThemeId } from "@/lib/themes"
 import { LanguagePicker } from "@/components/language-picker"
+import { VoiceToggle } from "@/components/voice-toggle"
 
 const STORAGE_KEY = "bhava-theme"
 const LIGHT_DEFAULT: ThemeId = "default"
@@ -49,6 +50,7 @@ export function ThemeHeader({ onThemeChange }: ThemeHeaderProps) {
     <>
       <div className="flex items-center justify-end gap-1.5 px-3 py-1.5" data-tour="controls">
         <LanguagePicker />
+        <VoiceToggle />
         <button
           onClick={quickToggle}
           style={{ minWidth: 36, minHeight: 36 }}

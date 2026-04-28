@@ -6,6 +6,14 @@
     "patterns": "Patrones",
     "space": "Mi Espacio"
   },
+  "voice": {
+    "toggle": { "on": "Escuchar: activado", "off": "Escuchar: desactivado" },
+    "unavailable": "Voz no disponible para este idioma en este dispositivo.",
+    "listen": "Escuchar",
+    "listenAgain": "Escuchar de nuevo",
+    "stop": "Detener",
+    "readOption": "Leer esta opción"
+  },
   "tour": {
     "skip": "Saltar",
     "back": "Atrás",

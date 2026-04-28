@@ -6,6 +6,14 @@
     "patterns": "Mga Pattern",
     "space": "Aking Espasyo"
   },
+  "voice": {
+    "toggle": { "on": "Pakinggan: bukas", "off": "Pakinggan: sarado" },
+    "unavailable": "Walang available na boses para sa wikang ito sa device na ito.",
+    "listen": "Pakinggan",
+    "listenAgain": "Pakinggan ulit",
+    "stop": "Itigil",
+    "readOption": "Basahin ang opsyong ito"
+  },
   "tour": {
     "skip": "Laktawan",
     "back": "Bumalik",

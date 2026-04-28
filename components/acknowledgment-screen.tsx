@@ -1,8 +1,11 @@
 "use client"
 
 import { useMemo } from "react"
+import { useTranslations } from "next-intl"
 import { AppLogo } from "@/components/app-logo"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
+import { useScreenNarration } from "@/hooks/use-screen-narration"
+import { Volume2 } from "lucide-react"
 import {
   humanReflection,
   suggestTools,
@@ -74,6 +77,12 @@ export function AcknowledgmentScreen({
   const tagline = taglineFor(country, regionLabel)
   const contextTags = new Set(situationToContextTags(session))
   const homeTimeLine = contextTags.has("homesick") || contextTags.has("loneliness") ? homeTimeLineFor(country) : null
+  const tVoice = useTranslations("voice")
+  const narrationParts = useMemo(
+    () => [`Hi ${firstName}.`, reflection, headingFor(tools[0]?.id), ...tools.map((t) => t.title)],
+    [firstName, reflection, tools],
+  )
+  const { replay } = useScreenNarration(narrationParts)
 
   return (
     <main className="min-h-dvh bg-background flex flex-col">
@@ -108,6 +117,15 @@ export function AcknowledgmentScreen({
           {homeTimeLine && (
             <p className="text-sm text-muted-foreground italic leading-relaxed">{homeTimeLine}</p>
           )}
+          <button
+            type="button"
+            onClick={replay}
+            className="self-start inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label={tVoice("listenAgain")}
+          >
+            <Volume2 size={12} aria-hidden="true" />
+            {tVoice("listenAgain")}
+          </button>
         </div>
 
         <section className="flex flex-col gap-3">

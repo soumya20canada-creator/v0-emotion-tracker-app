@@ -5,6 +5,14 @@
     "patterns": "Patterns",
     "space": "My Space"
   },
+  "voice": {
+    "toggle": { "on": "Listen: on", "off": "Listen: off" },
+    "unavailable": "Voice not available for this language on this device.",
+    "listen": "Listen",
+    "listenAgain": "Listen again",
+    "stop": "Stop",
+    "readOption": "Read this option"
+  },
   "tour": {
     "skip": "Skip",
     "back": "Back",

@@ -21,7 +21,9 @@ import { ThemeHeader } from "@/components/theme-header"
 import { LocationPicker } from "@/components/location-picker"
 import { AppLogo } from "@/components/app-logo"
 import { PronunciationGuide } from "@/components/pronunciation-guide"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Volume2 } from "lucide-react"
+import { useVoice } from "@/components/voice-provider"
+import { useScreenNarration } from "@/hooks/use-screen-narration"
 
 type OnboardingFlowProps = {
   isNewUser: boolean
@@ -33,6 +35,8 @@ type Screen = 1 | 2 | 3 | 4
 
 export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlowProps) {
   const t = useTranslations("onboarding")
+  const tVoice = useTranslations("voice")
+  const { forceSpeak } = useVoice()
   const startScreen: Screen = isNewUser ? 1 : 2
   const totalScreens = isNewUser ? 4 : 3
   const [screen, setScreen] = useState<Screen>(startScreen)
@@ -74,6 +78,15 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
   function toggle<T>(arr: T[], item: T): T[] {
     return arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]
   }
+
+  // Voice narration — speak the dominant prompt for the current screen.
+  const narrationParts: string[] = (() => {
+    if (screen === 1) return [t("intro.title"), t("intro.description"), t("country.title"), t("country.description")]
+    if (screen === 2) return [t("location.title"), t("location.description"), t("situation.title"), t("situation.description")]
+    if (screen === 3) return [t("body.title"), t("body.description"), t("duration.title")]
+    return [t("support.title"), t("support.description")]
+  })()
+  const { replay } = useScreenNarration(narrationParts)
 
   function handleComplete() {
     const session: OnboardingSession = {
@@ -150,6 +163,18 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
               style={{ width: `${(currentStep / totalScreens) * 100}%` }}
             />
           </div>
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={replay}
+              style={{ minHeight: 32 }}
+              className="flex items-center gap-1.5 px-2.5 h-8 rounded-full bg-muted hover:bg-border text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label={tVoice("listenAgain")}
+            >
+              <Volume2 size={12} aria-hidden="true" />
+              <span className="text-[11px] font-semibold">{tVoice("listenAgain")}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -208,6 +233,8 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                   <MultiSelectButton
                     key={opt.id}
                     label={t(opt.labelKey)}
+                    onListen={() => forceSpeak(t(opt.labelKey))}
+                    listenAriaLabel={tVoice("readOption")}
                     selected={identity.includes(opt.id)}
                     onToggle={() => setIdentity(toggle(identity, opt.id))}
                   />
@@ -228,6 +255,8 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                   <MultiSelectButton
                     key={opt.id}
                     label={t(opt.labelKey)}
+                    onListen={() => forceSpeak(t(opt.labelKey))}
+                    listenAriaLabel={tVoice("readOption")}
                     selected={gender.includes(opt.id)}
                     onToggle={() => setGender(toggle(gender, opt.id))}
                   />
@@ -262,6 +291,8 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                   <SingleSelectButton
                     key={opt.id}
                     label={t(opt.labelKey)}
+                    onListen={() => forceSpeak(t(opt.labelKey))}
+                    listenAriaLabel={tVoice("readOption")}
                     selected={pronouns === opt.id}
                     onSelect={() => setPronouns(pronouns === opt.id ? "" : opt.id)}
                   />
@@ -316,6 +347,8 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                   <MultiSelectButton
                     key={opt.id}
                     label={t(opt.labelKey)}
+                    onListen={() => forceSpeak(t(opt.labelKey))}
+                    listenAriaLabel={tVoice("readOption")}
                     selected={situation.includes(opt.id)}
                     onToggle={() => setSituation(toggle(situation, opt.id))}
                   />
@@ -335,6 +368,8 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                   <MultiSelectButton
                     key={opt.id}
                     label={t(opt.labelKey)}
+                    onListen={() => forceSpeak(t(opt.labelKey))}
+                    listenAriaLabel={tVoice("readOption")}
                     selected={goingOn.includes(opt.id)}
                     onToggle={() => setGoingOn(toggle(goingOn, opt.id))}
                   />
@@ -363,6 +398,8 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                   <MultiSelectButton
                     key={opt.id}
                     label={t(opt.labelKey)}
+                    onListen={() => forceSpeak(t(opt.labelKey))}
+                    listenAriaLabel={tVoice("readOption")}
                     selected={bodyFeelings.includes(opt.id)}
                     onToggle={() => setBodyFeelings(toggle(bodyFeelings, opt.id))}
                   />
@@ -379,6 +416,8 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                   <SingleSelectButton
                     key={opt.id}
                     label={t(opt.labelKey)}
+                    onListen={() => forceSpeak(t(opt.labelKey))}
+                    listenAriaLabel={tVoice("readOption")}
                     selected={duration === opt.id}
                     onSelect={() => setDuration(duration === opt.id ? "" : opt.id)}
                   />
@@ -414,6 +453,8 @@ export function OnboardingFlow({ isNewUser, onComplete, onSkip }: OnboardingFlow
                   <MultiSelectButton
                     key={opt.id}
                     label={t(opt.labelKey)}
+                    onListen={() => forceSpeak(t(opt.labelKey))}
+                    listenAriaLabel={tVoice("readOption")}
                     selected={support.includes(opt.id)}
                     onToggle={() => setSupport(toggle(support, opt.id))}
                   />
@@ -440,41 +481,64 @@ function MultiSelectButton({
   label,
   selected,
   onToggle,
+  onListen,
+  listenAriaLabel,
 }: {
   label: string
   selected: boolean
   onToggle: () => void
+  onListen?: () => void
+  listenAriaLabel?: string
 }) {
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-pressed={selected}
-      style={{ minHeight: 52 }}
+    <div
       className={[
-        "w-full px-5 py-3.5 rounded-xl text-left text-base font-medium transition-all duration-150 cursor-pointer",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-        "flex items-center gap-3",
+        "w-full rounded-xl flex items-center gap-2 transition-all duration-150",
+        "focus-within:ring-2 focus-within:ring-primary",
         selected
-          ? "bg-primary/10 text-primary border-2 border-primary"
-          : "bg-muted text-foreground border-2 border-transparent hover:border-primary/30 hover:bg-muted/80",
+          ? "bg-primary/10 border-2 border-primary"
+          : "bg-muted border-2 border-transparent hover:border-primary/30 hover:bg-muted/80",
       ].join(" ")}
     >
-      <span
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-pressed={selected}
+        style={{ minHeight: 52 }}
         className={[
-          "w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 transition-colors",
-          selected ? "bg-primary border-primary" : "border-muted-foreground/40",
+          "flex-1 px-5 py-3.5 rounded-xl text-left text-base font-medium cursor-pointer",
+          "focus-visible:outline-none",
+          "flex items-center gap-3",
+          selected ? "text-primary" : "text-foreground",
         ].join(" ")}
-        aria-hidden="true"
       >
-        {selected && (
-          <svg width={12} height={12} viewBox="0 0 12 12" fill="none">
-            <path d="M2 6l3 3 5-5" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
-      </span>
-      {label}
-    </button>
+        <span
+          className={[
+            "w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 transition-colors",
+            selected ? "bg-primary border-primary" : "border-muted-foreground/40",
+          ].join(" ")}
+          aria-hidden="true"
+        >
+          {selected && (
+            <svg width={12} height={12} viewBox="0 0 12 12" fill="none">
+              <path d="M2 6l3 3 5-5" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </span>
+        {label}
+      </button>
+      {onListen && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onListen() }}
+          aria-label={listenAriaLabel ?? "Read this option"}
+          style={{ minWidth: 40, minHeight: 40 }}
+          className="mr-2 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/60 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <Volume2 size={14} aria-hidden="true" />
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -482,37 +546,60 @@ function SingleSelectButton({
   label,
   selected,
   onSelect,
+  onListen,
+  listenAriaLabel,
 }: {
   label: string
   selected: boolean
   onSelect: () => void
+  onListen?: () => void
+  listenAriaLabel?: string
 }) {
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-pressed={selected}
-      style={{ minHeight: 52 }}
+    <div
       className={[
-        "w-full px-5 py-3.5 rounded-xl text-left text-base font-medium transition-all duration-150 cursor-pointer",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-        "flex items-center gap-3",
+        "w-full rounded-xl flex items-center gap-2 transition-all duration-150",
+        "focus-within:ring-2 focus-within:ring-primary",
         selected
-          ? "bg-primary/10 text-primary border-2 border-primary"
-          : "bg-muted text-foreground border-2 border-transparent hover:border-primary/30 hover:bg-muted/80",
+          ? "bg-primary/10 border-2 border-primary"
+          : "bg-muted border-2 border-transparent hover:border-primary/30 hover:bg-muted/80",
       ].join(" ")}
     >
-      <span
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-pressed={selected}
+        style={{ minHeight: 52 }}
         className={[
-          "w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center border-2 transition-colors",
-          selected ? "bg-primary border-primary" : "border-muted-foreground/40",
+          "flex-1 px-5 py-3.5 rounded-xl text-left text-base font-medium cursor-pointer",
+          "focus-visible:outline-none",
+          "flex items-center gap-3",
+          selected ? "text-primary" : "text-foreground",
         ].join(" ")}
-        aria-hidden="true"
       >
-        {selected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
-      </span>
-      {label}
-    </button>
+        <span
+          className={[
+            "w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center border-2 transition-colors",
+            selected ? "bg-primary border-primary" : "border-muted-foreground/40",
+          ].join(" ")}
+          aria-hidden="true"
+        >
+          {selected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
+        </span>
+        {label}
+      </button>
+      {onListen && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onListen() }}
+          aria-label={listenAriaLabel ?? "Read this option"}
+          style={{ minWidth: 40, minHeight: 40 }}
+          className="mr-2 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/60 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <Volume2 size={14} aria-hidden="true" />
+        </button>
+      )}
+    </div>
   )
 }
 

@@ -6,6 +6,14 @@
     "patterns": "规律",
     "space": "我的空间"
   },
+  "voice": {
+    "toggle": { "on": "朗读：开", "off": "朗读：关" },
+    "unavailable": "此设备不支持该语言的朗读。",
+    "listen": "朗读",
+    "listenAgain": "再听一次",
+    "stop": "停止",
+    "readOption": "朗读此选项"
+  },
   "tour": {
     "skip": "跳过",
     "back": "返回",

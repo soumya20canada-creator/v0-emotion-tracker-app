@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { DM_Sans, Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { IntlProvider } from '@/components/intl-provider'
+import { VoiceProvider } from '@/components/voice-provider'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -55,7 +56,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${dmSans.variable} ${cormorant.variable} font-sans antialiased`}>
         <IntlProvider>
-          {children}
+          <VoiceProvider>
+            {children}
+          </VoiceProvider>
         </IntlProvider>
         <Analytics />
       </body>
