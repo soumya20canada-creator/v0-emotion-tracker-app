@@ -66,8 +66,17 @@
       "community": { "title": "Encuentra comunidad", "subtitle": "Personas cerca de ti, sin frases vacías" },
       "legalAid": { "title": "Ayuda legal", "subtitle": "Ayuda gratuita con visas, estatus y documentos" },
       "crisis": { "title": "Líneas de crisis", "subtitle": "Personas reales, entrenadas para escuchar · gratis y confidencial" },
-      "family": { "title": "Habla con tu familia", "subtitle": "Frases para decirlo en voz alta a quienes están en casa" }
+      "family": { "title": "Habla con tu familia", "subtitle": "Frases para decirlo en voz alta a quienes están en casa" },
+      "sleep": { "title": "¿No puedes dormir?", "subtitle": "Calma la mente · 5 a 20 minutos" }
     }
+  },
+  "sleep": {
+    "title": "¿Difícil dormir esta noche?",
+    "subtitle": "Está bien. A muchos nos pasa. Elige algo suave.",
+    "park":   { "title": "Suelta los pensamientos",   "desc": "Escribe lo que tienes en mente para que no te quite el sueño." },
+    "breathe":{ "title": "Respiración 4-7-8",         "desc": "Un patrón lento que le dice al cuerpo que ya puede descansar." },
+    "body":   { "title": "Calma el cuerpo",           "desc": "Un escaneo corporal corto para soltar donde acumulas tensión." },
+    "close":  "Volver"
   },
   "emotions": {
     "joy": "Alegría",

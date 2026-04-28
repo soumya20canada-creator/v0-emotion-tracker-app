@@ -66,8 +66,17 @@
       "community": { "title": "寻找社区", "subtitle": "你身边真实的人，不是空话" },
       "legalAid": { "title": "法律援助", "subtitle": "签证、身份、文件的免费帮助" },
       "crisis": { "title": "危机求助热线", "subtitle": "真人接听，受过倾听训练 · 免费且保密" },
-      "family": { "title": "告诉家人", "subtitle": "对家乡亲人说出口的对白" }
+      "family": { "title": "告诉家人", "subtitle": "对家乡亲人说出口的对白" },
+      "sleep": { "title": "睡不着？", "subtitle": "让心安静下来 · 5 到 20 分钟" }
     }
+  },
+  "sleep": {
+    "title": "今晚难以入睡？",
+    "subtitle": "没关系。很多人都在熬夜。选一个温柔的方法。",
+    "park":   { "title": "把想法放下",   "desc": "把脑子里的事写下来，别让它陪你一整夜。" },
+    "breathe":{ "title": "4-7-8 呼吸",    "desc": "缓慢的节奏告诉身体可以放松了。" },
+    "body":   { "title": "让身体安定",   "desc": "短短的身体扫描，松开紧绷的地方。" },
+    "close":  "返回"
   },
   "emotions": {
     "joy": "喜悦",

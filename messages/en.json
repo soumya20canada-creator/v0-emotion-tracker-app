@@ -65,8 +65,17 @@
       "community": { "title": "Find community", "subtitle": "People near you, not platitudes" },
       "legalAid": { "title": "Legal aid", "subtitle": "Free help with visas, status, paperwork" },
       "crisis": { "title": "Crisis helplines", "subtitle": "Real people, trained to listen · free + confidential" },
-      "family": { "title": "Tell your family", "subtitle": "Scripts for saying it out loud to people back home" }
+      "family": { "title": "Tell your family", "subtitle": "Scripts for saying it out loud to people back home" },
+      "sleep": { "title": "Trouble sleeping?", "subtitle": "Quiet your mind · 5 to 20 minutes" }
     }
+  },
+  "sleep": {
+    "title": "Hard to sleep tonight?",
+    "subtitle": "It's okay. A lot of us lie awake. Pick something gentle.",
+    "park":   { "title": "Park your thoughts",   "desc": "Write what's on your mind so it's not on you all night." },
+    "breathe":{ "title": "4-7-8 breathing",       "desc": "A slow pattern that signals your body it's safe to drift." },
+    "body":   { "title": "Settle into the body", "desc": "A short body scan to soften where you're holding tension." },
+    "close":  "Back"
   },
   "emotions": {
     "joy": "Joy",

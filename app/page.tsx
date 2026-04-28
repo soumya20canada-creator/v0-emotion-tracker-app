@@ -69,7 +69,8 @@ import { countryToRegionId, situationToContextTags, bodyToEmotion, durationToInt
 import { upcomingCulturalDay } from "@/lib/cultural-calendar"
 import { taglineFor } from "@/lib/cultural-taglines"
 import { monthKey, previousMonthStart } from "@/lib/monthly-report"
-import { ArrowLeft, X, Lock, Info, Eye, EyeOff, Wind, BookOpenText, Feather, Headphones, ArrowRight, ChevronRight, LifeBuoy, Stethoscope, UsersRound, Scale, MessageCircleHeart } from "lucide-react"
+import { ArrowLeft, X, Lock, Info, Eye, EyeOff, Wind, BookOpenText, Feather, Headphones, ArrowRight, ChevronRight, LifeBuoy, Stethoscope, UsersRound, Scale, MessageCircleHeart, Moon } from "lucide-react"
+import { SleepHelper } from "@/components/sleep-helper"
 
 type Screen = "home" | "wheel" | "describe" | "sub-emotion" | "context" | "intensity" | "actions" | "crisis" | "progress" | "badges" | "patterns"
 
@@ -94,6 +95,7 @@ export default function BhavaApp() {
   const [showFindCommunity, setShowFindCommunity] = useState(false)
   const [showLegalAid, setShowLegalAid] = useState(false)
   const [showFamilyScripts, setShowFamilyScripts] = useState(false)
+  const [showSleep, setShowSleep] = useState(false)
   const [actionsHint, setActionsHint] = useState<string | null>(null)
 
   // App settings
@@ -786,6 +788,10 @@ export default function BhavaApp() {
     )
   }
 
+  if (showSleep) {
+    return <SleepHelper userId={profile.id} onClose={() => setShowSleep(false)} />
+  }
+
   if (showFindTherapist) {
     return (
       <FindTherapist
@@ -945,6 +951,7 @@ export default function BhavaApp() {
                 <HomeToolTile icon={Wind} title={tHome("tools.breathe.title")} subtitle={tHome("tools.breathe.subtitle")} onClick={() => openTool("breathe", false)} />
                 <HomeToolTile icon={BookOpenText} title={tHome("tools.journal.title")} subtitle={tHome("tools.journal.subtitle")} onClick={() => openTool("journal", false)} />
                 <HomeToolTile icon={Feather} title={tHome("tools.note.title")} subtitle={tHome("tools.note.subtitle")} onClick={() => openTool("grounding-note", false)} />
+                <HomeToolTile icon={Moon} title={tHome("tools.sleep.title")} subtitle={tHome("tools.sleep.subtitle")} onClick={() => setShowSleep(true)} />
                 <HomeToolTile icon={Headphones} title={tHome("tools.sit.title")} subtitle={tHome("tools.sit.subtitle")} onClick={() => openTool("meditate", false)} />
               </div>
             </section>

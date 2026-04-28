@@ -66,8 +66,17 @@
       "community": { "title": "Trouver une communauté", "subtitle": "Des gens près de toi, pas des banalités" },
       "legalAid": { "title": "Aide juridique", "subtitle": "Aide gratuite pour visas, statut, papiers" },
       "crisis": { "title": "Lignes de crise", "subtitle": "Vraies personnes, formées pour écouter · gratuit et confidentiel" },
-      "family": { "title": "Parle à ta famille", "subtitle": "Des phrases pour le dire à voix haute à ceux qui sont au pays" }
+      "family": { "title": "Parle à ta famille", "subtitle": "Des phrases pour le dire à voix haute à ceux qui sont au pays" },
+      "sleep": { "title": "Tu n'arrives pas à dormir ?", "subtitle": "Apaise ton esprit · 5 à 20 minutes" }
     }
+  },
+  "sleep": {
+    "title": "Difficile de dormir ce soir ?",
+    "subtitle": "C'est okay. On est nombreux à veiller. Choisis quelque chose de doux.",
+    "park":   { "title": "Pose tes pensées",     "desc": "Écris ce qui tourne dans ta tête pour qu'il ne te garde pas éveillé." },
+    "breathe":{ "title": "Respiration 4-7-8",    "desc": "Un rythme lent qui dit au corps qu'il peut lâcher prise." },
+    "body":   { "title": "Détends le corps",     "desc": "Un court scan corporel pour relâcher la tension." },
+    "close":  "Retour"
   },
   "emotions": {
     "joy": "Joie",

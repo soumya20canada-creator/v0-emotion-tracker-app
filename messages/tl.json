@@ -66,8 +66,17 @@
       "community": { "title": "Maghanap ng komunidad", "subtitle": "Mga taong malapit sa iyo, hindi puro salita lang" },
       "legalAid": { "title": "Tulong-legal", "subtitle": "Libreng tulong sa visa, status, papeles" },
       "crisis": { "title": "Mga crisis helpline", "subtitle": "Tunay na tao, sanay makinig · libre at kumpidensyal" },
-      "family": { "title": "Sabihin sa pamilya mo", "subtitle": "Mga script para sabihin nang malakas sa mga kapamilya sa bansa" }
+      "family": { "title": "Sabihin sa pamilya mo", "subtitle": "Mga script para sabihin nang malakas sa mga kapamilya sa bansa" },
+      "sleep": { "title": "Hirap matulog?", "subtitle": "Pakalmahin ang isip · 5 hanggang 20 minuto" }
     }
+  },
+  "sleep": {
+    "title": "Mahirap matulog ngayong gabi?",
+    "subtitle": "Okay lang. Marami sa atin ang gising. Pumili ng isang banayad na bagay.",
+    "park":   { "title": "Ilagay sa papel ang iniisip", "desc": "Isulat ang nasa isip mo para hindi ka nito gisingin buong gabi." },
+    "breathe":{ "title": "4-7-8 paghinga",                "desc": "Mabagal na padron na nagsasabi sa katawan mo na ligtas nang magpahinga." },
+    "body":   { "title": "Pakalmahin ang katawan",       "desc": "Maikling body scan para palambutin kung saan ka may tensyon." },
+    "close":  "Balik"
   },
   "emotions": {
     "joy": "Saya",
