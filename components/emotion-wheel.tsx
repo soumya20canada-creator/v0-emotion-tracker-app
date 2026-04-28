@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { EMOTION_CATEGORIES, type EmotionCategory } from "@/lib/emotions-data"
 import {
   Sun,
@@ -27,15 +28,17 @@ type EmotionWheelProps = {
 
 export function EmotionWheel({ onSelect, selectedId }: EmotionWheelProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const tEmotions = useTranslations("emotions")
+  const tHome = useTranslations("home")
 
   return (
     <div className="flex flex-col items-center gap-8 w-full" data-tour="wheel">
       <div className="flex flex-col items-center gap-3">
         <h2 className="text-3xl font-extrabold text-foreground text-center text-balance leading-tight">
-          How are you feeling?
+          {tHome("greeting")}
         </h2>
         <p className="text-base text-muted-foreground text-center leading-relaxed">
-          Tap what fits. No right answers.
+          {tHome("subtitle")}
         </p>
       </div>
 
@@ -61,7 +64,7 @@ export function EmotionWheel({ onSelect, selectedId }: EmotionWheelProps) {
               onClick={() => onSelect(emotion)}
               onMouseEnter={() => setHoveredId(emotion.id)}
               onMouseLeave={() => setHoveredId(null)}
-              aria-label={`Select ${emotion.label} emotion`}
+              aria-label={tEmotions(emotion.id)}
               aria-pressed={isSelected}
             >
               {Icon && (
@@ -75,7 +78,7 @@ export function EmotionWheel({ onSelect, selectedId }: EmotionWheelProps) {
                 className="text-base font-bold"
                 style={{ color: isSelected ? "#FFFFFF" : emotion.color }}
               >
-                {emotion.label}
+                {tEmotions(emotion.id)}
               </span>
             </button>
           )
